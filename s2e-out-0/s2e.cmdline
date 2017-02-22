@@ -1,1 +1,0 @@
-'../../build/qemu-release/i386-s2e-softmmu/qemu-system-i386' '-net' 'none' 's2e_disk-raw.s2e' '-loadvm' '1' '-s2e-config-file' '/tmp/tmphZI1z9config.lua' '-s2e-verbose'
