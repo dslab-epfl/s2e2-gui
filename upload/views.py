@@ -3,6 +3,7 @@ from django.shortcuts import render
 from .forms import UploadFileForm
 from shutil import copyfile
 from contextlib import contextmanager
+from models import S2EOutput
 import os
 import tempfile
 import shutil
@@ -22,7 +23,8 @@ def upload_file(request):
 		form = UploadFileForm(request.POST, request.FILES)
 		if form.is_valid():
 				handle_uploaded_file(request.FILES["config_file"], request.FILES["binary_file"])
-				return render(request, 'success.html', {'form': form})
+				output = S2EOutput("s2e-last/")
+				return render(request, 'display_log.html', {'warnings': output.warnings, 'messages' : output.messages, 'info' : output.info})
 	else:
 		form = UploadFileForm()
 	return render(request, 'upload.html', {'form': form})
@@ -58,5 +60,11 @@ def make_temporary_directory():
 
 def launch_S2E(tmpdir):
 	os.system(S2E_QEMU_SYSTEM_PATH + " -net none " + S2E_IMAGE_SNAP_PATH + " -loadvm " + S2E_IMAGE_SNAP_EXT + " -s2e-config-file " + tmpdir + S2E_CONFIG_LUA_FILE_NAME + " -s2e-verbose")
+
+def display_output_file():
+	S2E_LAST = "s2e_last/"
+	
+	
+	
 
 

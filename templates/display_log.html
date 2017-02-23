@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html >
+	<head>
+		<meta charset="utf-8">
+		<title>S2E Web</title>   
+	</head>
+	<body>
+		<p>
+		<h1>Warnings :</h1>
+		{% autoescape off %}
+		{{warnings}}
+		{% endautoescape %}
+		</p>
+		
+		<p>
+		<h1>Messages :</h1>
+		{% autoescape off %}
+		{{messages}}
+		{% endautoescape %}
+		</p>
+
+		<p>
+		<h1>Info :</h1>
+		{% autoescape off %}
+		{{info}}
+		{% endautoescape %}
+		</p>
+	</body>
+</html> 

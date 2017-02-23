@@ -1,8 +1,9 @@
-from __future__ import unicode_literals
+class S2EOutput():
+	def __init__(self, s2e_out_dir):
+		with open(s2e_out_dir + "warnings.txt", 'r') as destination:
+			self.warnings = destination.read().replace("\n", " <br /> ")
+		with open(s2e_out_dir + "messages.txt", 'r') as destination:
+			self.messages = destination.read().replace("\n", " <br /> ")
+		with open(s2e_out_dir + "info.txt", 'r') as destination:
+			self.info = destination.read().replace("\n", " <br /> ")
 
-from django.db import models
-
-from django.db import models
-
-class Document(models.Model):
-    docfile = models.FileField(updload_to='documents')
