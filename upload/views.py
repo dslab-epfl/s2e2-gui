@@ -35,6 +35,9 @@ def handle_uploaded_file(config, binary):
 	write_file_to_disk_and_close(tmpdir + S2E_CONFIG_LUA_FILE_NAME, config)
 	write_file_to_disk_and_close(tmpdir + S2E_BINARY_FILE_NAME, binary)
 	launch_S2E(tmpdir)
+	#remove downloaded files
+	os.remove(tmpdir + S2E_CONFIG_LUA_FILE_NAME)
+	os.remove(tmpdir + S2E_BINARY_FILE_NAME)
 
 
 def write_file_to_disk_and_close(path, w_file):
