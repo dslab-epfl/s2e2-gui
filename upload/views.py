@@ -30,7 +30,7 @@ def upload_file(request):
 def handle_uploaded_file(config, binary):	
 	#used in stage 2
 	#with make_temporary_directory() as tmpdir:
-	tmpdir = "temp-dir"	
+	tmpdir = "temp-dir/"	
 
 	write_file_to_disk_and_close(tmpdir + S2E_CONFIG_LUA_FILE_NAME, config)
 	write_file_to_disk_and_close(tmpdir + S2E_BINARY_FILE_NAME, binary)
