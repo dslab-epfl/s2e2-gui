@@ -5,18 +5,25 @@
 		<title>S2E Web</title>   
 	</head>
 	<body>
-		<p>
-		<h1>Warnings :</h1>
-		{{warnings|linebreaks}}
-		</p>
+		{% if has_s2e_error %}
+			<p>
+			<h1>S2E was unable to properly run :</h1>
+			{{s2e_error|linebreaks}}
+			</p>
+		{% else %}
+			<p>
+			<h1>Warnings :</h1>
+			{{warnings|linebreaks}}
+			</p>
 		
-		<p>
-		<h1>Messages :</h1>
-		{{messages|linebreaks}}
-		</p>
-		<p>
-		<h1>Info :</h1>
-		{{info|linebreaks}}
-		</p>
+			<p>
+			<h1>Messages :</h1>
+			{{messages|linebreaks}}
+			</p>
+			<p>
+			<h1>Info :</h1>
+			{{info|linebreaks}}
+			</p>
+		{% endif %}
 	</body>
 </html> 
