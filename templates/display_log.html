@@ -7,23 +7,16 @@
 	<body>
 		<p>
 		<h1>Warnings :</h1>
-		{% autoescape off %}
-		{{warnings}}
-		{% endautoescape %}
+		{{warnings|linebreaks}}
 		</p>
 		
 		<p>
 		<h1>Messages :</h1>
-		{% autoescape off %}
-		{{messages}}
-		{% endautoescape %}
+		{{messages|linebreaks}}
 		</p>
-
 		<p>
 		<h1>Info :</h1>
-		{% autoescape off %}
-		{{info}}
-		{% endautoescape %}
+		{{info|linebreaks}}
 		</p>
 	</body>
 </html> 
