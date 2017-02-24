@@ -10,6 +10,7 @@ import tempfile
 import shutil
 
 
+#TODO create a config file with all of these variables
 S2E_QEMU_SYSTEM_PATH = "../../build/qemu-release/i386-s2e-softmmu/qemu-system-i386"
 S2E_IMAGE_SNAP_PATH = "../../test/s2e_disk-raw.s2e"
 # The name ".s2e." in the image file
@@ -28,8 +29,8 @@ def upload_file(request):
 			tmpdir = "temp-dir/"	
 			has_s2e_error, s2e_error = handle_uploaded_file(tmpdir, request.FILES["config_file"], request.FILES["binary_file"])
 			output = S2EOutput("s2e-last/")
-			#TODO pass the boolean s2e_error and has_s2e_error to render
-			return render(request, 'display_log.html', {'warnings': output.warnings, 'messages' : output.messages, 'info' : output.info, 'has_s2e_error': has_s2e_error, 's2e_error': s2e_error})
+
+			return render(request, 'display_log.html', {'warnings': output.warnings, 'messages' : output.messages, 'info' : output.info, 'debug' : output.debug, 'has_s2e_error': has_s2e_error, 's2e_error': s2e_error})
 	else:
 		form = UploadFileForm()
 	return render(request, 'upload.html', {'form': form})
