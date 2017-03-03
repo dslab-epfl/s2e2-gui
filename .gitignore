@@ -3,3 +3,5 @@
 *~
 /s2e-out-*/
 s2e-last
+.project
+.pydevproject

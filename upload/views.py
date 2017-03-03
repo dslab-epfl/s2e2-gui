@@ -8,16 +8,7 @@ import subprocess
 import os
 import tempfile
 import shutil
-
-
-#TODO create a config file with all of these variables
-S2E_QEMU_SYSTEM_PATH = "../../build/qemu-release/i386-s2e-softmmu/qemu-system-i386"
-S2E_IMAGE_SNAP_PATH = "../../test/s2e_disk-raw.s2e"
-# The name ".s2e." in the image file
-S2E_IMAGE_SNAP_EXT = "ready"
-S2E_CONFIG_LUA_FILE_NAME = "config.lua"
-S2E_BINARY_FILE_NAME = "binary"
-S2E_BOOTSTRAP_FILE_NAME = "bootstrap"
+import s2e_web.S2E_settings as settings
 
 
 def upload_file(request):
@@ -36,13 +27,13 @@ def upload_file(request):
 	return render(request, 'upload.html', {'form': form})
 
 def handle_uploaded_file(tmpdir, config, binary):	
-	write_file_to_disk_and_close(tmpdir + S2E_CONFIG_LUA_FILE_NAME, config)
-	write_file_to_disk_and_close(tmpdir + S2E_BINARY_FILE_NAME, binary)
+	write_file_to_disk_and_close(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME, config)
+	write_file_to_disk_and_close(tmpdir + settings.S2E_BINARY_FILE_NAME, binary)
 		
 	has_s2e_error, s2e_error = launch_S2E(tmpdir)
 
-	os.remove(tmpdir + S2E_CONFIG_LUA_FILE_NAME)
-	os.remove(tmpdir + S2E_BINARY_FILE_NAME)
+	os.remove(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME)
+	os.remove(tmpdir + settings.S2E_BINARY_FILE_NAME)
 
 	return has_s2e_error, s2e_error
 
@@ -64,7 +55,9 @@ def make_temporary_directory():
 		shutil.rmtree(tmpdir)
 
 def launch_S2E(tmpdir):
-	s2e_command = S2E_QEMU_SYSTEM_PATH + " -net none " + S2E_IMAGE_SNAP_PATH + " -loadvm " + S2E_IMAGE_SNAP_EXT + " -s2e-config-file " + tmpdir + S2E_CONFIG_LUA_FILE_NAME
+	s2e_command = settings.S2E_QEMU_SYSTEM_PATH + " -net none " + \
+				  settings.S2E_IMAGE_SNAP_PATH + " -loadvm " + settings.S2E_IMAGE_SNAP_EXT + \
+				  " -s2e-config-file " + tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME
 
 	p = subprocess.Popen([s2e_command, ""], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	out, err = p.communicate()
