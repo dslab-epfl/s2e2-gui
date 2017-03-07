@@ -8,4 +8,6 @@ S2E_CONFIG_LUA_FILE_NAME = "config.lua"
 S2E_BINARY_FILE_NAME = "binary"
 S2E_BOOTSTRAP_FILE_NAME = "bootstrap"
 
+S2E_PLUGIN_SRC_DIR = "/home/davide/S2E/s2e/qemu/s2e/Plugins"
+
     
