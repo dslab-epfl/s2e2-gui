@@ -1,13 +1,11 @@
 from __future__ import unicode_literals
 from __future__ import print_function
 
-from django.db import models
 import clang.cindex
 import sys
 from types import NoneType
 from __builtin__ import staticmethod, True
 import yaml 
-
 
 class PluginConfig():
 	def __init__(self, plugin_name, plugin_descr, list_plugin_attr):
@@ -25,7 +23,7 @@ class Attribute():
 		
 class S2ECodeParser():
 	CONFIG_TAG = "@s2e_plugin_option@"
-	
+	DESCRIPTION_TAG = "S2E_DEFINE_PLUGIN"
 	
 	@staticmethod
 	def parsePlugin(filePath):
@@ -33,27 +31,14 @@ class S2ECodeParser():
 		tu = index.parse(filePath)
 		print('Translation unit:', tu.spelling)
 		
-		pluginDescription = S2ECodeParser.tokenListToString(S2ECodeParser.getPluginDescription(tu.cursor))
+		pluginDescription = S2ECodeParser.getPluginInfo(tu.cursor)
+		configDictionary = S2ECodeParser.getAllConfigOption(tu.cursor)
+		print(pluginDescription)
+		print(configDictionary)
 		
-		S2ECodeParser.getNextConfigOption(tu.cursor.get_tokens())
-		
-		
-	@staticmethod
-	def iterateChildren(cursor, level = 0):
-		for c in cursor.get_children():
-			#if(check == False or c.spelling == head):				
-			if(c.location.line == 26):
-				print(S2ECodeParser.levelToString(level) + "display : " + c.displayname)
-				print(S2ECodeParser.levelToString(level) + "kind : " + str(c.kind))
-				print(S2ECodeParser.levelToString(level) + "location : " + str(c.location))
-				print(S2ECodeParser.levelToString(level) + "spelling : " + str(c.spelling))
-				print(S2ECodeParser.levelToString(level) + "display : " + c.displayname)
-				print("\n")
-				
-			S2ECodeParser.iterateChildren(c, level + 1)
 			
 	@staticmethod
-	def getPluginDescription(cursor):
+	def getPluginInfo(cursor):
 		generator = cursor.get_tokens()
 		notFound = True
 		while(notFound):
@@ -61,19 +46,23 @@ class S2ECodeParser():
 				currentToken = next(generator)
 					
 				# check for the plugin definition
-				if(currentToken.spelling == "S2E_DEFINE_PLUGIN"):
+				if(currentToken.spelling == S2ECodeParser.DESCRIPTION_TAG):
 					if(next(generator).spelling == "("):
-						return S2ECodeParser.getTokenFromTo((S2ECodeParser.getUpToCloseParenthesis(generator)), ',', ',')
+						argumentList = S2ECodeParser.getArgumentList(S2ECodeParser.getUpToCloseParenthesis(generator), ',')
+						return argumentList[0], argumentList[1], argumentList[3:]
 						
 			except StopIteration:
-				return IOError("can't find the plugin description")
+				return IOError("Can't find the plugin description")
 	
 	@staticmethod
 	def getAllConfigOption(cursor):
 		generator = cursor.get_tokens()
-		while(getNextConfigOption != None):
-			pass
-		
+		configOut = {}
+		nextConfig = S2ECodeParser.getNextConfigOption(generator)
+		while(nextConfig != None):
+			configOut = dict(configOut, **nextConfig)
+			nextConfig = S2ECodeParser.getNextConfigOption(generator)
+		return configOut
 				
 	
 	@staticmethod
@@ -91,63 +80,37 @@ class S2ECodeParser():
 					configOptionString = ""
 					currentToken = next(generator)
 					currentTokenSpelling = currentToken.spelling.decode("utf-8")
+					
 					while(currentTokenSpelling.startswith("//")):
 						configOptionString = configOptionString + currentTokenSpelling[2:] + "\n"
-						
 						currentToken = next(generator)
 						currentTokenSpelling = currentToken.spelling.decode("utf-8")
 						
-					print(yaml.safe_load(configOptionString))
+					#TODO in case of parse error, remove plugin from list and send a meaningful error message
+					return yaml.safe_load(configOptionString)
+				
+				elif(currentTokenSpelling.startswith("/*")):
+					tagIndex = currentTokenSpelling.find(S2ECodeParser.CONFIG_TAG)
+					
+					if(tagIndex != -1):
+						yamlComment = currentTokenSpelling[tagIndex + len(S2ECodeParser.CONFIG_TAG) :-2].replace("\t", "")
+						return yaml.safe_load(yamlComment)
 						
 						
 			except StopIteration:
 				return None
 	
 	@staticmethod
-	def getTokenFromTo(tokenList, matchFrom, matchTo):
+	def getArgumentList(tokenList, separator = ","):
 		outputList = []
-		hasMatch = False
+		accumulator = ""
 		for token in tokenList:
-			if(hasMatch and token.spelling == matchTo):
-				return outputList
-			if(hasMatch == True):
-				outputList.append(token)
-			if(token.spelling == matchFrom):
-				hasMatch = True
-			
-	
-	@staticmethod
-	def iterateToken(cursor):
-		
-		#Detect the list of following string
-		#toFind = ["s2e", "(", ")", "->", "getConfig", "(", ")", "->", None, "("]
-		#toFindPos8 = ["getInt", "getBool"]
-		toFind = ["S2E_DEFINE_PLUGIN"]
-		toFindPos = 0
-		currentToken = ""
-		generator = cursor.get_tokens()
-		hasNext = True
-		
-		while(hasNext):
-			try:
-				currentToken = next(generator)
-					
-				# if we found the next element in the list or if it is the item in the 8th positions
-				if((currentToken.spelling == toFind[toFindPos]) or (toFindPos == 8 and currentToken.spelling in toFindPos8)):
-					toFindPos = toFindPos + 1
-					if(toFindPos == len(toFind)):	
-						toFindPos = 0
-						print(next(generator).spelling)
-						print(next(generator).spelling)
-						print(next(generator).spelling)
-						print(next(generator).spelling)
-						print(next(generator).spelling)
-						#S2ECodeParser.printToken(S2ECodeParser.getUpToCloseParenthesis(generator))
-				else:
-					toFindPos = 0
-					
-			except StopIteration:
-				hasNext = False
+			if(token.spelling == separator):
+				outputList.append(accumulator)
+				accumulator = ""
+			else:
+				accumulator = accumulator + token.spelling
+		return outputList
 		
 			
 	@staticmethod
@@ -158,10 +121,10 @@ class S2ECodeParser():
 		
 	@staticmethod
 	def tokenListToString(tokenList):
-		outPutString = ""
+		outputString = ""
 		for token in tokenList:
-			outPutString = outPutString + token.spelling
-		return outPutString
+			outputString = outputString + token.spelling
+		return outputString
 		
 	@staticmethod
 	def getUpToCloseParenthesis(generator):
@@ -195,6 +158,53 @@ class S2ECodeParser():
 		for x in range(level):
 			out = out + "-"
 		return out
+	
+# 	@staticmethod
+# 	def iterateToken(cursor):
+# 		
+# 		#Detect the list of following string
+# 		#toFind = ["s2e", "(", ")", "->", "getConfig", "(", ")", "->", None, "("]
+# 		#toFindPos8 = ["getInt", "getBool"]
+# 		toFind = ["S2E_DEFINE_PLUGIN"]
+# 		toFindPos = 0
+# 		currentToken = ""
+# 		generator = cursor.get_tokens()
+# 		hasNext = True
+# 		
+# 		while(hasNext):
+# 			try:
+# 				currentToken = next(generator)
+# 					
+# 				# if we found the next element in the list or if it is the item in the 8th positions
+# 				if((currentToken.spelling == toFind[toFindPos]) or (toFindPos == 8 and currentToken.spelling in toFindPos8)):
+# 					toFindPos = toFindPos + 1
+# 					if(toFindPos == len(toFind)):	
+# 						toFindPos = 0
+# 						print(next(generator).spelling)
+# 						print(next(generator).spelling)
+# 						print(next(generator).spelling)
+# 						print(next(generator).spelling)
+# 						print(next(generator).spelling)
+# 						#S2ECodeParser.printToken(S2ECodeParser.getUpToCloseParenthesis(generator))
+# 				else:
+# 					toFindPos = 0
+# 					
+# 			except StopIteration:
+# 				hasNext = False
+	
+# 	@staticmethod
+# 	def iterateChildren(cursor, level = 0):
+# 		for c in cursor.get_children():
+# 			#if(check == False or c.spelling == head):				
+# 			if(c.location.line == 26):
+# 				print(S2ECodeParser.levelToString(level) + "display : " + c.displayname)
+# 				print(S2ECodeParser.levelToString(level) + "kind : " + str(c.kind))
+# 				print(S2ECodeParser.levelToString(level) + "location : " + str(c.location))
+# 				print(S2ECodeParser.levelToString(level) + "spelling : " + str(c.spelling))
+# 				print(S2ECodeParser.levelToString(level) + "display : " + c.displayname)
+# 				print("\n")
+# 				
+# 			S2ECodeParser.iterateChildren(c, level + 1)
 	
 # 	@staticmethod
 # 	def find_typerefs(node, typename):
