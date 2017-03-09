@@ -2,28 +2,39 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 import clang.cindex
-import sys
+import os
 from types import NoneType
 from __builtin__ import staticmethod, True
 import yaml 
-
-class PluginConfig():
-	def __init__(self, plugin_name, plugin_descr, list_plugin_attr):
-		self.plugin_name = plugin_name
-		self.plugin_descr = plugin_descr
-		self.list_plugin_attr = list_plugin_attr
-
-
-class Attribute():
-	def __init__(self, attr_name, attr_descr, attr_type):
-		self.attr_name = attr_name
-		self.attr_descr = attr_descr
-		self.attr_type = attr_type
+import json
 		
+class PluginParseException(Exception):
+	def __init__(self, value):
+		self.value = value
+	def __str__(self):
+		return repr(self.value)
 		
 class S2ECodeParser():
 	CONFIG_TAG = "@s2e_plugin_option@"
 	DESCRIPTION_TAG = "S2E_DEFINE_PLUGIN"
+	
+	
+	@staticmethod
+	def parseEveryPluginInDir(dirPath):
+		everyPluginDict = []
+		for root, dirs, files in os.walk(dirPath):
+			for file in files:
+				if(file.endswith(".cpp")):
+					try:
+						pluginDict = S2ECodeParser.parsePlugin(os.path.abspath(os.path.join(root, file)))
+						everyPluginDict.append(pluginDict)
+					except PluginParseException as e:
+						print(e)
+					
+		with open("result.json", "w") as fp:
+			json.dump(everyPluginDict, fp, indent=4, separators=(',', ': '))
+		
+		#S2ECodeParser.parsePlugin("/home/davide/S2E/s2e/qemu/s2e/Plugins/Debugger.cpp")
 	
 	@staticmethod
 	def parsePlugin(filePath):
@@ -31,11 +42,18 @@ class S2ECodeParser():
 		tu = index.parse(filePath)
 		print('Translation unit:', tu.spelling)
 		
-		pluginDescription = S2ECodeParser.getPluginInfo(tu.cursor)
+		pluginName, pluginDescr, pluginDep = S2ECodeParser.getPluginInfo(tu.cursor)
+			
 		configDictionary = S2ECodeParser.getAllConfigOption(tu.cursor)
-		print(pluginDescription)
-		print(configDictionary)
 		
+		pluginDictionary = {}
+		pluginDictionary["name"] = pluginName
+		pluginDictionary["description"] = pluginDescr
+		pluginDictionary["dependencies"] = pluginDep
+		pluginDictionary["configOption"] = configDictionary
+		
+		return pluginDictionary
+	
 			
 	@staticmethod
 	def getPluginInfo(cursor):
@@ -52,7 +70,7 @@ class S2ECodeParser():
 						return argumentList[0], argumentList[1], argumentList[3:]
 						
 			except StopIteration:
-				return IOError("Can't find the plugin description")
+				raise PluginParseException("Can't find the plugin description")
 	
 	@staticmethod
 	def getAllConfigOption(cursor):
@@ -60,10 +78,16 @@ class S2ECodeParser():
 		configOut = {}
 		nextConfig = S2ECodeParser.getNextConfigOption(generator)
 		while(nextConfig != None):
-			configOut = dict(configOut, **nextConfig)
+			configOut = S2ECodeParser.mergeDictionary(configOut, nextConfig)
 			nextConfig = S2ECodeParser.getNextConfigOption(generator)
 		return configOut
 				
+	@staticmethod
+	def mergeDictionary(x, y):
+		"""Merge two dictionary."""
+		z = x.copy()
+		z.update(y)
+		return z
 	
 	@staticmethod
 	def getNextConfigOption(generator):
@@ -73,7 +97,6 @@ class S2ECodeParser():
 			try:
 				currentToken = next(generator)
 					
-				#TODO look for the comment done like this : /* */ 
 				#looks for the plugin config option (multiline comment with "//")
 				currentTokenSpelling = currentToken.spelling.decode("utf-8")
 				if(currentTokenSpelling.startswith("//") and currentTokenSpelling.find(S2ECodeParser.CONFIG_TAG) != -1):
@@ -94,6 +117,7 @@ class S2ECodeParser():
 					
 					if(tagIndex != -1):
 						yamlComment = currentTokenSpelling[tagIndex + len(S2ECodeParser.CONFIG_TAG) :-2].replace("\t", "")
+						#TODO in case of parse error, remove plugin from list and send a meaningful error message
 						return yaml.safe_load(yamlComment)
 						
 						
@@ -101,12 +125,12 @@ class S2ECodeParser():
 				return None
 	
 	@staticmethod
-	def getArgumentList(tokenList, separator = ","):
+	def getArgumentList(tokenList, separator = ",", remove = '"'):
 		outputList = []
 		accumulator = ""
 		for token in tokenList:
 			if(token.spelling == separator):
-				outputList.append(accumulator)
+				outputList.append(accumulator.replace(remove, ""))
 				accumulator = ""
 			else:
 				accumulator = accumulator + token.spelling

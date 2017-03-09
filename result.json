@@ -1,0 +1,292 @@
+[
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "Example",
+        "description": "Example S2E plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "CorePlugin",
+        "description": "S2E core functionality"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "SymbolicHardware",
+        "description": "Symbolic hardware plugin for PCI/ISA devices"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "HostFiles",
+        "description": "Access to host files"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "BaseInstructions",
+        "description": "Default set of custom instructions plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "CodeSelector",
+        "description": "Plugin for monitoring module execution"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "FunctionMonitor",
+        "description": "Function calls/returns monitoring plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "CacheSim",
+        "description": "Cache simulator"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "Annotation",
+        "description": "Bypasses functions at run-time"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "ConsistencyModels",
+        "description": "Central manager for execution consistency models"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "MemoryChecker"
+        ],
+        "name": "StackChecker",
+        "description": "Verifies the correct stack use"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "Interceptor",
+            "ModuleExecutionDetector",
+            "ExecutionTracer"
+        ],
+        "name": "MemoryChecker",
+        "description": "MemoryChecker plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "ExecutionStatisticsCollector",
+        "description": "Allows client plugins to store statistics in a central location"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "ModuleExecutionDetector"
+        ],
+        "name": "EdgeKiller",
+        "description": "Kills states when a specified sequence of instructions has been executed"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "SymbolicHardware"
+        ],
+        "name": "InterruptInjector",
+        "description": "Inject hardware interrupts at various places in the system to cause race conditions"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "ModuleExecutionDetector"
+        ],
+        "name": "StackMonitor",
+        "description": "Tracks stack usage by modules"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "Interceptor",
+            "FunctionMonitor"
+        ],
+        "name": "LibraryCallMonitor",
+        "description": "Flags all calls to external libraries"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "FunctionMonitor",
+        "description": "ARM function calls/returns monitoring plugin"
+    },
+    {
+        "configOption": {
+            "catchAccessesAbove": {
+                "type": "int",
+                "description": "Catch accesses that are above the specified address"
+            },
+            "timeTrigger": {
+                "type": "int",
+                "description": "Start monitoring after the specified number of seconds"
+            },
+            "monitorStack": {
+                "type": "bool",
+                "description": "Catch all accesses to the stack"
+            }
+        },
+        "dependencies": [],
+        "name": "Debugger",
+        "description": "Debugger plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "StateManager",
+        "description": "Control the deletion/suspension of states"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "ModuleExecutionDetector",
+        "description": "Plugin for monitoring module execution"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "X86ExceptionInterceptor",
+        "description": "X86ExceptionInterceptor S2E plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "RawMonitor",
+        "description": "Plugin for monitoring raw module events"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "CooperativeSearcher",
+        "description": "Uses custom instructions to schedule states"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "MaxTbSearcher",
+        "description": "Prioritizes states that are about to execute unexplored translation blocks"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "ConcolicDFSSearcher",
+        "description": "Depth-first searcher, prioritizing non-speculative paths first"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "WindowsMonitor",
+        "description": "Plugin for monitoring Windows kernel/user-mode events"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "WindowsCrashDumpGenerator",
+        "description": "Generates WinDbg-compatible crash dumps"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "BlueScreenInterceptor",
+        "description": "Intercepts Windows blue screens of death and generated bug reports"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "FunctionMonitor"
+        ],
+        "name": "HalHandlers",
+        "description": "Basic collection of NT Hal API functions."
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "FunctionMonitor",
+            "Interceptor"
+        ],
+        "name": "NtoskrnlHandlers",
+        "description": "Basic collection of NT Kernel API functions."
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "Interceptor"
+        ],
+        "name": "WindowsDriverExerciser",
+        "description": "Windows driver tester"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "FunctionMonitor",
+            "Interceptor",
+            "ModuleExecutionDetector",
+            "SymbolicHardware"
+        ],
+        "name": "NdisHandlers",
+        "description": "Basic collection of NDIS API functions."
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "ModuleTracer",
+        "description": "Module load/unload tracer plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "StateSwitchTracer",
+        "description": "Traces state switches"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "ExecutionTracer"
+        ],
+        "name": "TranslationBlockTracer",
+        "description": "Tracer for executed translation blocks"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "TestCaseGenerator",
+        "description": "TestCaseGenerator plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "MemoryTracer",
+        "description": "Memory tracer plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "ExecutionTracer",
+        "description": "ExecutionTracer plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "ExecutionTracer"
+        ],
+        "name": "InstructionCounter",
+        "description": "Instruction counter plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "ExceptionTracer",
+        "description": "Traces CPU exception"
+    }
+]
