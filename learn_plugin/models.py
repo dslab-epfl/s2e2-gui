@@ -15,6 +15,7 @@ class PluginParseException(Exception):
 		return repr(self.value)
 		
 class S2ECodeParser():
+	GUI_CONFIG_TAG = "@s2e_plugin_gui_configured@"
 	CONFIG_TAG = "@s2e_plugin_option@"
 	DESCRIPTION_TAG = "S2E_DEFINE_PLUGIN"
 	
@@ -42,8 +43,8 @@ class S2ECodeParser():
 		tu = index.parse(filePath)
 		print('Translation unit:', tu.spelling)
 		
+		isGuiConfigured = S2ECodeParser.isPluginGuiConfigured(tu.cursor)
 		pluginName, pluginDescr, pluginDep = S2ECodeParser.getPluginInfo(tu.cursor)
-			
 		configDictionary = S2ECodeParser.getAllConfigOption(tu.cursor)
 		
 		pluginDictionary = {}
@@ -51,9 +52,27 @@ class S2ECodeParser():
 		pluginDictionary["description"] = pluginDescr
 		pluginDictionary["dependencies"] = pluginDep
 		pluginDictionary["configOption"] = configDictionary
-		
+		pluginDictionary["isGuiConfigured"] = isGuiConfigured
+
 		return pluginDictionary
 	
+	@staticmethod
+	def isPluginGuiConfigured(cursor):
+		generator = cursor.get_tokens()
+		notFound = True
+		while(notFound):
+			try:
+				currentToken = next(generator)
+		
+				# check if the plugin is gui configured
+				if(S2ECodeParser.isComment(currentToken.spelling.decode("utf-8"))):
+					tagPos = currentToken.spelling.find(S2ECodeParser.GUI_CONFIG_TAG)
+					if(tagPos != -1):
+						return True
+			
+			except StopIteration:
+				return False
+			
 			
 	@staticmethod
 	def getPluginInfo(cursor):
@@ -71,6 +90,13 @@ class S2ECodeParser():
 						
 			except StopIteration:
 				raise PluginParseException("Can't find the plugin description")
+	
+	@staticmethod
+	def isComment(string):
+		if(string.startswith("//") or string.startswith("/*")):
+			return True;
+		else:
+			return False;
 	
 	@staticmethod
 	def getAllConfigOption(cursor):

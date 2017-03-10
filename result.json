@@ -3,60 +3,70 @@
         "configOption": {},
         "dependencies": [],
         "name": "Example",
+        "isGuiConfigured": false,
         "description": "Example S2E plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "CorePlugin",
+        "isGuiConfigured": false,
         "description": "S2E core functionality"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "SymbolicHardware",
+        "isGuiConfigured": false,
         "description": "Symbolic hardware plugin for PCI/ISA devices"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "HostFiles",
+        "isGuiConfigured": false,
         "description": "Access to host files"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "BaseInstructions",
+        "isGuiConfigured": false,
         "description": "Default set of custom instructions plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "CodeSelector",
+        "isGuiConfigured": false,
         "description": "Plugin for monitoring module execution"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "FunctionMonitor",
+        "isGuiConfigured": false,
         "description": "Function calls/returns monitoring plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "CacheSim",
+        "isGuiConfigured": false,
         "description": "Cache simulator"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "Annotation",
+        "isGuiConfigured": false,
         "description": "Bypasses functions at run-time"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "ConsistencyModels",
+        "isGuiConfigured": false,
         "description": "Central manager for execution consistency models"
     },
     {
@@ -65,6 +75,7 @@
             "MemoryChecker"
         ],
         "name": "StackChecker",
+        "isGuiConfigured": false,
         "description": "Verifies the correct stack use"
     },
     {
@@ -75,12 +86,14 @@
             "ExecutionTracer"
         ],
         "name": "MemoryChecker",
+        "isGuiConfigured": false,
         "description": "MemoryChecker plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "ExecutionStatisticsCollector",
+        "isGuiConfigured": false,
         "description": "Allows client plugins to store statistics in a central location"
     },
     {
@@ -89,6 +102,7 @@
             "ModuleExecutionDetector"
         ],
         "name": "EdgeKiller",
+        "isGuiConfigured": false,
         "description": "Kills states when a specified sequence of instructions has been executed"
     },
     {
@@ -97,6 +111,7 @@
             "SymbolicHardware"
         ],
         "name": "InterruptInjector",
+        "isGuiConfigured": false,
         "description": "Inject hardware interrupts at various places in the system to cause race conditions"
     },
     {
@@ -105,6 +120,7 @@
             "ModuleExecutionDetector"
         ],
         "name": "StackMonitor",
+        "isGuiConfigured": false,
         "description": "Tracks stack usage by modules"
     },
     {
@@ -114,12 +130,14 @@
             "FunctionMonitor"
         ],
         "name": "LibraryCallMonitor",
+        "isGuiConfigured": false,
         "description": "Flags all calls to external libraries"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "FunctionMonitor",
+        "isGuiConfigured": false,
         "description": "ARM function calls/returns monitoring plugin"
     },
     {
@@ -139,66 +157,77 @@
         },
         "dependencies": [],
         "name": "Debugger",
+        "isGuiConfigured": false,
         "description": "Debugger plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "StateManager",
+        "isGuiConfigured": false,
         "description": "Control the deletion/suspension of states"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "ModuleExecutionDetector",
+        "isGuiConfigured": false,
         "description": "Plugin for monitoring module execution"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "X86ExceptionInterceptor",
+        "isGuiConfigured": false,
         "description": "X86ExceptionInterceptor S2E plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "RawMonitor",
+        "isGuiConfigured": false,
         "description": "Plugin for monitoring raw module events"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "CooperativeSearcher",
+        "isGuiConfigured": false,
         "description": "Uses custom instructions to schedule states"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "MaxTbSearcher",
+        "isGuiConfigured": false,
         "description": "Prioritizes states that are about to execute unexplored translation blocks"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "ConcolicDFSSearcher",
+        "isGuiConfigured": false,
         "description": "Depth-first searcher, prioritizing non-speculative paths first"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "WindowsMonitor",
+        "isGuiConfigured": false,
         "description": "Plugin for monitoring Windows kernel/user-mode events"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "WindowsCrashDumpGenerator",
+        "isGuiConfigured": false,
         "description": "Generates WinDbg-compatible crash dumps"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "BlueScreenInterceptor",
+        "isGuiConfigured": false,
         "description": "Intercepts Windows blue screens of death and generated bug reports"
     },
     {
@@ -207,6 +236,7 @@
             "FunctionMonitor"
         ],
         "name": "HalHandlers",
+        "isGuiConfigured": false,
         "description": "Basic collection of NT Hal API functions."
     },
     {
@@ -216,6 +246,7 @@
             "Interceptor"
         ],
         "name": "NtoskrnlHandlers",
+        "isGuiConfigured": false,
         "description": "Basic collection of NT Kernel API functions."
     },
     {
@@ -224,6 +255,7 @@
             "Interceptor"
         ],
         "name": "WindowsDriverExerciser",
+        "isGuiConfigured": false,
         "description": "Windows driver tester"
     },
     {
@@ -235,18 +267,21 @@
             "SymbolicHardware"
         ],
         "name": "NdisHandlers",
+        "isGuiConfigured": false,
         "description": "Basic collection of NDIS API functions."
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "ModuleTracer",
+        "isGuiConfigured": true,
         "description": "Module load/unload tracer plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "StateSwitchTracer",
+        "isGuiConfigured": false,
         "description": "Traces state switches"
     },
     {
@@ -255,24 +290,28 @@
             "ExecutionTracer"
         ],
         "name": "TranslationBlockTracer",
+        "isGuiConfigured": false,
         "description": "Tracer for executed translation blocks"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "TestCaseGenerator",
+        "isGuiConfigured": true,
         "description": "TestCaseGenerator plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "MemoryTracer",
+        "isGuiConfigured": false,
         "description": "Memory tracer plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "ExecutionTracer",
+        "isGuiConfigured": true,
         "description": "ExecutionTracer plugin"
     },
     {
@@ -281,12 +320,14 @@
             "ExecutionTracer"
         ],
         "name": "InstructionCounter",
+        "isGuiConfigured": true,
         "description": "Instruction counter plugin"
     },
     {
         "configOption": {},
         "dependencies": [],
         "name": "ExceptionTracer",
+        "isGuiConfigured": false,
         "description": "Traces CPU exception"
     }
 ]
