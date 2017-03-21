@@ -8,6 +8,8 @@ S2E_CONFIG_LUA_FILE_NAME = "config.lua"
 S2E_BINARY_FILE_NAME = "binary"
 S2E_BOOTSTRAP_FILE_NAME = "bootstrap"
 
-S2E_PLUGIN_SRC_DIR = "/home/davide/S2E/s2e/qemu/s2e/Plugins"
+S2E_PLUGIN_JSON_CONFIG_FILE = "/home/davide/S2E/python/s2e2-gui/result.json"
+S2E_ANALYSIS_ROOT_DIR = "/home/davide/S2E/python/s2e2-gui/"
+
 
     

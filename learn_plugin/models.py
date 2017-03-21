@@ -3,7 +3,8 @@ from __future__ import print_function
 
 import clang.cindex
 import os
-from types import NoneType
+import sys
+
 from __builtin__ import staticmethod, True
 import yaml 
 import json
@@ -15,63 +16,87 @@ class PluginParseException(Exception):
 		return repr(self.value)
 		
 class S2ECodeParser():
-	GUI_CONFIG_TAG = "@s2e_plugin_gui_configured@"
 	CONFIG_TAG = "@s2e_plugin_option@"
 	DESCRIPTION_TAG = "S2E_DEFINE_PLUGIN"
 	
+	LIST_TYPE = "list"
+	BOOLEAN_TYPE = "bool"
+	INT_TYPE = "int"
+	STRING_TYPE = "string"
+	STRING_LIST_TYPE = "stringList"
+	ACCEPTED_TYPES = [BOOLEAN_TYPE, INT_TYPE, STRING_TYPE, STRING_LIST_TYPE, LIST_TYPE]
+	
+	TYPE_KEY = "type"
+	DESCRIPTION_KEY = "description"
+	CONTENT_KEY = "content"
+	
 	
 	@staticmethod
-	def parseEveryPluginInDir(dirPath):
+	def parsePluginsInDir(dirPath, pluginNameList):
 		everyPluginDict = []
 		for root, dirs, files in os.walk(dirPath):
 			for file in files:
-				if(file.endswith(".cpp")):
+				if(file in pluginNameList):
 					try:
 						pluginDict = S2ECodeParser.parsePlugin(os.path.abspath(os.path.join(root, file)))
 						everyPluginDict.append(pluginDict)
-					except PluginParseException as e:
-						print(e)
+					except PluginParseException as err:
+						print("\033[0;31;49m " + str(err.value) + "\033[0m")
 					
 		with open("result.json", "w") as fp:
 			json.dump(everyPluginDict, fp, indent=4, separators=(',', ': '))
 		
-		#S2ECodeParser.parsePlugin("/home/davide/S2E/s2e/qemu/s2e/Plugins/Debugger.cpp")
 	
 	@staticmethod
 	def parsePlugin(filePath):
 		index = clang.cindex.Index.create()
 		tu = index.parse(filePath)
-		print('Translation unit:', tu.spelling)
+		print('Parsing File :', tu.spelling)
 		
-		isGuiConfigured = S2ECodeParser.isPluginGuiConfigured(tu.cursor)
 		pluginName, pluginDescr, pluginDep = S2ECodeParser.getPluginInfo(tu.cursor)
-		configDictionary = S2ECodeParser.getAllConfigOption(tu.cursor)
+		
+		try:
+			configDictionary = S2ECodeParser.getAllConfigOption(tu.cursor)
+		except yaml.scanner.ScannerError as err:
+			raise PluginParseException(str(err))
+		
+		S2ECodeParser.checkAndCleanConfigDictionary(configDictionary)
 		
 		pluginDictionary = {}
 		pluginDictionary["name"] = pluginName
 		pluginDictionary["description"] = pluginDescr
 		pluginDictionary["dependencies"] = pluginDep
 		pluginDictionary["configOption"] = configDictionary
-		pluginDictionary["isGuiConfigured"] = isGuiConfigured
 
 		return pluginDictionary
 	
-	@staticmethod
-	def isPluginGuiConfigured(cursor):
-		generator = cursor.get_tokens()
-		notFound = True
-		while(notFound):
-			try:
-				currentToken = next(generator)
-		
-				# check if the plugin is gui configured
-				if(S2ECodeParser.isComment(currentToken.spelling.decode("utf-8"))):
-					tagPos = currentToken.spelling.find(S2ECodeParser.GUI_CONFIG_TAG)
-					if(tagPos != -1):
-						return True
 			
-			except StopIteration:
-				return False
+	@staticmethod
+	def checkAndCleanConfigDictionary(dict):
+		for key, value in dict.iteritems():
+			if(not(S2ECodeParser.TYPE_KEY in value)):
+				raise PluginParseException(str(key) + "has no type")
+			if(not(value[S2ECodeParser.TYPE_KEY] in S2ECodeParser.ACCEPTED_TYPES)):
+				raise PluginParseException(str(key) + " as an illegal type of " + str(value[S2ECodeParser.TYPE_KEY]))
+			if(not (S2ECodeParser.DESCRIPTION_KEY in value)):
+				value[S2ECodeParser.DESCRIPTION_KEY]=""
+				
+			
+			# Need to deal with list dict in a different way
+			keyType = value[S2ECodeParser.TYPE_KEY]
+			if(keyType == S2ECodeParser.LIST_TYPE):
+				# Check if the list as a content
+				if(not (S2ECodeParser.CONTENT_KEY in value)):
+					raise PluginParseException(str(key) + " is a list without a content attribute. List must have a content ")
+				
+				for valueKey in value.keys():
+					if(valueKey!= S2ECodeParser.CONTENT_KEY and valueKey != S2ECodeParser.TYPE_KEY and valueKey != S2ECodeParser.DESCRIPTION_KEY):
+						value.pop(valueKey)
+				S2ECodeParser.checkAndCleanConfigDictionary(value[S2ECodeParser.CONTENT_KEY])
+			else:
+				for valueKey in value.keys():
+					if(valueKey != S2ECodeParser.TYPE_KEY and valueKey != S2ECodeParser.DESCRIPTION_KEY):
+						value.pop(valueKey)
 			
 			
 	@staticmethod
@@ -110,7 +135,7 @@ class S2ECodeParser():
 				
 	@staticmethod
 	def mergeDictionary(x, y):
-		"""Merge two dictionary."""
+		'''Merge two dictionary.'''
 		z = x.copy()
 		z.update(y)
 		return z
@@ -135,7 +160,6 @@ class S2ECodeParser():
 						currentToken = next(generator)
 						currentTokenSpelling = currentToken.spelling.decode("utf-8")
 						
-					#TODO in case of parse error, remove plugin from list and send a meaningful error message
 					return yaml.safe_load(configOptionString)
 				
 				elif(currentTokenSpelling.startswith("/*")):
@@ -143,7 +167,6 @@ class S2ECodeParser():
 					
 					if(tagIndex != -1):
 						yamlComment = currentTokenSpelling[tagIndex + len(S2ECodeParser.CONFIG_TAG) :-2].replace("\t", "")
-						#TODO in case of parse error, remove plugin from list and send a meaningful error message
 						return yaml.safe_load(yamlComment)
 						
 						
@@ -160,6 +183,9 @@ class S2ECodeParser():
 				accumulator = ""
 			else:
 				accumulator = accumulator + token.spelling
+		if(len(accumulator) > 0):
+			outputList.append(accumulator.replace(remove, ""))
+		
 		return outputList
 		
 			
@@ -202,74 +228,3 @@ class S2ECodeParser():
 		del outputList[-1]	
 		return outputList
         
-	@staticmethod
-	def levelToString(level):
-		out = ""
-		for x in range(level):
-			out = out + "-"
-		return out
-	
-# 	@staticmethod
-# 	def iterateToken(cursor):
-# 		
-# 		#Detect the list of following string
-# 		#toFind = ["s2e", "(", ")", "->", "getConfig", "(", ")", "->", None, "("]
-# 		#toFindPos8 = ["getInt", "getBool"]
-# 		toFind = ["S2E_DEFINE_PLUGIN"]
-# 		toFindPos = 0
-# 		currentToken = ""
-# 		generator = cursor.get_tokens()
-# 		hasNext = True
-# 		
-# 		while(hasNext):
-# 			try:
-# 				currentToken = next(generator)
-# 					
-# 				# if we found the next element in the list or if it is the item in the 8th positions
-# 				if((currentToken.spelling == toFind[toFindPos]) or (toFindPos == 8 and currentToken.spelling in toFindPos8)):
-# 					toFindPos = toFindPos + 1
-# 					if(toFindPos == len(toFind)):	
-# 						toFindPos = 0
-# 						print(next(generator).spelling)
-# 						print(next(generator).spelling)
-# 						print(next(generator).spelling)
-# 						print(next(generator).spelling)
-# 						print(next(generator).spelling)
-# 						#S2ECodeParser.printToken(S2ECodeParser.getUpToCloseParenthesis(generator))
-# 				else:
-# 					toFindPos = 0
-# 					
-# 			except StopIteration:
-# 				hasNext = False
-	
-# 	@staticmethod
-# 	def iterateChildren(cursor, level = 0):
-# 		for c in cursor.get_children():
-# 			#if(check == False or c.spelling == head):				
-# 			if(c.location.line == 26):
-# 				print(S2ECodeParser.levelToString(level) + "display : " + c.displayname)
-# 				print(S2ECodeParser.levelToString(level) + "kind : " + str(c.kind))
-# 				print(S2ECodeParser.levelToString(level) + "location : " + str(c.location))
-# 				print(S2ECodeParser.levelToString(level) + "spelling : " + str(c.spelling))
-# 				print(S2ECodeParser.levelToString(level) + "display : " + c.displayname)
-# 				print("\n")
-# 				
-# 			S2ECodeParser.iterateChildren(c, level + 1)
-	
-# 	@staticmethod
-# 	def find_typerefs(node, typename):
-# 		""" Find all references to the type named 'typename'
-# 		"""
-# 		if node.kind.is_reference():
-# 			ref_node = node.get_definition()
-# 			if(type(ref_node) != NoneType):
-# 				if ref_node.spelling == typename:
-# 					print 'Found %s [line=%s, col=%s]' % (
-# 						typename, node.location.line, node.location.column)
-# 		
-# 		# Recurse for children of this node
-# 		for c in node.get_children():
-# 			S2ECodeParser.find_typerefs(c, typename)
-		
-
-
