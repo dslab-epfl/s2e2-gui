@@ -10,6 +10,7 @@ from s2e_web import S2E_settings
 import models
 
 plugins = None
+configure_plugins_html = None
 
 def configurePlugins(request):
     global plugins
@@ -51,7 +52,10 @@ def configurePlugins(request):
             
     else:
         #TODO need to cache the resulting page and plugins config
-        return render(request, 'configure_plugins.html', {'plugins': plugins, 'configuration_menu' : (models.generate_plugin_configuration_menu(plugins))})
+        if(configure_plugins_html == None):
+            configure_plugins_html = render(request, 'configure_plugins.html', {'plugins': plugins, 'configuration_menu' : (models.generate_plugin_configuration_menu(plugins))})
+        
+        return configure_plugins_html
 
 def getPluginsConfig(request, selectedPlugins):
     pluginsConfig = {}
