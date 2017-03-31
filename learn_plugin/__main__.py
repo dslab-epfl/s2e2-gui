@@ -9,6 +9,5 @@ if __name__ == "__main__":
         "TestCaseGenerator.cpp",
         "TranslationBlockTracer.cpp",
         "Example.cpp",
-        "BaseInstructions.cpp",
         "ModuleExecutionDetector.cpp"])
 

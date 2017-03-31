@@ -15,12 +15,6 @@
         "description": "Example S2E plugin"
     },
     {
-        "configOption": {},
-        "dependencies": [],
-        "name": "BaseInstructions",
-        "description": "Default set of custom instructions plugin"
-    },
-    {
         "configOption": {
             "trackAllModules": {
                 "type": "bool",

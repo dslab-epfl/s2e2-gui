@@ -14,6 +14,7 @@ configure_plugins_html = None
 
 def configurePlugins(request):
     global plugins
+    global configure_plugins_html
         
     if(plugins == None):
         with open(settings.S2E_PLUGIN_JSON_CONFIG_FILE, "r") as jsonFile:
@@ -92,8 +93,12 @@ def generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir):
     for plugin in selectedPlugins:
         configFileContent += '\t"' + plugin["name"] + '"' + ",\n"
     
+    
     # add the HostFiles plugin, it is used to run the analysis
-    configFileContent += '\t "HostFiles" ' + "\n"
+    configFileContent += '\t "HostFiles" ' + ",\n"
+    # add BaseInstructions to the list
+    configFileContent += '\t "BaseInstructions" ' + "\n"
+    
     configFileContent += "}\n\n"
     
     
