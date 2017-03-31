@@ -41,6 +41,7 @@
 		<script type="text/javascript">
 				//init the dependency map
 				var pluginMap = new Map();
+				
 				var tmpCopyArray;
 				{% for plugin in plugins %}
 					tmpCopyArray = new Array();
@@ -49,7 +50,8 @@
 						tmpCopyArray.push("{{dependency}}");
 					{% endfor %}
 					
-					pluginMap.set("{{plugin.name}}", {isChecked: false, depCount: 0, dependencies: tmpCopyArray});
+					pluginMap.set("{{plugin.name}}", {isChecked: false, depCount: 0, dependencies: tmpCopyArray});				
+				
 				{% endfor %}
 				
 				{% include "configure_plugins.js" %}

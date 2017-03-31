@@ -1,8 +1,12 @@
 //setup the right menu according to the chechbox
 var leftMenuChildren = document.getElementById("left-menu-div").children;
 for(var i = 0; i < leftMenuChildren.length; ++i){
-	if(leftMenuChildren[i].tagName == "INPUT" && leftMenuChildren[i].type == "checkbox" && leftMenuChildren[i].checked == true){
-		checkboxClickHandler(leftMenuChildren[i]);
+	if(leftMenuChildren[i].tagName == "INPUT"){
+		if(leftMenuChildren[i].type == "hidden"){			
+			leftMenuChildren[i].value = "";
+		}else if(leftMenuChildren[i].type == "checkbox"){
+			leftMenuChildren[i].checked = false;			
+		}
 	}
 }
 
