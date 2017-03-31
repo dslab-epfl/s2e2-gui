@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
+    	<style type="text/css">
+			{% include "configure_plugins.css" %}
+    	</style>
         <meta charset="utf-8">
         <title>S2E Web</title>        
     </head>
@@ -9,7 +12,7 @@
 	 <form method="post" enctype="multipart/form-data">
 	 	{% csrf_token %}
 	 	
-	 <div style="float:left;width: 400px; border-style:solid" id="left-menu-div">
+	 <div class="left_menu" id="left-menu-div">
 	 	
 	 	<!-- The menu on the left of the page, contains every plugins -->
 	 	{% for plugin in plugins %}

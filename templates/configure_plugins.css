@@ -1,0 +1,39 @@
+div.normal{
+	display:none;
+	/*border-style:solid;*/
+	margin-top:5px;
+	background-color: lightgray;
+}
+
+div.inside{
+	margin-top:5px;
+	margin-left:10px;
+	margin-right:10px;
+	background-color: gray;
+}
+
+div.list_element{
+	margin-top:5px;
+	border: dotted;
+	background-color: gray;
+}
+
+div.left_menu{
+	float:left;
+	width: 400px;
+	/*border-style: solid;*/
+	background-color: lightgray;
+}
+
+label.normal{
+	margin-left:10px;
+}
+
+label.error{
+	color: red
+}
+
+input.normal{
+	margin-left:15px;
+	margin-top:10px;
+}

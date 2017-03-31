@@ -114,13 +114,13 @@ def generate_plugins_configurations(selectedPluginsConfig):
     for plugin, configs in selectedPluginsConfig.items():
         attributeLen = len(configs.items())
         if(attributeLen > 0):
-            configContent += "pluginConfig." + plugin + " = {\n"
+            configContent += "pluginsConfig." + plugin + " = {\n"
             
             for index, (configKey, configValue) in enumerate(configs.items()):
-                if(index == pluginsLen - 1):
-                    configContent += "\t" + configKey + " = {" + configValue +  "}\n"
+                if(index == attributeLen - 1):
+                    configContent += "\t" + configKey + " = " + configValue +  "\n"
                 else:
-                    configContent += "\t" + configKey + " = {" + configValue +  "},\n"
+                    configContent += "\t" + configKey + " = " + configValue +  ",\n"
                     
             
             configContent += "}\n\n"
