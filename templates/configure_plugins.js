@@ -10,6 +10,8 @@ for(var i = 0; i < leftMenuChildren.length; ++i){
 	}
 }
 
+var uniqueId = 0;
+
 
 function checkboxClickHandler(checkbox){
 	
