@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
+	    {% load static %}
+    	<script src="{% static "jquery-3.2.1.js" %}"></script>
+    	<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
     	<style type="text/css">
 			{% include "configure_plugins.css" %}
+			
     	</style>
         <meta charset="utf-8">
         <title>S2E Web</title>        
@@ -17,20 +21,20 @@
 	 	<!-- The menu on the left of the page, contains every plugins -->
 	 	{% for plugin in plugins %}
 	 		<input type="hidden" id="checkbox_value_{{ plugin.name }}" name="{{ plugin.name }}" />
-	 		<input type="checkbox" id="checkbox_{{ plugin.name }}" onclick="checkboxClickHandler(this)" value="" name="{{ plugin.name }}">
+	 		<input type="checkbox" class="checkbox-normal" id="checkbox_{{ plugin.name }}" onclick="checkboxClickHandler(this)" value="" name="{{ plugin.name }}">
 	 		{{ plugin.name }}<br>
 	 	{% endfor %}
 	 	
 	 </div>
 	 
-	 <div style="margin-left: 420px;">	
+	 <div style="margin-left: 420px;" id="right-menu-div">	
 	 
 	 	<input id="id_binary_file" name="binary_file" type="file" required />
 	 	<input type="submit" value="Launch S2E Analysis">
 	 	
 	 	<!-- The menu on the right of the page, where you configure every plugins -->
 	 	{% autoescape off %}
-	 		{{ configuration_menu }}
+	 	<!-- {{ configuration_menu }} -->
 	 	{% endautoescape %}
 	 		 	
 	 </div>
@@ -41,6 +45,7 @@
 		<script type="text/javascript">
 				//init the dependency map
 				var pluginMap = new Map();
+				var uniqueId = 0;
 				
 				var tmpCopyArray;
 				{% for plugin in plugins %}
@@ -53,6 +58,13 @@
 					pluginMap.set("{{plugin.name}}", {isChecked: false, depCount: 0, dependencies: tmpCopyArray});				
 				
 				{% endfor %}
+				
+				var plugins = {{ pluginsJson | safe }};
+				
+				for(var i = 0; i < plugins.length; ++i){
+					generatePluginConfigOption(plugins[i]);
+				}
+				
 				
 				{% include "configure_plugins.js" %}
 				

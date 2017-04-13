@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<style type="text/css">
+			{% include "configure_plugins.css" %}
+			
+    	</style>
+        <meta charset="utf-8">
+        <title>S2E Web</title>        
+    </head>
+    <body id="body">
+	 
+	 <form method="post" enctype="multipart/form-data">
+	 	{% csrf_token %}
+	 	
+	 
+
+	
+	<script> 
+		alert("elll");
+		var j = {{ objects | safe }};
+		alert(j);
+
+
+		for(var i = 0; i < j.length; ++i){
+			var ul = document.createElement("div");
+			var content = document.createTextNode(j[i]["name"]);
+			ul.appendChild(content);	
+			document.getElementById("body").appendChild(ul);	
+			alert("hdono");
+		}		
+	</script>
+
+	 </form>
+		
+	</body>
+	
+	
+</html> 

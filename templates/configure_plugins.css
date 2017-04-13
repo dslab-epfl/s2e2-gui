@@ -1,6 +1,8 @@
-div.normal{
+div:empty{
 	display:none;
-	/*border-style:solid;*/
+}
+
+div.normal{
 	margin-top:5px;
 	background-color: lightgray;
 }
@@ -9,13 +11,24 @@ div.inside{
 	margin-top:5px;
 	margin-left:10px;
 	margin-right:10px;
-	background-color: gray;
+	background-color: lightgray;
 }
 
 div.list_element{
 	margin-top:5px;
+	margin-left:5px;
+	margin-right:5px;
+	margin-bottom:5px;
 	border: dotted;
 	background-color: gray;
+}
+
+div.container{
+	margin-top:5px;
+	margin-bottom:5px;
+	padding-top: 5px;
+	padding-bottom: 5px;	
+	background-color: lightgray;
 }
 
 div.left_menu{
@@ -37,3 +50,4 @@ input.normal{
 	margin-left:15px;
 	margin-top:10px;
 }
+

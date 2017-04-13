@@ -16,6 +16,45 @@
     },
     {
         "configOption": {
+            "timeout": {
+                "type": "int",
+                "description": "If no more new code is covered after the specified number of seconds, kill all states except one successful. If the timeout is zero, continue exploration indefinitely until a client plugin explicitly instructs StateManager to kill the states."
+            }
+        },
+        "dependencies": [
+            "ModuleExecutionDetector"
+        ],
+        "name": "StateManager",
+        "description": "Control the deletion/suspension of states"
+    },
+    {
+        "configOption": {
+            "module": {
+                "content": {
+                    "pairs": {
+                        "content": {
+                            "addresses": {
+                                "type": "intList",
+                                "description": "addresses"
+                            }
+                        },
+                        "type": "list",
+                        "description": "The name of the module. This must match the name returned by the OS monitoring plugin."
+                    }
+                },
+                "type": "list",
+                "description": "list of modules, must match a module in the ModuleExecutionDetector plugin"
+            }
+        },
+        "dependencies": [
+            "ModuleExecutionDetector",
+            "Interceptor"
+        ],
+        "name": "EdgeKiller",
+        "description": "Kills states when a specified sequence of instructions has been executed"
+    },
+    {
+        "configOption": {
             "trackAllModules": {
                 "type": "bool",
                 "description": "When true, pass events about all module loads and unloads to client plugins but do not notify them about the execution. This is useful for execution tracers to record modules loads to provide debug information offline without actually recording any trace."
@@ -48,10 +87,19 @@
     {
         "configOption": {},
         "dependencies": [
-            "Interceptor"
+            "ExecutionTracer",
+            "ModuleExecutionDetector"
         ],
-        "name": "ModuleTracer",
-        "description": "Module load/unload tracer plugin"
+        "name": "InstructionCounter",
+        "description": "Instruction counter plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "ExecutionTracer"
+        ],
+        "name": "TestCaseGenerator",
+        "description": "TestCaseGenerator plugin"
     },
     {
         "configOption": {
@@ -73,14 +121,6 @@
     },
     {
         "configOption": {},
-        "dependencies": [
-            "ExecutionTracer"
-        ],
-        "name": "TestCaseGenerator",
-        "description": "TestCaseGenerator plugin"
-    },
-    {
-        "configOption": {},
         "dependencies": [],
         "name": "ExecutionTracer",
         "description": "ExecutionTracer plugin"
@@ -88,10 +128,9 @@
     {
         "configOption": {},
         "dependencies": [
-            "ExecutionTracer",
-            "ModuleExecutionDetector"
+            "Interceptor"
         ],
-        "name": "InstructionCounter",
-        "description": "Instruction counter plugin"
+        "name": "ModuleTracer",
+        "description": "Module load/unload tracer plugin"
     }
 ]

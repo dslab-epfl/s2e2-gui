@@ -54,6 +54,8 @@ def configurePlugins(request):
             output = S2EOutput("s2e-last/")
 
             return render(request, 'display_log.html', {'warnings': output.warnings, 'messages' : output.messages, 'info' : output.info, 'debug' : output.debug, 'has_s2e_error': has_s2e_error, 's2e_error': s2e_error})
+            
+
 
                         
         except AttributeError:
@@ -68,6 +70,7 @@ def configurePlugins(request):
 
             
     else:
+        configure_plugins_html = render(request, 'configure_plugins.html', {'plugins': plugins, 'pluginsJson': json.dumps(plugins)})
         #TODO need to cache the resulting page and plugins config
         if(configure_plugins_html == None):
             configure_plugins_html = render(request, 'configure_plugins.html', {'plugins': plugins, 'configuration_menu' : (models.generate_plugin_configuration_menu(plugins))})

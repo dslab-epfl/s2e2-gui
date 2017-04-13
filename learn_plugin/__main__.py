@@ -9,5 +9,7 @@ if __name__ == "__main__":
         "TestCaseGenerator.cpp",
         "TranslationBlockTracer.cpp",
         "Example.cpp",
+        "StateManager.cpp",
+        "EdgeKiller.cpp",
         "ModuleExecutionDetector.cpp"])
 

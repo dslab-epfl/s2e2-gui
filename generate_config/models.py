@@ -33,7 +33,7 @@ def generate_plugin_configuration_menu(plugins):
         
     return html_output
 
-def generate_html_per_type(plugin, config_option, uniqueId = ""):
+def generate_html_per_type(plugin, config_option, uniqueId = "", first_level=True):
     html_output = ""
     
     for attr_key, attr_value in config_option.items():
@@ -51,7 +51,13 @@ def generate_html_per_type(plugin, config_option, uniqueId = ""):
         
         elif(attr_value["type"] == "list"):
             html_output += '<input type="button" class="' + CLASS_NORMAL +'" value="add ' + attr_key + '" onclick="' + plugin["name"] + "_" + attr_key + uniqueId + '()">'
-            html_output += '<script type="text/javascript"> function ' + plugin["name"] + "_" + attr_key + uniqueId + "(){" + generate_list_javascript(plugin, attr_key, attr_value) + '}</script>'
+            
+            #need to escape the ending script tag if inside a script tag
+            if(first_level):
+                html_output += '<script type="text/javascript"> function ' + plugin["name"] + "_" + attr_key + uniqueId + "(){" + generate_list_javascript(plugin, attr_key, attr_value, first_level) + '}</script>'
+            else :
+                html_output += str('<script type="text/javascript"> alert("hello"); function ' + plugin["name"] + "_" + attr_key).encode("string-escape") + uniqueId + "(){" + generate_list_javascript(plugin, attr_key, attr_value, first_level) + '}<\/script>'
+                
             html_output += '<div class="' + CLASS_INSIDE_DIV + '" id="div_'+ plugin["name"] + ':' + attr_key + uniqueId + '"></div>'
           
         else:
@@ -60,17 +66,22 @@ def generate_html_per_type(plugin, config_option, uniqueId = ""):
     return html_output
 
 #TODO put the name of the module and send it to the server
-def generate_list_javascript(plugin, attr_key, attr_value):
+def generate_list_javascript(plugin, attr_key, attr_value, first_level=True):
     key_text = '<label class="' + CLASS_LIST_ELEMENT_DIV + '">Element Key : </label>' 
     key_label = '<input type="text" id="' + plugin["name"] + ":" + attr_key + '\'+uniqueId+\'" name="' + plugin["name"] + ":" + attr_key +'\'+uniqueId+\'" value="" />'
     div_inner_html = '<div class=' + CLASS_LIST_ELEMENT_DIV + '>'
     
-    div_inner_html += generate_html_per_type(plugin, attr_value["content"], '\'+uniqueId+\'')
+    div_inner_html += generate_html_per_type(plugin, attr_value["content"], "'+uniqueId+'", False)
     
     div_inner_html += '</div>';    
     
-    output = "uniqueId = uniqueId + 1;"
-    output += "document.getElementById('div_" + plugin["name"] + ":" + attr_key + "').innerHTML+='" + key_text + key_label + div_inner_html + "';"
+    output = 'uniqueId = uniqueId + 1;'
+    if(first_level):
+        output += 'document.getElementById(\'div_' + plugin["name"] + ':' + attr_key + '\').innerHTML+=\'' + key_text + key_label + div_inner_html + '\';'
+    else:
+        #output += 'document.getElementById(\'div_' + plugin["name"] + ':' + attr_key + '\').append(\'' + key_text + key_label + div_inner_html + '\');'
+        output += str('document.getElementById(\'div_' + plugin["name"] + ':' + attr_key).encode("string-escape") + "'+uniqueId+'" + str('\').append(\'' + key_text + key_label + div_inner_html + '\');').encode("string-escape")
+        #output += 'document.getElementById(\'div_' + plugin["name"] + ':' + attr_key + "'+uniqueId+'" + '\').append(\'' + key_text + key_label + div_inner_html + '\');'        
     
     return output
     
