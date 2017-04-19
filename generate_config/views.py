@@ -34,13 +34,13 @@ def configurePlugins(request):
             plugins = json.load(jsonFile)
     
     if (request.method == 'POST'):
-        print(request.POST)
         try:
             # Generate an unique name
+            request_data = json.loads(request.POST["data"]);
             tmpdir = "temp-dir/"
             
-            selectedPlugins = getSelectedPlugins(request)
-            selectedPluginsConfig = getPluginsConfig(request, selectedPlugins)
+            selectedPlugins = getSelectedPlugins(request_data)
+            selectedPluginsConfig = getPluginsConfig(request_data, selectedPlugins)
             
             generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir)
             write_file_to_disk_and_close(tmpdir + settings.S2E_BINARY_FILE_NAME, request.FILES["binary_file"])
@@ -76,39 +76,21 @@ def configurePlugins(request):
         
         return configure_plugins_html
 
-def getPluginsConfig(request, selectedPlugins):
-    pluginsConfig = {}
+def getPluginsConfig(request_data, selectedPlugins):    
+    # TODO make checks to disallow bad configs
     
-    # TODO do it recursively to handle list of lists
-    for plugin in selectedPlugins:
-        tmpPluginConfig = {}
-        for attrConfigKey, attrConfigValue in plugin["configOption"].items():
-            if(attrConfigValue[TYPE_KEY] == LIST_TYPE):
-                for key, value in request.POST.items():
-                    listKey = plugin["name"] + ":" + attrConfigKey
-                    if(key.startswith(listKey)):
-                        uniqueId = key[len(listKey):]
-                        if(uniqueId.isdigit()):
-                            tmpContentConfig = {}
-                            for contentKey, contentValue in attrConfigValue[CONTENT_KEY].items():
-                                tmpContentConfig[contentKey] = request.POST.get(plugin["name"] + ":" + contentKey + uniqueId);
-                                
-                            tmpPluginConfig[value] = tmpContentConfig
-            else:
-                tmpPluginConfig[attrConfigKey] = request.POST.get(plugin["name"] + ":" + attrConfigKey)
         
-        pluginsConfig[plugin["name"]] = tmpPluginConfig
-        
-    return pluginsConfig
+    return request_data
     
 
-def getSelectedPlugins(request):
+def getSelectedPlugins(request_data):
     global plugins
     selectedPlugins = []
     
     for plugin in plugins:
-        if("true" in request.POST.getlist(plugin["name"]) ):
+        if(plugin["name"] in request_data.keys()):
             selectedPlugins.append(plugin)
+            
     return selectedPlugins
     
 
@@ -157,42 +139,50 @@ def generate_plugins_configurations(selectedPluginsConfig):
         if(attributeLen > 0):
             configContent += "pluginsConfig." + plugin + " = {\n"
             
-            for index, (configKey, configValue) in enumerate(configs.items()):
-                if(configKey == ""):
-                    raise S2ELaunchException("configuration key is empty")
-                    
-                if type(configValue) is dict:
-                    if(index == attributeLen - 1):
-                        configContent += "\t" + str(configKey) + " = " + translate_dict_to_lua(configValue) + "\n"
-                    else:
-                        configContent += "\t" + str(configKey) + " = " + translate_dict_to_lua(configValue) + ",\n"
-                else:
-                    if(index == attributeLen - 1):
-                        configContent += "\t" + str(configKey) + " = " + str(configValue) +  "\n"
-                    else:
-                        configContent += "\t" + str(configKey) + " = " + str(configValue) +  ",\n"
-                    
+            configContent += translate_to_lua(configs)
             
             configContent += "}\n\n"
     
     return configContent
     
 #TODO make recursive
-def translate_dict_to_lua(dictionary):
-    output = "{"
-    dictionaryLen = len(dictionary.items())
+def translate_to_lua(configs, level=1):
+    output = ""
+    configsLen = len(configs.items())
     
-    for index, (key, value) in enumerate(dictionary.items()):  
-        if(key == ""):
+    for index, (configKey, configValue) in enumerate(configs.items()):
+        if(configKey == ""):
             raise S2ELaunchException("configuration key is empty")
-                  
-        if(index == dictionaryLen - 1):
-            output += "\t" + str(key) + " = " + str(value) + "\n"
-        else:
-            output += "\t" + str(key) + " = " + str(value) + ",\n"
             
-    output += "}\n"
-    
+        for i in range(level):
+            output += "\t"    
+        
+        output += str(configKey) + "="
+        
+        if type(configValue) is dict:
+            output += "{\n" + translate_to_lua(configValue, level + 1)
+            for i in range(level):
+                output += "\t"
+            output += "}"
+            
+        elif type(configValue) is list:
+            listLen = len(configValue)
+            output += " {"
+            for listIndex, listElem in enumerate(configValue):
+                output += listElem
+                if(listIndex != listLen - 1):
+                    output += ", "
+            output += "}"
+        
+        else:
+            output += str(configValue)
+            
+        if(index != configsLen - 1):
+            output += ","
+        
+        output += "\n"
+        
+        
     return output
     
 

@@ -4,6 +4,7 @@
 	    {% load static %}
     	<script src="{% static "jquery-3.2.1.js" %}"></script>
     	<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+    	<script src="{% static "validation_plugin/jquery.validate.min.js" %}"></script>
     	<style type="text/css">
 			{% include "configure_plugins.css" %}
 			
@@ -11,7 +12,7 @@
         <meta charset="utf-8">
         <title>S2E Web</title>        
     </head>
-    <body>
+    <body id="body">
 	 
 	 {% csrf_token %}
 	 	
@@ -26,15 +27,18 @@
 	 	
 	 </div>
 	 
-	 <div style="margin-left: 420px;" id="right-menu-div">	
-	 
-	 	<input id="id_binary_file" name="binary_file" type="file" required />
-	 	<input type="button" onclick="submit_data()" value="Launch S2E Analysis">
-	 	
-	 		 	
-	 </div>
-	 
-	 
+	 <form id="validation_form">
+	 		 
+		 <div style="margin-left: 420px;" id="right-menu-div">	
+		 
+		 	<input id="id_binary_file" name="binary_file" type="file" required />
+		 	<input type="button" onclick="submit_data()" value="Launch S2E Analysis">
+		 	<div id="spinner" class="loader"></div>
+		 	
+		 		
+		 </div>
+		 
+	 </form>
 	 	
 		<script type="text/javascript">
 				//init the dependency map

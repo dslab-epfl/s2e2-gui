@@ -273,13 +273,20 @@ function checkboxChangeHandler(checkbox){
 }
 
 function submit_data(){
+	
+	var form = $("#validation_form");
+	form.validate();
+	
+	if(form.valid()){
+		parse_and_post_data();
+	}
+	
+}
+
+function parse_and_post_data(){
 	var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
-	
-	
-	
 	var data_to_parse = document.getElementById("right-menu-div").childNodes;
 	var json_to_send = {};
-
 	
 	$.each( data_to_parse, function( i, el ) {
 		if(el.style != undefined){			
@@ -288,16 +295,28 @@ function submit_data(){
 				json_to_send[el.id] = test;
 			}
 		}
-	});
+	});	
+
 	
-	console.log(json_to_send);
+	var file = document.getElementById("id_binary_file").files[0];
+	var form_data = new FormData();
+	form_data.append("binary_file", file)
+	form_data.append("csrfmiddlewaretoken", middle_token)
+	form_data.append("data", JSON.stringify(json_to_send))
 	
+	document.getElementById("spinner").appendChild(document.createElement("p"));
 	
-	$.post("http://localhost:8000/",
-		    {
-				csrfmiddlewaretoken: middle_token,
-				data: json_to_send
-		    });
+	$.ajax({
+			  type: "POST",
+			  url: "http://localhost:8000/",
+			  data: form_data,
+			  processData: false,
+			  contentType: false,
+			  success: function(data){
+				  document.getElementById("body").innerHTML=data;
+			  }
+			});
+	
 }
 
 function parse_DOM(DOM_array){
