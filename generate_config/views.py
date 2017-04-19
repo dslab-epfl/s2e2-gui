@@ -34,7 +34,7 @@ def configurePlugins(request):
             plugins = json.load(jsonFile)
     
     if (request.method == 'POST'):
-        
+        print(request.POST)
         try:
             # Generate an unique name
             tmpdir = "temp-dir/"
@@ -70,10 +70,9 @@ def configurePlugins(request):
 
             
     else:
+        #TODO change to cache data
+        #if(configure_plugins_html == None):
         configure_plugins_html = render(request, 'configure_plugins.html', {'plugins': plugins, 'pluginsJson': json.dumps(plugins)})
-        #TODO need to cache the resulting page and plugins config
-        if(configure_plugins_html == None):
-            configure_plugins_html = render(request, 'configure_plugins.html', {'plugins': plugins, 'configuration_menu' : (models.generate_plugin_configuration_menu(plugins))})
         
         return configure_plugins_html
 

@@ -55,6 +55,8 @@ function generate_html_per_type(parent, plugin, config_option){
 			generate_html_for_list(parent, plugin, attr_key, attr_value);
 		}else if(attr_value["type"] == "intList"){
 			generate_html_for_intList(parent, plugin, attr_key, attr_value);
+		}else if(attr_value["type"] == "stringList"){
+			generate_html_for_stringList(parent, plugin, attr_key, attr_value);
 		}else{
 			var error = document.createElement("label");
 			error.className = "error";
@@ -69,7 +71,7 @@ function generate_html_for_int(parent, plugin_name, attr_key){
 	var input = document.createElement("input");
 	input.setAttribute("type", "number");
 	input.className = "list_element";
-	input.name = plugin_name + ":" + attr_key + uniqueId
+	input.name = attr_key
 	
 	parent.appendChild(input);
 }
@@ -81,7 +83,7 @@ function generate_html_for_bool(parent, plugin_name, attr_key){
 	input1.value = "true";
 	input1.checked = "checked";
 	input1.className = "normal";
-	input1.name = plugin_name + ":" + attr_key + uniqueId;
+	input1.name = attr_key;
 	label1.appendChild(input1);
 	label1.appendChild(document.createTextNode("True"));
 
@@ -90,7 +92,7 @@ function generate_html_for_bool(parent, plugin_name, attr_key){
 	input2.setAttribute("type", "radio");
 	input2.value = "false";
 	input2.className = "normal";
-	input2.name = plugin_name + ":" + attr_key + uniqueId;
+	input2.name = attr_key;
 	label2.appendChild(input2);
 	label2.appendChild(document.createTextNode("False"));
 	
@@ -102,7 +104,7 @@ function generate_html_for_string(parent, plugin_name, attr_key){
 	var input = document.createElement("input");
 	input.setAttribute("type", "text");
 	input.className = "normal";
-	input.name = plugin_name + ":" + attr_key + uniqueId
+	input.name = attr_key;
 	
 	parent.appendChild(input);
 }
@@ -115,10 +117,11 @@ function generate_html_for_list(parent, plugin, attr_key, attr_value){
 	input.data_content = attr_value["content"];
 	input.data_plugin = plugin;
 	input.data_div = plugin["name"] + ":" + attr_key + uniqueId;
+	input.data_key = attr_key;
 	input.onclick = function(){generate_html_for_list_onclick(this);};
 	
 	var div = document.createElement("div");
-	div.className = "container";
+	div.className = "container_list";
 	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
 	
 	parent.appendChild(input);
@@ -133,6 +136,17 @@ function generate_html_for_list_onclick(button){
 	var element_div = document.createElement("div");
 	element_div.className = "list_element";
 	
+	var key_label = document.createElement("label");
+	key_label.appendChild(document.createTextNode(button.data_key + " key : "));
+	key_label.className = "normal";
+	element_div.appendChild(key_label);
+	
+	var key_input = document.createElement("input");
+	key_input.setAttribute("type", "text");
+	key_input.name = button.data_plugin["name"] + ":" + button.data_key + uniqueId;
+	key_input.className = "normal";
+	element_div.appendChild(key_input);
+	
 	generate_html_per_type(element_div, button.data_plugin, button.data_content);
 	parent.appendChild(element_div);
 }
@@ -143,12 +157,13 @@ function generate_html_for_intList(parent, plugin, attr_key, attr_value){
 	input.className = "normal";
 	input.value = "add " + attr_key;
 	input.data_div = plugin["name"] + ":" + attr_key + uniqueId;
-	input.data_name = plugin["name"] + ":" + attr_key;
+	input.data_name = attr_key;
 	input.onclick = function(){generate_html_for_intList_onclick(this);};
 	
 	var div = document.createElement("div");
 	div.className = "container";
 	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
+	div.data_name = attr_key;
 	
 	parent.appendChild(input);
 	parent.appendChild(div);
@@ -161,6 +176,37 @@ function generate_html_for_intList_onclick(button){
 	
 	var input = document.createElement("input");
 	input.setAttribute("type", "number");
+	input.className = "normal"
+	input.name = button.data_name + uniqueId;
+	
+	parent.appendChild(input);
+}
+
+function generate_html_for_stringList(parent, plugin, attr_key, attr_value){
+	var input = document.createElement("input");
+	input.setAttribute("type", "button");
+	input.className = "normal";
+	input.value = "add " + attr_key;
+	input.data_div = plugin["name"] + ":" + attr_key + uniqueId;
+	input.data_name = attr_key;
+	input.onclick = function(){generate_html_for_stringList_onclick(this);};
+	
+	var div = document.createElement("div");
+	div.className = "container";
+	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
+	div.data_name = attr_key;
+	
+	parent.appendChild(input);
+	parent.appendChild(div);
+}
+
+function generate_html_for_stringList_onclick(button){
+	var parent = document.getElementById("div_" + button.data_div);
+		
+	uniqueId++;
+	
+	var input = document.createElement("input");
+	input.setAttribute("type", "text");
 	input.className = "normal"
 	input.name = button.data_name + uniqueId;
 	
@@ -225,5 +271,114 @@ function checkboxChangeHandler(checkbox){
 		}
 	}
 }
+
+function submit_data(){
+	var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
+	
+	
+	
+	var data_to_parse = document.getElementById("right-menu-div").childNodes;
+	var json_to_send = {};
+
+	
+	$.each( data_to_parse, function( i, el ) {
+		if(el.style != undefined){			
+			if(el.style.display == "block"){
+				var test = parse_DOM(el.childNodes);
+				json_to_send[el.id] = test;
+			}
+		}
+	});
+	
+	console.log(json_to_send);
+	
+	
+	$.post("http://localhost:8000/",
+		    {
+				csrfmiddlewaretoken: middle_token,
+				data: json_to_send
+		    });
+}
+
+function parse_DOM(DOM_array){
+	var json_to_send = {};
+	$.each ( DOM_array, function( i, el){
+		
+		if(el.tagName == "DIV"){
+			if(el.className == "container_list"){
+				
+				var parsed_children = parse_div_list(el.childNodes);
+				json_to_send = $.extend(json_to_send, parsed_children);
+				
+				
+			}else if(el.className == "container"){
+				
+				console.log(el);
+				json_to_send[el.data_name] = parse_div_container_list(el.childNodes);
+				
+			}else{				
+				if(el.hasChildNodes()){
+					var parsed_DOM = parse_DOM(el.childNodes);
+					if(parsed_DOM.length != 0){				
+						json_to_send = $.extend(json_to_send, parsed_DOM);
+					}
+				}
+			}
+			
+		}else if(el.tagName == "INPUT"){
+			
+			if(el.type == "radio"){
+				if(el.checked == true){
+					var json_var = {};
+					json_var[el.name] = el.value;
+					json_to_send = $.extend(json_to_send, json_var);
+				}
+			}else if(el.type == "button"){
+				
+			}else{
+				var json_var = {};
+				json_var[el.name] = el.value;
+				json_to_send = $.extend(json_to_send, json_var);
+			}
+			
+		}else{			
+			if(el.hasChildNodes()){
+				var parsed_DOM = parse_DOM(el.childNodes);
+				if(parsed_DOM.length != 0){				
+					json_to_send = $.extend(json_to_send, parsed_DOM);
+				}
+			}
+		}
+		
+		
+		
+	});
+	
+	return json_to_send;
+}
+
+
+function parse_div_list(children){
+	var output = {};
+	
+	$.each(children, function(i, el){
+		var key = el.childNodes[1].value;
+		output[key] = parse_DOM([].slice.call(el.childNodes, 2));
+	})
+	
+	return output
+}
+
+function parse_div_container_list(children){
+	var output = [];
+	
+	$.each(children, function(i, el){
+		output.push(el.value);
+	})
+	
+	return output
+}
+
+
 
 

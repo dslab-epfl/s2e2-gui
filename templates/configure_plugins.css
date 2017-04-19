@@ -31,6 +31,14 @@ div.container{
 	background-color: lightgray;
 }
 
+div.container_list{
+	margin-top:5px;
+	margin-bottom:5px;
+	padding-top: 5px;
+	padding-bottom: 5px;	
+	background-color: lightgray;
+}
+
 div.left_menu{
 	float:left;
 	width: 400px;

@@ -13,8 +13,7 @@
     </head>
     <body>
 	 
-	 <form method="post" enctype="multipart/form-data">
-	 	{% csrf_token %}
+	 {% csrf_token %}
 	 	
 	 <div class="left_menu" id="left-menu-div">
 	 	
@@ -30,16 +29,11 @@
 	 <div style="margin-left: 420px;" id="right-menu-div">	
 	 
 	 	<input id="id_binary_file" name="binary_file" type="file" required />
-	 	<input type="submit" value="Launch S2E Analysis">
+	 	<input type="button" onclick="submit_data()" value="Launch S2E Analysis">
 	 	
-	 	<!-- The menu on the right of the page, where you configure every plugins -->
-	 	{% autoescape off %}
-	 	<!-- {{ configuration_menu }} -->
-	 	{% endautoescape %}
 	 		 	
 	 </div>
 	 
-	 </form>
 	 
 	 	
 		<script type="text/javascript">
