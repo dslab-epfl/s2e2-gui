@@ -17,11 +17,11 @@ function generatePluginConfigOption(plugin){
 	inside_div.style.display="none"
 	
 	var plugin_name = document.createElement("center");
-	plugin_name.innerHTML = "<b>" + plugin["name"] + "</b>";
+	plugin_name.innerHTML = "<h1>" + plugin["name"] + "</h1>";
 	inside_div.appendChild(plugin_name);
 	
 	var plugin_description = document.createElement("center");
-	plugin_description.innerHTML = plugin["description"];
+	plugin_description.innerHTML = "<h3>" + plugin["description"] + "</h3>";
 	inside_div.appendChild(plugin_description);   
 
 	var config_body;
@@ -70,7 +70,7 @@ function generate_html_per_type(parent, plugin, config_option){
 function generate_html_for_int(parent, plugin_name, attr_key){
 	var input = document.createElement("input");
 	input.setAttribute("type", "number");
-	input.className = "list_element";
+	input.className = "normal";
 	input.name = attr_key
 	
 	parent.appendChild(input);
@@ -233,17 +233,20 @@ function checkboxChangeHandler(checkbox){
 		
 		for(var i = 0; i < plugin.dependencies.length; ++i){
 			var dep = pluginMap.get(plugin.dependencies[i]);
-			dep.depCount += 1;
 			
-			var dependencyCheckbox = document.getElementById("checkbox_" + plugin.dependencies[i]);
-			
-			//disable checkbox and if state changed, handle change
-			dependencyCheckbox.disabled = true;
-			if(dependencyCheckbox.checked == false){
-				dependencyCheckbox.checked = true;
-				document.getElementById("checkbox_value_" + dependencyCheckbox.name).value=dependencyCheckbox.checked;
-
-				checkboxChangeHandler(dependencyCheckbox);
+			if(dep != undefined){				
+				dep.depCount += 1;
+				
+				var dependencyCheckbox = document.getElementById("checkbox_" + plugin.dependencies[i]);
+				
+				//disable checkbox and if state changed, handle change
+				dependencyCheckbox.disabled = true;
+				if(dependencyCheckbox.checked == false){
+					dependencyCheckbox.checked = true;
+					document.getElementById("checkbox_value_" + dependencyCheckbox.name).value=dependencyCheckbox.checked;
+	
+					checkboxChangeHandler(dependencyCheckbox);
+				}
 			}
 			
 		}
@@ -253,19 +256,22 @@ function checkboxChangeHandler(checkbox){
 		
 		for(var i = 0; i < plugin.dependencies.length; ++i){
 			var dep = pluginMap.get(plugin.dependencies[i]);
-			dep.depCount -= 1;
 			
-			var dependencyCheckbox = document.getElementById("checkbox_" + plugin.dependencies[i]);
-			
-			if(dep.depCount == 0){
-				dependencyCheckbox.disabled = false;
+			if(dep != undefined){
+				dep.depCount -= 1;
 				
-				//change occured
-				if(dependencyCheckbox.checked != dep.isChecked){
-					dependencyCheckbox.checked = dep.isChecked;
-					document.getElementById("checkbox_value_" + dependencyCheckbox.name).value=dependencyCheckbox.checked
+				var dependencyCheckbox = document.getElementById("checkbox_" + plugin.dependencies[i]);
+				
+				if(dep.depCount == 0){
+					dependencyCheckbox.disabled = false;
 					
-					checkboxChangeHandler(dependencyCheckbox);
+					//change occured
+					if(dependencyCheckbox.checked != dep.isChecked){
+						dependencyCheckbox.checked = dep.isChecked;
+						document.getElementById("checkbox_value_" + dependencyCheckbox.name).value=dependencyCheckbox.checked
+						
+						checkboxChangeHandler(dependencyCheckbox);
+					}
 				}
 			}
 		}

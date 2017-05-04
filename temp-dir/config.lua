@@ -3,31 +3,44 @@ s2e = {
 }
 
 plugins = {
-	"EdgeKiller",
+	"InstructionCounter",
+	"ExecutionTracer",
 	"ModuleExecutionDetector",
 	 "HostFiles" ,
+	 "Vmi" ,
 	 "BaseInstructions" 
 }
 
 pluginsConfig = {}
 
-pluginsConfig.EdgeKiller = {
-	aaa={
-		qqq={
-			addresses= {3, 4, 7, 13}
-		}
-	}
-}
-
 pluginsConfig.ModuleExecutionDetector = {
 	trackAllModules=true,
-	configureAllModules=true,
-	aaa={
-		moduleName=aaa,
-		kernelMode=false
-	}
+	trackExecution=true,
+	configureAllModules=true
 }
 
 pluginsConfig.HostFiles = {
-	 baseDirs = {"/home/davide/S2E/python/s2e2-gui/temp-dir/"}
+	 baseDirs = {"/home/davide/tmp/s2e/projects/binary"},
+	 allowWrite = true,
+}
+pluginsConfig.Vmi = {
+	 baseDirs = {"/home/davide/tmp/s2e/projects/binary"}
+}
+dofile('library.lua')
+add_plugin("LinuxMonitor")
+pluginsConfig.LinuxMonitor = {
+-- Kill the execution state when it encounters a segfault
+    terminateOnSegFault = true,
+-- Kill the execution state when it encounters a trap
+terminateOnTrap = true,
+}
+-------------------------------------------------------------------------------
+-- This generates test cases when a state crashes or terminates.
+-- If symbolic inputs consist of symbolic files, the test case generator writes
+-- concrete files in the S2E output folder. These files can be used to
+-- demonstrate the crash in a program, added to a test suite, etc.
+add_plugin("TestCaseGenerator")
+pluginsConfig.TestCaseGenerator = {
+    generateOnStateKill = true,
+    generateOnSegfault = true
 }

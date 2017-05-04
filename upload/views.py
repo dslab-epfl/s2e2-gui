@@ -6,9 +6,11 @@ from contextlib import contextmanager
 from models import S2EOutput
 import subprocess
 import os
+import signal
 import tempfile
 import shutil
 import s2e_web.S2E_settings as settings
+from threading import Timer
 
 
 def upload_file(request):
@@ -55,16 +57,50 @@ def make_temporary_directory():
 		shutil.rmtree(tmpdir)
 
 def launch_S2E(tmpdir):
-	s2e_command = settings.S2E_QEMU_SYSTEM_PATH + " -net none " + \
-				  settings.S2E_IMAGE_SNAP_PATH + " -loadvm " + settings.S2E_IMAGE_SNAP_EXT + \
-				  " -s2e-config-file " + tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME
-
-	p = subprocess.Popen([s2e_command, ""], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	out, err = p.communicate()
+	
+	#s2e_new_project_command = "s2e new_project -i " + settings.S2E_IMAGE_NAME + " "  + tmpdir + settings.S2E_BINARY_FILE_NAME 
+	
 		
-	return p.returncode, err
+	s2e_command = "sh " + settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME  + "/launch-s2e.sh"
 	
 	
+	#s2e_command = settings.S2E_QEMU_SYSTEM_PATH + " -net none " + \
+	#			  settings.S2E_IMAGE_SNAP_PATH + " -loadvm " + settings.S2E_IMAGE_SNAP_EXT + \
+	#			  " -s2e-config-file " + tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME
 	
+	
+	#p = subprocess.Popen([s2e_new_project_command, ""], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.S2E_ENVIRONEMENT_FOLDER_PATH)
+	#has_err = p.returncode
+	#if(has_err != 0):
+	#	out, err = p.communicate()
+	#	return has_err, err
+
+
+
+	shutil.copyfile(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME, settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/" + settings.S2E_ENV_CONFIG_LUA_NAME)
+	shutil.copyfile(tmpdir + settings.S2E_BINARY_FILE_NAME, settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/" + settings.S2E_BINARY_FILE_NAME)
+	
+	
+	kill = lambda process: kill_process(process)
+	
+	p = subprocess.Popen([s2e_command, ""], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME, preexec_fn=os.setsid)
+	
+	#TODO add an option for the timeout
+	my_timer = Timer(600, kill, [p])
+	 
+	out, err = "timer timout", ""
+	try:
+		my_timer.start()
+		out, err = p.communicate()
+	finally:
+		my_timer.cancel()
+	
+		
+	return p.returncode, out + err
+	
+	
+def kill_process(process):
+	print("process killed after timeout")
+	os.killpg(os.getpgid(process.pid), signal.SIGTERM)
 
 

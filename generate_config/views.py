@@ -9,6 +9,7 @@ from upload.models import S2EOutput
 from s2e_web import S2E_settings
 from models import S2ELaunchException
 import models
+from django.utils.encoding import smart_text
 
 LIST_TYPE = "list"
 BOOLEAN_TYPE = "bool"
@@ -28,6 +29,7 @@ configure_plugins_html = None
 def configurePlugins(request):
     global plugins
     global configure_plugins_html
+    
         
     if(plugins == None):
         with open(settings.S2E_PLUGIN_JSON_CONFIG_FILE, "r") as jsonFile:
@@ -46,14 +48,14 @@ def configurePlugins(request):
             write_file_to_disk_and_close(tmpdir + settings.S2E_BINARY_FILE_NAME, request.FILES["binary_file"])
             
             has_s2e_error, s2e_error = launch_S2E(tmpdir)
-
+            
             #TODO uncomment
             #os.remove(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME)
             os.remove(tmpdir + settings.S2E_BINARY_FILE_NAME)
 
-            output = S2EOutput("s2e-last/")
-
-            return render(request, 'display_log.html', {'warnings': output.warnings, 'messages' : output.messages, 'info' : output.info, 'debug' : output.debug, 'has_s2e_error': has_s2e_error, 's2e_error': s2e_error})
+            output = S2EOutput(has_s2e_error, settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/s2e-last/")
+                        
+            return render(request, 'display_log.html', {'warnings': smart_text(output.warnings, encoding="utf-8", errors="ignore"), 'info' : smart_text(output.info, encoding="utf-8", errors="ignore"), 'debug' : smart_text(output.debug, encoding="utf-8", errors="ignore"), 'has_s2e_error': has_s2e_error != 0, 's2e_error': s2e_error})
             
 
 
@@ -95,7 +97,6 @@ def getSelectedPlugins(request_data):
     
 
 def generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir):
-    # TODO add more options
     # Generate the base s2e config
     configFileContent = "s2e = {\n"
     configFileContent += "\t kleeArgs = {}\n"
@@ -110,6 +111,8 @@ def generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir):
     
     # add the HostFiles plugin, it is used to run the analysis
     configFileContent += '\t "HostFiles" ' + ",\n"
+    # add the Vmi plugin, it is used to run the analysis
+    configFileContent += '\t "Vmi" ' + ",\n"
     # add BaseInstructions to the list
     configFileContent += '\t "BaseInstructions" ' + "\n"
     
@@ -120,13 +123,49 @@ def generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir):
             
     configFileContent += generate_HostFiles_config(tmpdir)
     
-    write_string_to_disk_and_close(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME, configFileContent)
+    configFileContent += generate_Vmi_config(tmpdir)
     
+    #TODO REMOVE!
+    configFileContent += add_temporary_config_value()
+    
+    
+    write_string_to_disk_and_close(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME, configFileContent)
+
+def add_temporary_config_value():
+    out =  "dofile('library.lua')\n"
+    out +=  'add_plugin("LinuxMonitor")\n'
+    out += 'pluginsConfig.LinuxMonitor = {\n'
+    out += '-- Kill the execution state when it encounters a segfault\n'
+    out += '    terminateOnSegFault = true,\n'
+    out += '-- Kill the execution state when it encounters a trap\n'
+    out += 'terminateOnTrap = true,\n'
+    out += '}\n'
+    out += '-------------------------------------------------------------------------------\n'
+    out += '-- This generates test cases when a state crashes or terminates.\n'
+    out += '-- If symbolic inputs consist of symbolic files, the test case generator writes\n'
+    out += '-- concrete files in the S2E output folder. These files can be used to\n'
+    out += '-- demonstrate the crash in a program, added to a test suite, etc.\n'
+    out += 'add_plugin("TestCaseGenerator")\n'
+    out += 'pluginsConfig.TestCaseGenerator = {\n'
+    out += '    generateOnStateKill = true,\n'
+    out += '    generateOnSegfault = true\n'
+    out += '}\n'    
+    return out
+
     
 def generate_HostFiles_config(tmpdir):
     configContent = ""
     configContent += "pluginsConfig.HostFiles = {\n"
-    configContent += "\t baseDirs = {\"" + S2E_settings.S2E_ANALYSIS_ROOT_DIR + tmpdir + "\"}\n"
+    configContent += "\t baseDirs = {\"" + S2E_settings.S2E_PROJECT_FOLDER_PATH + S2E_settings.S2E_BINARY_FILE_NAME + "\"},\n"
+    configContent += "\t allowWrite = true,\n"
+    configContent += "}\n"
+    
+    return configContent
+
+def generate_Vmi_config(tmpdir):
+    configContent = ""
+    configContent += "pluginsConfig.Vmi = {\n"
+    configContent += "\t baseDirs = {\"" + S2E_settings.S2E_PROJECT_FOLDER_PATH + S2E_settings.S2E_BINARY_FILE_NAME + "\"}\n"
     configContent += "}\n"
     
     return configContent

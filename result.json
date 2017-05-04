@@ -1,60 +1,153 @@
 [
     {
         "configOption": {
-            "traceBlockTranslation": {
+            "reloadConfig": {
                 "type": "bool",
-                "description": "True if a translation block must be traced"
+                "description": ""
             },
-            "traceBlockExecution": {
-                "type": "bool",
-                "description": "True if a execution block must be traced"
-            }
-        },
-        "dependencies": [],
-        "name": "Example",
-        "description": "Example S2E plugin"
-    },
-    {
-        "configOption": {
-            "timeout": {
-                "type": "int",
-                "description": "If no more new code is covered after the specified number of seconds, kill all states except one successful. If the timeout is zero, continue exploration indefinitely until a client plugin explicitly instructs StateManager to kill the states."
+            "module": {
+                "content": {
+                    "functions": {
+                        "type": "string",
+                        "description": ""
+                    }
+                },
+                "type": "list",
+                "description": "The configuration of this list is wrong"
             }
         },
         "dependencies": [
             "ModuleExecutionDetector"
         ],
-        "name": "StateManager",
-        "description": "Control the deletion/suspension of states"
+        "name": "ControlFlowGraph",
+        "description": "Manages control flow graphs for modules"
     },
     {
         "configOption": {
-            "module": {
-                "content": {
-                    "pairs": {
-                        "content": {
-                            "addresses": {
-                                "type": "intList",
-                                "description": "addresses"
-                            }
-                        },
-                        "type": "list",
-                        "description": "The name of the module. This must match the name returned by the OS monitoring plugin."
-                    }
-                },
-                "type": "list",
-                "description": "list of modules, must match a module in the ModuleExecutionDetector plugin"
+            "dumpInfoInterval": {
+                "type": "int",
+                "description": ""
             }
         },
         "dependencies": [
-            "ModuleExecutionDetector",
-            "Interceptor"
+            "OSMonitor",
+            "ProcessExecutionDetector",
+            "ModuleExecutionDetector"
         ],
-        "name": "EdgeKiller",
-        "description": "Kills states when a specified sequence of instructions has been executed"
+        "name": "CallSiteMonitor",
+        "description": "CallSiteMonitor S2E plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [
+            "ExecutionTracer",
+            "ModuleExecutionDetector"
+        ],
+        "name": "InstructionCounter",
+        "description": "Instruction counter plugin"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "ExecutionTracer",
+        "description": "ExecutionTracer plugin"
     },
     {
         "configOption": {
+            "enableSeeds": {
+                "type": "bool",
+                "description": ""
+            },
+            "enableParallelSeeding": {
+                "type": "bool",
+                "description": ""
+            },
+            "seedDirectory": {
+                "type": "string",
+                "description": ""
+            },
+            "maxSeedStates": {
+                "type": "int",
+                "description": ""
+            }
+        },
+        "dependencies": [
+            "MultiSearcher",
+            "CUPASearcher"
+        ],
+        "name": "SeedSearcher",
+        "description": "Seed searcher"
+    },
+    {
+        "configOption": {},
+        "dependencies": [],
+        "name": "MultiSearcher",
+        "description": "MultiSearcher S2E plugin"
+    },
+    {
+        "configOption": {
+            "stateMachineTimeout": {
+                "type": "int",
+                "description": "How long do we wait before using new seeds.\nUsing seeds is currently expensive. For simple CBs, seeds slow down vulnerability finding by a lot. Use them only when S2E is stuck."
+            },
+            "lowPrioritySeedThreshold": {
+                "type": "int",
+                "description": "Seeds with priority equal to or lower than the threshold are considered low priority For CFE, high priorities range from 10 to 7 (various types of POVs and crashes), while normal test cases are from 6 and below."
+            }
+        },
+        "dependencies": [
+            "SeedSearcher",
+            "OSMonitor",
+            "TranslationBlockCoverage"
+        ],
+        "name": "SeedScheduler",
+        "description": "Coordinates seed scheduling"
+    },
+    {
+        "configOption": {
+            "writeCoverageOnStateKill": {
+                "type": "bool",
+                "description": "This is mainly for debugging, in normal use would generate too many files"
+            }
+        },
+        "dependencies": [
+            "ControlFlowGraph"
+        ],
+        "name": "BasicBlockCoverage",
+        "description": "Reports basic block coverage for registered modules"
+    },
+    {
+        "configOption": {
+            "writeCoverageOnStateKill": {
+                "type": "bool",
+                "description": "This is mainly for debugging, in normal use would generate too many files"
+            }
+        },
+        "dependencies": [
+            "ModuleExecutionDetector"
+        ],
+        "name": "TranslationBlockCoverage",
+        "description": "TranslationBlockCoverage S2E plugin"
+    },
+    {
+        "configOption": {
+            "moduleNames": {
+                "type": "stringList",
+                "description": "Fetch the list of modules where to report the calls"
+            }
+        },
+        "dependencies": [
+            "OSMonitor"
+        ],
+        "name": "ProcessExecutionDetector",
+        "description": "ProcessExecutionDetector S2E plugin"
+    },
+    {
+        "configOption": {
+            "trackExecution": {
+                "type": "bool",
+                "description": ""
+            },
             "trackAllModules": {
                 "type": "bool",
                 "description": "When true, pass events about all module loads and unloads to client plugins but do not notify them about the execution. This is useful for execution tracers to record modules loads to provide debug information offline without actually recording any trace."
@@ -79,58 +172,10 @@
             }
         },
         "dependencies": [
-            "Interceptor"
+            "OSMonitor",
+            "Vmi"
         ],
         "name": "ModuleExecutionDetector",
         "description": "Plugin for monitoring module execution"
-    },
-    {
-        "configOption": {},
-        "dependencies": [
-            "ExecutionTracer",
-            "ModuleExecutionDetector"
-        ],
-        "name": "InstructionCounter",
-        "description": "Instruction counter plugin"
-    },
-    {
-        "configOption": {},
-        "dependencies": [
-            "ExecutionTracer"
-        ],
-        "name": "TestCaseGenerator",
-        "description": "TestCaseGenerator plugin"
-    },
-    {
-        "configOption": {
-            "flushTbCache": {
-                "type": "bool",
-                "description": "Whether or not to flush the translation block cache when enabling/disabling tracing. This can be useful when tracing is enabled in the middle of a run where most of the blocks are already translated without the tracing instrumentation enabled. The default behavior is ON, because otherwise it may produce confising results."
-            },
-            "manualTrigger": {
-                "type": "bool",
-                "description": "Specify whether or not to enable custom instructions for enabling/disabling tracing"
-            }
-        },
-        "dependencies": [
-            "ExecutionTracer",
-            "ModuleExecutionDetector"
-        ],
-        "name": "TranslationBlockTracer",
-        "description": "Tracer for executed translation blocks"
-    },
-    {
-        "configOption": {},
-        "dependencies": [],
-        "name": "ExecutionTracer",
-        "description": "ExecutionTracer plugin"
-    },
-    {
-        "configOption": {},
-        "dependencies": [
-            "Interceptor"
-        ],
-        "name": "ModuleTracer",
-        "description": "Module load/unload tracer plugin"
     }
 ]
