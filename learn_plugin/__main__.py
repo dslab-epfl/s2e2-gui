@@ -24,6 +24,7 @@ if __name__ == "__main__":
 	"InstructionCounter.cpp", 
 	"SeedSearcher.cpp",
 	"MultiSearcher.cpp",
+    "TestCaseGenerator.cpp",
 	"SeedScheduler.cpp"])
 	
 

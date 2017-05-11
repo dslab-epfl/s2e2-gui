@@ -306,9 +306,10 @@ function parse_and_post_data(){
 	
 	var file = document.getElementById("id_binary_file").files[0];
 	var form_data = new FormData();
-	form_data.append("binary_file", file)
-	form_data.append("csrfmiddlewaretoken", middle_token)
-	form_data.append("data", JSON.stringify(json_to_send))
+	form_data.append("binary_file", file);
+	form_data.append("csrfmiddlewaretoken", middle_token);
+	form_data.append("data", JSON.stringify(json_to_send));
+	form_data.append("method", "run_s2e");
 	
 	document.getElementById("spinner").appendChild(document.createElement("p"));
 	
@@ -319,8 +320,10 @@ function parse_and_post_data(){
 			  processData: false,
 			  contentType: false,
 			  success: function(data){
-				  document.getElementById("body").innerHTML=data;
-			  }
+				  
+				  display_data_from_server(JSON.parse(data));
+		            //$('#body').html(data);
+		      }
 			});
 	
 }
@@ -403,6 +406,40 @@ function parse_div_container_list(children){
 	
 	return output
 }
+
+function see_last_result(){
+	
+	var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
+	
+	var form_data = new FormData();
+	form_data.append("csrfmiddlewaretoken", middle_token);
+	form_data.append("method", "get_last_result");
+		
+	$.ajax({
+			  type: "POST",
+			  url: "http://localhost:8000/",
+			  data: form_data,
+			  processData: false,
+			  contentType: false,
+			  success: function(data){
+				  display_data_from_server(JSON.parse(data))
+		      }
+			});
+	
+}
+
+function display_data_from_server(data){
+	document.open("text/html");
+	document.write(data.html);
+	document.close();
+	
+	window.data_runstats = data.stats;
+	
+	//$('#body').html(data);
+	
+	
+}
+
 
 
 

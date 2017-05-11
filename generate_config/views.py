@@ -36,35 +36,47 @@ def configurePlugins(request):
             plugins = json.load(jsonFile)
     
     if (request.method == 'POST'):
-        try:
-            # Generate an unique name
-            request_data = json.loads(request.POST["data"]);
-            tmpdir = "temp-dir/"
+        
+        if(request.POST["method"] == "get_last_result"):
             
-            selectedPlugins = getSelectedPlugins(request_data)
-            selectedPluginsConfig = getPluginsConfig(request_data, selectedPlugins)
-            
-            generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir)
-            write_file_to_disk_and_close(tmpdir + settings.S2E_BINARY_FILE_NAME, request.FILES["binary_file"])
-            
-            has_s2e_error, s2e_error = launch_S2E(tmpdir)
-            
-            #TODO uncomment
-            #os.remove(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME)
-            os.remove(tmpdir + settings.S2E_BINARY_FILE_NAME)
-
-            output = S2EOutput(has_s2e_error, settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/s2e-last/")
+            s2e_has_error = 0;
+            s2e_output_dir = settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/s2e-last/"
                         
-            return render(request, 'display_log.html', {'warnings': smart_text(output.warnings, encoding="utf-8", errors="ignore"), 'info' : smart_text(output.info, encoding="utf-8", errors="ignore"), 'debug' : smart_text(output.debug, encoding="utf-8", errors="ignore"), 'has_s2e_error': has_s2e_error != 0, 's2e_error': s2e_error})
+            return render_output(s2e_has_error, "", s2e_output_dir, request)
             
-
-
-                        
-        except AttributeError:
-            return HttpResponseServerError()
-        except S2ELaunchException as err:
-            print(err)
-            return HttpResponseServerError()
+            
+        elif(request.POST["method"] == "run_s2e"):
+            
+            try:
+                # Generate an unique name
+                request_data = json.loads(request.POST["data"]);
+                tmpdir = "temp-dir/"
+                
+                selectedPlugins = getSelectedPlugins(request_data)
+                selectedPluginsConfig = getPluginsConfig(request_data, selectedPlugins)
+                
+                generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir)
+                write_file_to_disk_and_close(tmpdir + settings.S2E_BINARY_FILE_NAME, request.FILES["binary_file"])
+                
+                has_s2e_error, s2e_error = launch_S2E(tmpdir)
+                
+                os.remove(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME)
+                os.remove(tmpdir + settings.S2E_BINARY_FILE_NAME)
+                
+                
+                s2e_output_dir = settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/s2e-last/"
+                
+                models.generate_lcov_files(s2e_output_dir)
+                            
+                #return render(request, 'display_log/index.html', {'warnings': smart_text(output.warnings, encoding="utf-8", errors="ignore"), 'info' : smart_text(output.info, encoding="utf-8", errors="ignore"), 'debug' : smart_text(output.debug, encoding="utf-8", errors="ignore"), 'has_s2e_error': has_s2e_error != 0, 's2e_error': s2e_error})
+                return render_output(has_s2e_error, s2e_error, s2e_output_dir, request)
+                            
+            except AttributeError as err:
+                print(err)
+                return HttpResponseServerError()
+            except S2ELaunchException as err:
+                print(err)
+                return HttpResponseServerError()
                 
         
         return HttpResponse(status = 404)
@@ -125,13 +137,11 @@ def generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir):
     
     configFileContent += generate_Vmi_config(tmpdir)
     
-    #TODO REMOVE!
-    configFileContent += add_temporary_config_value()
-    
+    configFileContent += add_linux_monitor_config()
     
     write_string_to_disk_and_close(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME, configFileContent)
 
-def add_temporary_config_value():
+def add_linux_monitor_config():
     out =  "dofile('library.lua')\n"
     out +=  'add_plugin("LinuxMonitor")\n'
     out += 'pluginsConfig.LinuxMonitor = {\n'
@@ -139,16 +149,6 @@ def add_temporary_config_value():
     out += '    terminateOnSegFault = true,\n'
     out += '-- Kill the execution state when it encounters a trap\n'
     out += 'terminateOnTrap = true,\n'
-    out += '}\n'
-    out += '-------------------------------------------------------------------------------\n'
-    out += '-- This generates test cases when a state crashes or terminates.\n'
-    out += '-- If symbolic inputs consist of symbolic files, the test case generator writes\n'
-    out += '-- concrete files in the S2E output folder. These files can be used to\n'
-    out += '-- demonstrate the crash in a program, added to a test suite, etc.\n'
-    out += 'add_plugin("TestCaseGenerator")\n'
-    out += 'pluginsConfig.TestCaseGenerator = {\n'
-    out += '    generateOnStateKill = true,\n'
-    out += '    generateOnSegfault = true\n'
     out += '}\n'    
     return out
 
@@ -184,7 +184,7 @@ def generate_plugins_configurations(selectedPluginsConfig):
     
     return configContent
     
-#TODO make recursive
+
 def translate_to_lua(configs, level=1):
     output = ""
     configsLen = len(configs.items())
@@ -230,4 +230,22 @@ def write_string_to_disk_and_close(path, string):
             destination.write(string)
     destination.close()
     
-            
+           
+def render_output(has_s2e_error, s2e_error, s2e_output_dir, request):
+    output = S2EOutput(has_s2e_error, s2e_output_dir)
+    stats = models.generate_stats(s2e_output_dir)     
+    line_coverage_path = models.get_lcov_path()            
+    
+    data_dictionary =  {'warnings': smart_text(output.warnings, encoding="utf-8", errors="ignore"), 
+                        'info' : smart_text(output.info, encoding="utf-8", errors="ignore"), 
+                        'debug' : smart_text(output.debug, encoding="utf-8", errors="ignore"), 
+                        'has_s2e_error': has_s2e_error != 0, 
+                        's2e_error': s2e_error,
+                        'line_coverage_report_path' : line_coverage_path}
+    
+    html_page = str(render(request, 'display_log/index.html', data_dictionary))            
+    
+    return HttpResponse(json.dumps({"stats" : smart_text(stats, encoding="utf-8", errors="ignore"), "html" :  html_page })) 
+
+
+ 

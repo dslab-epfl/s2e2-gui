@@ -47,6 +47,21 @@
         "description": "Instruction counter plugin"
     },
     {
+        "configOption": {
+            "generateOnSegfault": {
+                "type": "bool",
+                "description": "Generate a test case on segmentation fault"
+            },
+            "generateOnStateKill": {
+                "type": "bool",
+                "description": "Generate a test case on state kill"
+            }
+        },
+        "dependencies": [],
+        "name": "TestCaseGenerator",
+        "description": "TestCaseGenerator plugin"
+    },
+    {
         "configOption": {},
         "dependencies": [],
         "name": "ExecutionTracer",

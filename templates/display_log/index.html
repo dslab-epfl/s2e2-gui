@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+	{% load static %}
+    <script src="{% static "jquery-3.2.1.js" %}"></script>
+    <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+
+	<style>
+		{% include "display_log/main.css" %}
+	</style>
+	<head>
+		<meta charset="utf-8">
+		<title>S2E Web</title>   
+	</head>
+	<body>
+		{% if has_s2e_error %}
+			<p>
+			<h1>S2E was unable to properly run :</h1>
+				{{s2e_error|linebreaks}}
+			</p>
+		{% else %}
+			<div id="menu">
+			    <button class="mainActionButton" data-target="warning_log">Warning</button>
+			    <button class="mainActionButton" data-target="info_log">Info</button>
+			    <button class="mainActionButton" data-target="debug_log">Debug</button>
+			    <button class="mainActionButton" data-target="icount">Instruction Counter</button>
+			    <button class="mainActionButton" data-target="line_coverage">Line Coverage</button>
+			    <button class="mainActionButton" data-target="stats">Statistics</button>
+			    
+			</div>
+			
+			<div id="warning_log" class="mainContainer">
+				{{warnings|linebreaks}}
+			</div>
+		
+			<div id="info_log" class="mainContainer">
+				{{info|linebreaks}}
+			</div>
+			
+			<div id="debug_log" class="mainContainer">
+				{{debug|linebreaks}}
+			</div>
+			
+			<div id="icount" class="mainContainer">
+
+			</div>
+			
+			<div id="line_coverage" class="mainContainer">
+				<object data="{% get_static_prefix %}{{line_coverage_report_path}}" style="width: 100%; height:100%; overflow:auto;border:5px ridge black"></object>
+			</div>
+			
+			<div id="stats" class="mainContainer">
+				
+			</div>
+		
+		{% endif %}
+	</body>
+	
+	<script>	
+		{% include "display_log/events.js" %}			
+	</script>
+</html> 

@@ -7,7 +7,6 @@
     	<script src="{% static "validation_plugin/jquery.validate.min.js" %}"></script>
     	<style type="text/css">
 			{% include "configure_plugins.css" %}
-			
     	</style>
         <meta charset="utf-8">
         <title>S2E Web</title>        
@@ -32,7 +31,8 @@
 		 <div style="margin-left: 420px;" id="right-menu-div">	
 		 
 		 	<input id="id_binary_file" name="binary_file" type="file" required />
-		 	<input type="button" onclick="submit_data()" value="Launch S2E Analysis">
+		 	<input type="button" onclick="submit_data()" value="Launch S2E Analysis" />
+		 	<input type="button" onclick="see_last_result()" value="See last results" />
 		 	<div id="spinner" class="loader"></div>
 		 	
 		 		

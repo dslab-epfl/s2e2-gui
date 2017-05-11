@@ -62,6 +62,8 @@ def launch_S2E(tmpdir):
 	
 		
 	s2e_command = "sh " + settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME  + "/launch-s2e.sh"
+	#s2e_command = "s2e run " + settings.S2E_BINARY_FILE_NAME +" -n"
+	
 	
 	
 	#s2e_command = settings.S2E_QEMU_SYSTEM_PATH + " -net none " + \
@@ -84,9 +86,10 @@ def launch_S2E(tmpdir):
 	kill = lambda process: kill_process(process)
 	
 	p = subprocess.Popen([s2e_command, ""], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME, preexec_fn=os.setsid)
+	#p = subprocess.Popen([s2e_command, ""], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.S2E_ENVIRONEMENT_FOLDER_PATH, preexec_fn=os.setsid)
 	
 	#TODO add an option for the timeout
-	my_timer = Timer(600, kill, [p])
+	my_timer = Timer(10, kill, [p])
 	 
 	out, err = "timer timout", ""
 	try:
