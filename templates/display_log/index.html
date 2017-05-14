@@ -20,25 +20,39 @@
 			</p>
 		{% else %}
 			<div id="menu">
-			    <button class="mainActionButton" data-target="warning_log">Warning</button>
-			    <button class="mainActionButton" data-target="info_log">Info</button>
-			    <button class="mainActionButton" data-target="debug_log">Debug</button>
-			    <button class="mainActionButton" data-target="icount">Instruction Counter</button>
-			    <button class="mainActionButton" data-target="line_coverage">Line Coverage</button>
-			    <button class="mainActionButton" data-target="stats">Statistics</button>
-			    
+				<button class="mainActionButton" data-target="warning_log">Warning</button><!-- 
+				--><button class="mainActionButton" data-target="info_log">Info</button><!-- 
+				--><button class="mainActionButton" data-target="debug_log">Debug</button><!-- 
+				--><button class="mainActionButton" data-target="icount">Instruction Counter</button><!-- 
+				--><button class="mainActionButton" data-target="line_coverage">Line Coverage</button><!-- 
+				--><button class="mainActionButton" data-target="stats">Statistics</button>
 			</div>
-			
+		
 			<div id="warning_log" class="mainContainer">
-				{{warnings|linebreaks}}
+				<select id="warning_log_select" class="log_select" data-target="warning_log">
+					<option value="all">Full log</option>
+				</select>
+				<div id="warning_log_all" class="mainContainer open">
+					{{warnings|linebreaks}}
+				</div>
 			</div>
 		
 			<div id="info_log" class="mainContainer">
-				{{info|linebreaks}}
+				<select id="info_log_select" class="log_select" data-target="info_log">
+					<option value="all">Full log</option>
+				</select>
+				<div id="info_log_all" class="mainContainer open">
+					{{info|linebreaks}}
+				</div>
 			</div>
 			
 			<div id="debug_log" class="mainContainer">
-				{{debug|linebreaks}}
+				<select id="debug_log_select" class="log_select" data-target="debug_log">
+					<option value="all">Full log</option>
+				</select>
+				<div id="debug_log_all" class="mainContainer open">
+					{{debug|linebreaks}}
+				</div>
 			</div>
 			
 			<div id="icount" class="mainContainer">
@@ -47,7 +61,7 @@
 			
 			<div id="line_coverage" class="mainContainer">
 				{% if line_coverage_exist %}
-					<object data="{% get_static_prefix %}{{line_coverage_report_path}}" class="externalContainer"></object>
+					<iframe onload="resizeIframe(this)" src="{% get_static_prefix %}{{line_coverage_report_path}}" class="externalContainer"></iframe>
 				{% else %}
 					<h4>No coverage report found :</h4>
 						<p>To have a coverage report, make sure to enable TranslationBlockCoverage and set the value writeCoverageOnStateKill to true</p>
@@ -57,7 +71,7 @@
 			<div id="stats" class="mainContainer">
 				
 			</div>
-		
+	
 		{% endif %}
 	</body>
 	

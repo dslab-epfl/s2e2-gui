@@ -1,10 +1,11 @@
 $(document).ready(function(){
 
     $(".mainActionButton").click(function(){
-        $("#menu").addClass("reduced");
-
         var target = $(this).data("target");
-        $(".mainContainer").removeClass("open");
+        $("#menu button.active").removeClass("active");
+        $(this).addClass("active");
+        
+        $("body > .mainContainer").removeClass("open");
         $("#" + target).addClass("open");
     });
     
@@ -12,6 +13,26 @@ $(document).ready(function(){
 	display_stats(window.data_runstats);
 	display_icount(window.data_icount);
 	
+	createCustomLogDisplay("warning_log");
+	createCustomLogDisplay("debug_log");
+	createCustomLogDisplay("info_log");
+	
+	var iFrame = document.getElementById("line_coverage_iframe");
+    resizeIFrameToFitContent(iFrame);
+	
+});
+
+function resizeIframe(obj) {
+    obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+}
+
+
+$(".log_select").change(function(){
+	var jquery_this = $(this);
+	var target = jquery_this.data("target");
+		
+	$("#" + target + " .mainContainer").removeClass("open");
+	$("#" + target + "_" + jquery_this.val()).addClass("open");
 });
 
 function display_stats(stats){
@@ -72,3 +93,50 @@ function display_icount(icount){
 	}
 	
 }
+
+function createCustomLogDisplay(div_id){
+	
+		var re = /\[State \d+\]/g;
+				
+		var warning_array = $("#" + div_id + "_all").html().split(/<br>|<p>|<\/p>/);
+		var line_by_state = {};
+		var last_matched_state = null;
+		
+		for(var i = 0; i < warning_array.length; ++i){
+			var text_line = warning_array[i];
+			var matched_state = text_line.match(re);
+			
+			if(matched_state != null){
+				last_matched_state = matched_state[0].substr(7, matched_state[0].length - 8);
+			}
+						
+			if(last_matched_state != null){
+				var state_array = line_by_state[last_matched_state];
+				if(state_array == undefined){
+					state_array = [];
+					line_by_state[last_matched_state] = state_array;
+				}
+				state_array.push(text_line);
+			}
+		}
+		
+		for(var key in line_by_state){
+			var div = document.createElement("DIV");
+			div.id = div_id + "_" + key;
+			div.className = "mainContainer";
+			var text_array = line_by_state[key];
+			
+			for(var i = 0; i < text_array.length; ++i){
+				div.appendChild(document.createTextNode(text_array[i]));
+				div.appendChild(document.createElement("BR"));
+			}
+			$("#" + div_id).append(div);
+			
+			var option_entry = document.createElement("OPTION");
+			option_entry.value = key;
+			option_entry.appendChild(document.createTextNode("State " + key));
+			$("#" + div_id + "_select").append(option_entry);	
+		}
+	
+}
+

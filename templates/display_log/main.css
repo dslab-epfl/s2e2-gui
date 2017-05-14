@@ -6,53 +6,67 @@ html, body {
 }
 
 #menu {
-    margin: 20% auto 0 auto;
+	overflow:hidden;
+    margin: 0px 0px 0px 0px;
     width: 100%;
     transition: all 1s;
     font-size: 22px;
-}
-
-#menu.reduced {
-    margin: 8px auto 10px auto;
-    width: 100%;
+    background-color: black;
 }
 
 button.mainActionButton {
     text-transform: uppercase;
     width: 29%;
+    max-width: 10000px;
     height: 180px;
-    padding: 0;
-    margin: 0 2%;
+    padding: 0px;
+    margin: 0px 2%;
     margin-bottom: 10px;
-    transition: all 1s;
+    background-color: black;
+    transition: max-width 1s, height 1s;
 }
-.reduced > button.mainActionButton{
-    width: 26%;
-    height: 100px;
-    padding: 0;
-    margin: 5px;
-    box-shadow: 0 0 6px -3px black;
+
+button.mainActionButton::-moz-focus-inner { 
+  border: 0; 
+}
+
+button.mainActionButton.active {
+    background-color: green;
+}
+
+#menu > button.mainActionButton{
+    width: auto;
+    max-width: 1000px;
+    height: 60px;
+    padding: 10px;
+    margin: 0px;
+    font-size: 24px;
+    font-size: medium;
+    display: inline;
 }
 
 .mainContainer{
     opacity: 0;
     visibility: hidden;
     overflow: hidden;
-    transition: all 1s;
+    transition: max-height 10s, padding 1s, margin 1s, background-position 1s;
     background-color: navy;
-    height: 0;
-    width: 80%;
-    padding: 0;
-    margin-top: 20px;
+    height: 0px;
+    max-height: 0px;
+    width: 100%;
+    padding: 0px;
+    margin-top: 0px;
 }
 
 .mainContainer.open{
-    padding: 40px 10%;
+    padding: 40px 5%;
     opacity: 1;
     visibility: visible;
     background-color: white;
     height: auto;
+    max-height: 10000px;
     overflow-x: auto;
+    box-sizing: border-box;
 }
 
 button {
@@ -60,11 +74,8 @@ button {
     padding:0 40px;
     color: white;
     background-color: gray;
-    border: 1px solid black;
-    border-radius: 3px;
+    border: none;
     font-size: 19px;
-    transition: all 1s;
-    box-shadow: 0 0 20px -10px black;
 }
 button:hover {
     color: black;

@@ -87,7 +87,7 @@ def configurePlugins(request):
     else:
         #TODO change to cache data
         #if(configure_plugins_html == None):
-        configure_plugins_html = render(request, 'configure_plugins.html', {'plugins': plugins, 'pluginsJson': json.dumps(plugins)})
+        configure_plugins_html = render(request, 'configure_plugins/index.html', {'plugins': plugins, 'pluginsJson': json.dumps(plugins)})
         
         return configure_plugins_html
 
@@ -247,10 +247,9 @@ def render_output(has_s2e_error, s2e_error, s2e_output_dir, request):
                         'line_coverage_report_path' : line_coverage_path}
     
     html_page = str(render(request, 'display_log/index.html', html_data_dictionary))
-             
     
     return HttpResponse(json.dumps({"stats" : smart_text(stats, encoding="utf-8", errors="ignore"), 
-                                    "html" :  html_page,
+                                    "html" :  html_page[39:],
                                     "icount" : icount})) 
 
 

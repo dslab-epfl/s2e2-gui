@@ -22,8 +22,11 @@ def generate_plugin_specific_output(selected_plugins):
 
 def generate_stats(s2e_out_dir):
     stats = None
-    with open(s2e_out_dir + "run.stats", 'r') as destination:
-        stats = destination.read()
+    try:
+        with open(s2e_out_dir + "run.stats", 'r') as destination:
+            stats = destination.read()
+    except IOError:
+        return "No stats found"
         
     return stats
         
@@ -84,13 +87,6 @@ def generate_icount_files(s2e_out_dir):
         data_last_timestamp = data_current_timestamp
         
     return instruction_count
-    
-    
-    
-def generate_timeline():
-    return
-    
-    
     
     
     

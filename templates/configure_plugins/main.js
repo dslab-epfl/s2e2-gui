@@ -320,10 +320,8 @@ function parse_and_post_data(){
 			  data: form_data,
 			  processData: false,
 			  contentType: false,
-			  success: function(data){
-				  
+			  success: function(data){				  
 				  display_data_from_server(JSON.parse(data));
-		            //$('#body').html(data);
 		      }
 			});
 	
