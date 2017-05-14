@@ -46,7 +46,12 @@
 			</div>
 			
 			<div id="line_coverage" class="mainContainer">
-				<object data="{% get_static_prefix %}{{line_coverage_report_path}}" style="width: 100%; height:100%; overflow:auto;border:5px ridge black"></object>
+				{% if line_coverage_exist %}
+					<object data="{% get_static_prefix %}{{line_coverage_report_path}}" class="externalContainer"></object>
+				{% else %}
+					<h4>No coverage report found :</h4>
+						<p>To have a coverage report, make sure to enable TranslationBlockCoverage and set the value writeCoverageOnStateKill to true</p>
+				{% endif %}			
 			</div>
 			
 			<div id="stats" class="mainContainer">
@@ -57,6 +62,7 @@
 	</body>
 	
 	<script>	
-		{% include "display_log/events.js" %}			
+		{% include "display_log/events.js" %}
+		{% include "display_log/utils.js" %}
 	</script>
 </html> 

@@ -310,6 +310,7 @@ function parse_and_post_data(){
 	form_data.append("csrfmiddlewaretoken", middle_token);
 	form_data.append("data", JSON.stringify(json_to_send));
 	form_data.append("method", "run_s2e");
+	form_data.append("timeout", $("#timeout_value").val())
 	
 	document.getElementById("spinner").appendChild(document.createElement("p"));
 	
@@ -434,10 +435,7 @@ function display_data_from_server(data){
 	document.close();
 	
 	window.data_runstats = data.stats;
-	
-	//$('#body').html(data);
-	
-	
+	window.data_icount = data.icount;
 }
 
 

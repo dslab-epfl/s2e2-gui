@@ -4,13 +4,6 @@ html, body {
     font-family: 'Lato', sans-serif;
     font-size: 20px;
 }
-#main {
-    text-align: center;
-    margin: 0 auto;
-    max-width: 1300px;
-    min-height: 500px;
-    //box-shadow: 0 0 5px black;
-}
 
 #menu {
     margin: 20% auto 0 auto;
@@ -18,10 +11,12 @@ html, body {
     transition: all 1s;
     font-size: 22px;
 }
+
 #menu.reduced {
     margin: 8px auto 10px auto;
     width: 100%;
 }
+
 button.mainActionButton {
     text-transform: uppercase;
     width: 29%;
@@ -60,31 +55,6 @@ button.mainActionButton {
     overflow-x: auto;
 }
 
-#mainForm {
-    margin: 40px 40px;
-    text-align: center;
-}
-
-#errorMsg{
-    display: none;
-    position: relative;
-    color: red;
-    text-align: left;
-    font-weight: bold;
-    background-color: red;
-    width: 90%;
-    padding: 10px 5%;
-    margin: 5px auto;
-}
-
-#errorMsg #clearErrorMsg{
-    color: black;
-    position: absolute;
-    bottom: 7px;
-    right: 15px;
-    cursor: pointer;
-}
-
 button {
     height: 50px;
     padding:0 40px;
@@ -116,24 +86,32 @@ button:disabled{
     border-color : darkgray;
 }
 
-.sendQueryButton{
-    display: block;
-    margin: 40px auto 0 auto;
+.externalContainer{
+	width: 100%;
+	height:100%; 
+	overflow:auto;
+	border:5px ridge black
 }
 
-#predefinedQueriesContainer button{
-    margin : 20px 20px;
-}
-
-#stats_table{
+tbody{
 	width: auto;
 }
 
-#stats_table_tr{
-
-}
-
-#stats_table_td{
+tr > td{
 	padding: 5px;
 	border: 1px solid black;
 }
+
+tr > th{
+	padding: 5px;
+	border: 1px solid black;
+}
+
+tr{
+	background-color: #b1c1fa;
+}
+
+tr:hover{
+	background-color: #f1f1f1;
+}
+

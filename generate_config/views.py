@@ -49,16 +49,17 @@ def configurePlugins(request):
             
             try:
                 # Generate an unique name
+                timeout = request.POST["timeout"]                
                 request_data = json.loads(request.POST["data"]);
                 tmpdir = "temp-dir/"
-                
+                                
                 selectedPlugins = getSelectedPlugins(request_data)
                 selectedPluginsConfig = getPluginsConfig(request_data, selectedPlugins)
                 
                 generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir)
                 write_file_to_disk_and_close(tmpdir + settings.S2E_BINARY_FILE_NAME, request.FILES["binary_file"])
                 
-                has_s2e_error, s2e_error = launch_S2E(tmpdir)
+                has_s2e_error, s2e_error = launch_S2E(tmpdir, timeout)
                 
                 os.remove(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME)
                 os.remove(tmpdir + settings.S2E_BINARY_FILE_NAME)
@@ -234,18 +235,23 @@ def write_string_to_disk_and_close(path, string):
 def render_output(has_s2e_error, s2e_error, s2e_output_dir, request):
     output = S2EOutput(has_s2e_error, s2e_output_dir)
     stats = models.generate_stats(s2e_output_dir)     
-    line_coverage_path = models.get_lcov_path()            
+    has_coverage, line_coverage_path = models.get_lcov_path()
+    icount = models.generate_icount_files(s2e_output_dir)
     
-    data_dictionary =  {'warnings': smart_text(output.warnings, encoding="utf-8", errors="ignore"), 
+    html_data_dictionary =  {'warnings': smart_text(output.warnings, encoding="utf-8", errors="ignore"), 
                         'info' : smart_text(output.info, encoding="utf-8", errors="ignore"), 
                         'debug' : smart_text(output.debug, encoding="utf-8", errors="ignore"), 
                         'has_s2e_error': has_s2e_error != 0, 
                         's2e_error': s2e_error,
+                        'line_coverage_exist' : has_coverage,
                         'line_coverage_report_path' : line_coverage_path}
     
-    html_page = str(render(request, 'display_log/index.html', data_dictionary))            
+    html_page = str(render(request, 'display_log/index.html', html_data_dictionary))
+             
     
-    return HttpResponse(json.dumps({"stats" : smart_text(stats, encoding="utf-8", errors="ignore"), "html" :  html_page })) 
+    return HttpResponse(json.dumps({"stats" : smart_text(stats, encoding="utf-8", errors="ignore"), 
+                                    "html" :  html_page,
+                                    "icount" : icount})) 
 
 
  

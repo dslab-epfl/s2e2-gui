@@ -20,8 +20,8 @@
 	 	<!-- The menu on the left of the page, contains every plugins -->
 	 	{% for plugin in plugins %}
 	 		<input type="hidden" id="checkbox_value_{{ plugin.name }}" name="{{ plugin.name }}" />
-	 		<input type="checkbox" class="checkbox-normal" id="checkbox_{{ plugin.name }}" onclick="checkboxClickHandler(this)" value="" name="{{ plugin.name }}">
-	 		{{ plugin.name }}<br>
+	 		<label><input type="checkbox" class="checkbox-normal" id="checkbox_{{ plugin.name }}" onclick="checkboxClickHandler(this)" value="" name="{{ plugin.name }}">
+	 		{{ plugin.name }}<br></label>
 	 	{% endfor %}
 	 	
 	 </div>
@@ -30,11 +30,13 @@
 	 		 
 		 <div style="margin-left: 420px;" id="right-menu-div">	
 		 
-		 	<input id="id_binary_file" name="binary_file" type="file" required />
-		 	<input type="button" onclick="submit_data()" value="Launch S2E Analysis" />
-		 	<input type="button" onclick="see_last_result()" value="See last results" />
-		 	<div id="spinner" class="loader"></div>
-		 	
+			 <div style="display:inline-block;"> 
+			 	<input id="id_binary_file" name="binary_file" type="file" required />
+			 	<input type="button" onclick="submit_data()" value="Launch S2E Analysis" />
+			 	<input type="button" onclick="see_last_result()" value="See last results" />
+			 	<label>Timeout: <input type="number" id="timeout_value" value="10"/></label>
+			 	<div id="spinner" class="loader"></div>
+			 </div>
 		 		
 		 </div>
 		 

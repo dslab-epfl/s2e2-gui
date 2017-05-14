@@ -56,7 +56,7 @@ def make_temporary_directory():
 	finally:
 		shutil.rmtree(tmpdir)
 
-def launch_S2E(tmpdir):
+def launch_S2E(tmpdir, timeout):
 	
 	#s2e_new_project_command = "s2e new_project -i " + settings.S2E_IMAGE_NAME + " "  + tmpdir + settings.S2E_BINARY_FILE_NAME 
 	
@@ -85,11 +85,11 @@ def launch_S2E(tmpdir):
 	
 	kill = lambda process: kill_process(process)
 	
-	p = subprocess.Popen([s2e_command, ""], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME, preexec_fn=os.setsid)
+	p = subprocess.Popen([s2e_command, ""], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME)
 	#p = subprocess.Popen([s2e_command, ""], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.S2E_ENVIRONEMENT_FOLDER_PATH, preexec_fn=os.setsid)
 	
 	#TODO add an option for the timeout
-	my_timer = Timer(10, kill, [p])
+	my_timer = Timer(int(timeout), kill, [p])
 	 
 	out, err = "timer timout", ""
 	try:
@@ -104,6 +104,12 @@ def launch_S2E(tmpdir):
 	
 def kill_process(process):
 	print("process killed after timeout")
-	os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+
+	os.kill(process.pid, signal.SIGTERM)
+	
+	#this is a hack ask why this works
+	os.kill(process.pid + 3, signal.SIGTERM)
+	
+	process.returncode = 0;
 
 
