@@ -4,11 +4,11 @@ import json
 import os
 from django.http import HttpResponseServerError, HttpResponse
 from django.http.response import Http404
-from upload.views import launch_S2E, write_file_to_disk_and_close
-from upload.models import S2EOutput
+from launch_s2e import launch_s2e, write_file_to_disk_and_close
 from s2e_web import S2E_settings
 from models import S2ELaunchException
 import models
+import utils
 from django.utils.encoding import smart_text
 
 LIST_TYPE = "list"
@@ -41,8 +41,11 @@ def configurePlugins(request):
             
             s2e_has_error = 0;
             s2e_output_dir = settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/s2e-last/"
+            
+            custom_data = models.CustomAnalysisData()
+            custom_data.get_from_disk(s2e_output_dir)
                         
-            return render_output(s2e_has_error, "", s2e_output_dir, request)
+            return render_output(s2e_has_error, "", s2e_output_dir, custom_data.data, request)
             
             
         elif(request.POST["method"] == "run_s2e"):
@@ -59,18 +62,19 @@ def configurePlugins(request):
                 generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir)
                 write_file_to_disk_and_close(tmpdir + settings.S2E_BINARY_FILE_NAME, request.FILES["binary_file"])
                 
-                has_s2e_error, s2e_error = launch_S2E(tmpdir, timeout)
+                has_s2e_error, s2e_error, killed_by_timeout = launch_s2e(tmpdir, timeout)
                 
                 os.remove(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME)
                 os.remove(tmpdir + settings.S2E_BINARY_FILE_NAME)
                 
-                
                 s2e_output_dir = settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/s2e-last/"
                 
                 models.generate_lcov_files(s2e_output_dir)
-                            
-                #return render(request, 'display_log/index.html', {'warnings': smart_text(output.warnings, encoding="utf-8", errors="ignore"), 'info' : smart_text(output.info, encoding="utf-8", errors="ignore"), 'debug' : smart_text(output.debug, encoding="utf-8", errors="ignore"), 'has_s2e_error': has_s2e_error != 0, 's2e_error': s2e_error})
-                return render_output(has_s2e_error, s2e_error, s2e_output_dir, request)
+                
+                custom_data = models.CustomAnalysisData(killed_by_timeout)
+                custom_data.save_to_disk(s2e_output_dir)            
+                
+                return render_output(has_s2e_error, s2e_error, s2e_output_dir, custom_data.data, request)
                             
             except AttributeError as err:
                 print(err)
@@ -133,14 +137,11 @@ def generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir):
     
     
     configFileContent += generate_plugins_configurations(selectedPluginsConfig)
-            
     configFileContent += generate_HostFiles_config(tmpdir)
-    
     configFileContent += generate_Vmi_config(tmpdir)
-    
     configFileContent += add_linux_monitor_config()
     
-    write_string_to_disk_and_close(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME, configFileContent)
+    utils.write_string_to_disk_and_close(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME, configFileContent)
 
 def add_linux_monitor_config():
     out =  "dofile('library.lua')\n"
@@ -225,15 +226,9 @@ def translate_to_lua(configs, level=1):
         
     return output
     
-
-def write_string_to_disk_and_close(path, string):
-    with open(path, 'wb+') as destination:
-            destination.write(string)
-    destination.close()
-    
            
-def render_output(has_s2e_error, s2e_error, s2e_output_dir, request):
-    output = S2EOutput(has_s2e_error, s2e_output_dir)
+def render_output(has_s2e_error, s2e_error, s2e_output_dir, custom_data, request):
+    output = models.S2EOutput(has_s2e_error, s2e_output_dir)
     stats = models.generate_stats(s2e_output_dir)     
     has_coverage, line_coverage_path = models.get_lcov_path()
     icount = models.generate_icount_files(s2e_output_dir)
@@ -244,7 +239,8 @@ def render_output(has_s2e_error, s2e_error, s2e_output_dir, request):
                         'has_s2e_error': has_s2e_error != 0, 
                         's2e_error': s2e_error,
                         'line_coverage_exist' : has_coverage,
-                        'line_coverage_report_path' : line_coverage_path}
+                        'line_coverage_report_path' : line_coverage_path,
+                        'custom_data' : custom_data}
     
     html_page = str(render(request, 'display_log/index.html', html_data_dictionary))
     

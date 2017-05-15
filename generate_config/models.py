@@ -6,7 +6,23 @@ import s2e_web.S2E_settings as settings
 import os
 from xdiagnose.utils.url_io import data_from_url
 import json
+import utils
 
+class S2EOutput():
+    def __init__(self, has_s2e_error, s2e_out_dir):
+        if has_s2e_error != 0 : 
+            self.warnings = ""
+            self.messages = ""
+            self.info = ""
+            self.debug = ""
+            
+        else:    
+            with open(s2e_out_dir + "warnings.txt", 'r') as destination:
+                self.warnings = destination.read()
+            with open(s2e_out_dir + "info.txt", 'r') as destination:
+                self.info = destination.read()
+            with open(s2e_out_dir + "debug.txt", 'r') as destination:
+                self.debug = destination.read()
 
 class S2ELaunchException(Exception):
     def __init__(self, value):
@@ -89,10 +105,17 @@ def generate_icount_files(s2e_out_dir):
     return instruction_count
     
     
+class CustomAnalysisData():
+    GUI_FILE_NAME = "GUI_data.json"
     
-    
-    
+    def __init__(self, killed_by_timeout = False):
+        self.data = {"killed_by_timeout" : killed_by_timeout}
         
-    
-    
-    
+    def save_to_disk(self, s2e_output_dir):
+        utils.write_string_to_disk_and_close(s2e_output_dir + CustomAnalysisData.GUI_FILE_NAME, json.dumps(self.data))
+        
+    def get_from_disk(self, s2e_output_dir):
+        with open(s2e_output_dir + CustomAnalysisData.GUI_FILE_NAME, 'r') as destination:
+            self.data = json.load(destination)
+        
+        

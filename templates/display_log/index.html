@@ -20,7 +20,8 @@
 			</p>
 		{% else %}
 			<div id="menu">
-				<button class="mainActionButton" data-target="warning_log">Warning</button><!-- 
+				<button class="mainActionButton active" data-target="overview">Overview</button><!-- 
+				--><button class="mainActionButton" data-target="warning_log">Warning</button><!-- 
 				--><button class="mainActionButton" data-target="info_log">Info</button><!-- 
 				--><button class="mainActionButton" data-target="debug_log">Debug</button><!-- 
 				--><button class="mainActionButton" data-target="icount">Instruction Counter</button><!-- 
@@ -28,6 +29,14 @@
 				--><button class="mainActionButton" data-target="stats">Statistics</button>
 			</div>
 		
+			<div id="overview" class="mainContainer open">
+				{% if custom_data.killed_by_timeout == True %}
+					<h2>Analysis was stopped by timeout</h2>
+				{% else %}
+					<h2>Analysis finished</h2>
+				{% endif %}
+			</div>
+			
 			<div id="warning_log" class="mainContainer">
 				<select id="warning_log_select" class="log_select" data-target="warning_log">
 					<option value="all">Full log</option>

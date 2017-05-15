@@ -5,13 +5,21 @@ html, body {
     font-size: 20px;
 }
 
+body{
+	margin-top: 100px;	
+}
+
 #menu {
 	overflow:hidden;
     margin: 0px 0px 0px 0px;
     width: 100%;
+    heigth: auto;
     transition: all 1s;
     font-size: 22px;
     background-color: black;
+    position: fixed;
+    left: 0px;
+    top: 0px;
 }
 
 button.mainActionButton {
