@@ -15,11 +15,9 @@ $(document).ready(function(){
 	
 	createCustomLogDisplay("warning_log");
 	createCustomLogDisplay("debug_log");
-	createCustomLogDisplay("info_log");
-	
-	var iFrame = document.getElementById("line_coverage_iframe");
-    resizeIFrameToFitContent(iFrame);
-	
+	var info_line_by_state = createCustomLogDisplay("info_log");
+    
+    displayFinalStatusCode(info_line_by_state);
 });
 
 function resizeIframe(obj) {
@@ -137,6 +135,83 @@ function createCustomLogDisplay(div_id){
 			option_entry.appendChild(document.createTextNode("State " + key));
 			$("#" + div_id + "_select").append(option_entry);	
 		}
+		
+		return line_by_state;
+}
+
+function displayFinalStatusCode(info_line_by_state){
+	
+	var status_reg_exp = /status: \dx\d*/;
+	var status_by_state = {};
+	var message_reg_exp = /message: ".*"/;
+	var message_by_state = {};
+	var term_reg_exp = /Terminating state early: .*/;
+	
+	for(var key in info_line_by_state){
+		var text_array = info_line_by_state[key];
+		
+		for(var i = 0; i < text_array.length; ++i){
+			var text_line = text_array[i];
+			
+			var matched = text_line.match(status_reg_exp);
+			if(matched != null){
+				var status_to_extract = matched[0];
+				status_by_state[key] = status_to_extract.substr(7, status_to_extract.length - 7);
+			}
+			
+			var matched_message = text_line.match(message_reg_exp);
+			if(matched_message != null){
+				var message_to_extract = matched_message[0];
+				message_by_state[key] = message_to_extract.substr(10, message_to_extract.length - 11);
+			}
+			
+			var matched_term = text_line.match(term_reg_exp);
+			if(matched_term != null){
+				var term_to_extract = matched_term[0];
+				message_by_state[key] = term_to_extract.substr(25, term_to_extract.length - 25);
+				status_by_state[key] = -1;
+			}
+		}
+	}
+	
+	var table = document.createElement('tbody');
+	table.className = "centered";
+	
+	var tr = document.createElement("TR");
+	
+	var th_state = document.createElement("TH");
+	th_state.appendChild(document.createTextNode("State"));
+	tr.appendChild(th_state);
+
+	var th_status = document.createElement("TH");
+	th_status.appendChild(document.createTextNode("Status"));
+	tr.appendChild(th_status);
+
+	var th_message = document.createElement("TH");
+	th_message.appendChild(document.createTextNode("Message"));
+	tr.appendChild(th_message);
+	
+	table.appendChild(tr);
+	
+	for(var key in status_by_state){
+		var tr_in = document.createElement("TR");
+		
+		var td_state = document.createElement("TD");
+		td_state.appendChild(document.createTextNode(key));
+		tr_in.appendChild(td_state);
+		
+		var td_status = document.createElement("TD");
+		td_status.appendChild(document.createTextNode(status_by_state[key]));
+		tr_in.appendChild(td_status);
+
+		var td_message = document.createElement("TD");
+		td_message.appendChild(document.createTextNode(message_by_state[key]));
+		tr_in.appendChild(td_message);
+				
+		table.appendChild(tr_in);
+	}
+	
+	$("#overview").append(table);
 	
 }
 
