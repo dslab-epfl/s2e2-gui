@@ -127,7 +127,7 @@ tr > th{
 }
 
 tr{
-	background-color: #b1c1fa;
+	background-color: #b1c1ea;
 }
 
 tr:hover{
@@ -142,4 +142,17 @@ tbody.centered{
 h2.centered{
 	text-align: center;
 	margin-bottom: 50px;	
+}
+
+tr.error{
+	background-color: #c12020;
+}
+
+tr.error:hover{
+	background-color: #e14040;
+}
+
+#statistics_table{
+	display: inline-table;
+	margin-right: 100px;
 }

@@ -37,6 +37,7 @@ function display_stats(stats){
 	var lines = stats.split("\n");
 	
 	var table = document.createElement('tbody');
+	table.id = "statistics_table"
 	
 	for (var lineIndex = 0; lineIndex < lines.length; ++lineIndex){
         var tr = document.createElement('tr');
@@ -67,7 +68,8 @@ function display_icount(icount){
 		document.getElementById("icount").appendChild(message_body);
 	}else{		
 		var table = document.createElement('tbody');
-
+		table.className = "centered";	
+ 
 		// headers
 		var tr = document.createElement('tr');
 		
@@ -156,7 +158,7 @@ function displayFinalStatusCode(info_line_by_state){
 			var matched = text_line.match(status_reg_exp);
 			if(matched != null){
 				var status_to_extract = matched[0];
-				status_by_state[key] = status_to_extract.substr(7, status_to_extract.length - 7);
+				status_by_state[key] = status_to_extract.substr(8, status_to_extract.length - 8);
 			}
 			
 			var matched_message = text_line.match(message_reg_exp);
@@ -201,7 +203,12 @@ function displayFinalStatusCode(info_line_by_state){
 		tr_in.appendChild(td_state);
 		
 		var td_status = document.createElement("TD");
-		td_status.appendChild(document.createTextNode(status_by_state[key]));
+		var status_message = status_by_state[key];
+		console.log(status_message)
+		if(status_message != "0x0" && status_message != "0"){
+			tr_in.className = "error";
+		}
+		td_status.appendChild(document.createTextNode(status_message));
 		tr_in.appendChild(td_status);
 
 		var td_message = document.createElement("TD");
