@@ -1,53 +1,113 @@
-div:empty{
-	display:none;
+html, body {
+    background-color: lightgray;
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
 }
 
-div.normal{
-	margin-top:5px;
-	background-color: lightgray;
+body{
+	margin-top: 100px;	
 }
 
-div.inside{
-	margin-top:5px;
-	margin-left:10px;
-	margin-right:10px;
-	background-color: lightgray;
+input[type=checkbox] {
+	visibility: hidden;
 }
 
-div.list_element{
-	margin-top:5px;
-	margin-left:5px;
-	margin-right:5px;
-	margin-bottom:5px;
-	border: dotted;
-	background-color: gray;
+#menu {
+	overflow:hidden;
+    margin: 0px 0px 0px 0px;
+    width: 100%;
+    heigth: auto;
+    transition: all 1s;
+    font-size: 22px;
+    background-color: black;
+    position: fixed;
+    left: 0px;
+    top: 0px;
 }
 
-div.container{
-	margin-top:5px;
-	margin-bottom:5px;
-	padding-top: 5px;
-	padding-bottom: 5px;	
-	background-color: lightgray;
-}
-
-div.container_list{
-	margin-top:5px;
-	margin-bottom:5px;
-	padding-top: 5px;
-	padding-bottom: 5px;	
-	background-color: lightgray;
-}
-
-div.left_menu{
-	float:left;
-	width: 400px;
+#left-menu-div{
+	float: right;
+	width: auto;
 	/*border-style: solid;*/
 	background-color: lightgray;
 }
 
+#right-menu-div{
+	display: block;
+	margin-left: auto;
+	width: auto;
+}
+
+#validation_form{
+	float: rigth;
+	width: auto;
+}
+
+#left_right_container{
+	display: flex;
+	flex-direction: row;           
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#topMenuTimeout{
+	text-transform: uppercase;
+	position: relative;
+	color: white;
+	height: 180px;
+}
+
+.topMenu{
+	display: inline;
+	font-size: medium;
+}
+
+button.mainActionButton {
+    text-transform: uppercase;
+    width: 29%;
+    max-width: 10000px;
+    height: 180px;
+    padding: 0px;
+    margin: 0px 2%;
+    margin-bottom: 10px;
+    background-color: black;
+    transition: max-width 1s, height 1s;
+}
+
+#button_run{
+	background-color: green;
+	float: right;
+}
+
+button::-moz-focus-inner { 
+  border: 0; 
+}
+
+button.mainActionButton.active {
+    background-color: green;
+}
+
+#menu > button.mainActionButton{
+    width: auto;
+    max-width: 1000px;
+    height: 60px;
+    padding: 10px;
+    margin: 0px;
+    font-size: 24px;
+    font-size: medium;
+    display: inline;
+}
+
+div:empty{
+	display:none;
+}
+
+
+
 label.normal{
-	margin-left:10px;
+	font-size: 14px;
 }
 
 label.error{
@@ -79,5 +139,109 @@ label.error{
 	float:left;
 }
 
+button {
+    height: 50px;
+    padding:0 40px;
+    color: white;
+    background-color: gray;
+    border: none;
+    font-size: 19px;
+}
 
+button:hover {
+    color: black;
+    background-color: white;
+    cursor: pointer;
+}
 
+button:disabled{
+    color : white;
+    background-color: darkgray;
+    border-color : darkgray;
+    cursor: not-allowed;
+}
+
+button:active {
+    color: black;
+}
+
+label.centered{
+	text-align: center;
+}
+
+button.left_menu_button{
+	margin: 0px;
+	width: 100%;
+	background-color: red;
+}
+
+button.left_menu_button:hover{
+	color: black;
+}
+
+button.left_menu_button.active{
+	background-color: green;
+}
+
+button.left_menu_button.active.disabled{
+	background-color: blue;
+	cursor: not-allowed;
+}
+
+button.left_menu_button.active.disabled:hover{
+	color: white;
+}
+
+button.disabled{
+	background-color: yellow;
+}
+
+div.plugin_div{
+	visibility: hidden;
+	overflow: hidden;
+	height: 0px;
+	max-height: 0px;
+	background-color: white;
+	transition: max-height 3s ease-in-out, all 3s;
+	padding: 0px;
+    margin-top: 0px;
+    opacity: 1;
+    box-sizing: border-box;
+}
+
+div.plugin_div.open{
+	visibility: visible;
+	opacity: 1;
+	height: 100%;
+	max-height: 1000px;
+	margin-bottom: 30px;
+}
+
+div.normal{
+	visibility: inherit;
+	height: inherit;
+	max-height: inherit;
+	background-color: inherit;
+	transition: inherit;
+}
+
+h1.right_menu_plugin_name{
+	text-align: center;
+}
+
+h3.right_menu_plugin_description{
+	text-align: center;
+}
+
+span.attribute_title{
+	margin-left: 20px;
+	font-size: 30px;
+	text-indent: 20px;
+	background-color: aqua;
+}
+
+span.attribute_description{
+	margin-left: 20px;
+	font-size: 24px;
+	text-indent: 20px;
+}

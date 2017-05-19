@@ -1,27 +1,16 @@
-//setup the right menu according to the chechbox
-var leftMenuChildren = document.getElementById("left-menu-div").children;
-for(var i = 0; i < leftMenuChildren.length; ++i){
-	if(leftMenuChildren[i].tagName == "INPUT"){
-		if(leftMenuChildren[i].type == "hidden"){			
-			leftMenuChildren[i].value = "";
-		}else if(leftMenuChildren[i].type == "checkbox"){
-			leftMenuChildren[i].checked = false;			
-		}
-	}
-}
-
 function generatePluginConfigOption(plugin){
 	var inside_div = document.createElement("div");
 	inside_div.id = plugin["name"];
-	inside_div.className = "normal";
-	inside_div.style.display="none"
+	inside_div.className = "plugin_div";
 	
-	var plugin_name = document.createElement("center");
-	plugin_name.innerHTML = "<h1>" + plugin["name"] + "</h1>";
+	var plugin_name = document.createElement("H1");
+	plugin_name.className = "right_menu_plugin_name";
+	plugin_name.appendChild(document.createTextNode(plugin["name"]));
 	inside_div.appendChild(plugin_name);
 	
-	var plugin_description = document.createElement("center");
-	plugin_description.innerHTML = "<h3>" + plugin["description"] + "</h3>";
+	var plugin_description = document.createElement("H3");
+	plugin_description.className = "right_menu_plugin_description";
+	plugin_description.appendChild(document.createTextNode(plugin["description"]));
 	inside_div.appendChild(plugin_description);   
 
 	var config_body;
@@ -40,10 +29,15 @@ function generatePluginConfigOption(plugin){
 
 function generate_html_per_type(parent, plugin, config_option){
 	$.each(config_option, function(attr_key, attr_value){
-		var header = document.createElement("p");
-		header.className = "normal";
-		header.innerHTML = "<b>" + attr_key + "</b> :" + attr_value["description"];
+		var header = document.createElement("span");
+		header.className = "attribute_title";
+		header.appendChild(document.createTextNode(attr_key + ":"));
+		var header_descr = document.createElement("span");
+		header_descr.className = "attribute_description";
+		header_descr.appendChild(document.createTextNode(attr_value["description"]))
 		parent.appendChild(header);	
+		parent.appendChild(header_descr);
+		parent.appendChild(document.createElement("BR"));
 		
 		if(attr_value["type"] == "int"){
 			generate_html_for_int(parent, plugin["name"], attr_key);
@@ -211,71 +205,6 @@ function generate_html_for_stringList_onclick(button){
 	input.name = button.data_name + uniqueId;
 	
 	parent.appendChild(input);
-}
-
-function checkboxClickHandler(checkbox){
-	
-	var plugin = pluginMap.get(checkbox.name);
-	plugin.isChecked = checkbox.checked;
-	document.getElementById("checkbox_value_" + checkbox.name).value=checkbox.checked;
-
-	
-	checkboxChangeHandler(checkbox);
-	
-}
-
-//Handle a checkbox change
-function checkboxChangeHandler(checkbox){
-	var plugin = pluginMap.get(checkbox.name);
-	
-	if(checkbox.checked){
-		document.getElementById(checkbox.name).style.display="block";
-		
-		for(var i = 0; i < plugin.dependencies.length; ++i){
-			var dep = pluginMap.get(plugin.dependencies[i]);
-			
-			if(dep != undefined){				
-				dep.depCount += 1;
-				
-				var dependencyCheckbox = document.getElementById("checkbox_" + plugin.dependencies[i]);
-				
-				//disable checkbox and if state changed, handle change
-				dependencyCheckbox.disabled = true;
-				if(dependencyCheckbox.checked == false){
-					dependencyCheckbox.checked = true;
-					document.getElementById("checkbox_value_" + dependencyCheckbox.name).value=dependencyCheckbox.checked;
-	
-					checkboxChangeHandler(dependencyCheckbox);
-				}
-			}
-			
-		}
-		
-	}else{
-		document.getElementById(checkbox.name).style.display="none"
-		
-		for(var i = 0; i < plugin.dependencies.length; ++i){
-			var dep = pluginMap.get(plugin.dependencies[i]);
-			
-			if(dep != undefined){
-				dep.depCount -= 1;
-				
-				var dependencyCheckbox = document.getElementById("checkbox_" + plugin.dependencies[i]);
-				
-				if(dep.depCount == 0){
-					dependencyCheckbox.disabled = false;
-					
-					//change occured
-					if(dependencyCheckbox.checked != dep.isChecked){
-						dependencyCheckbox.checked = dep.isChecked;
-						document.getElementById("checkbox_value_" + dependencyCheckbox.name).value=dependencyCheckbox.checked
-						
-						checkboxChangeHandler(dependencyCheckbox);
-					}
-				}
-			}
-		}
-	}
 }
 
 function submit_data(){

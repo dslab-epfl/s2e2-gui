@@ -3,7 +3,6 @@
     <head>
 	    {% load static %}
     	<script src="{% static "jquery-3.2.1.js" %}"></script>
-    	<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
     	<script src="{% static "validation_plugin/jquery.validate.min.js" %}"></script>
     	<style type="text/css">
 			{% include "configure_plugins/main.css" %}
@@ -14,33 +13,47 @@
     <body id="body">
 	 
 	 {% csrf_token %}
-	 	
-	 <div class="left_menu" id="left-menu-div">
-	 	
-	 	<!-- The menu on the left of the page, contains every plugins -->
-	 	{% for plugin in plugins %}
-	 		<input type="hidden" id="checkbox_value_{{ plugin.name }}" name="{{ plugin.name }}" />
-	 		<label><input type="checkbox" class="checkbox-normal" id="checkbox_{{ plugin.name }}" onclick="checkboxClickHandler(this)" value="" name="{{ plugin.name }}">
-	 		{{ plugin.name }}<br></label>
-	 	{% endfor %}
-	 	
-	 </div>
 	 
-	 <form id="validation_form">
-	 		 
-		 <div style="margin-left: 420px;" id="right-menu-div">	
-		 
-			 <div style="display:inline-block;"> 
-			 	<input id="id_binary_file" name="binary_file" type="file" required />
-			 	<input type="button" onclick="submit_data()" value="Launch S2E Analysis" />
-			 	<input type="button" onclick="see_last_result()" value="See last results" />
-			 	<label>Timeout: <input type="number" id="timeout_value" value="10"/></label>
-			 	<div id="spinner" class="loader"></div>
-			 </div>
-		 		
+	 <div id="menu">
+			<button class="mainActionButton topMenu" id="button_prev_result">See Previous Results</button><!-- 
+			--><label class="topMenu" id="topMenuTimeout">Timeout: <input class="topMenu" type="number" id="timeout_value" value="10"/></label><!-- 
+			--><button class="mainActionButton topMenu" id="button_run">Run</button>
+	 </div>
+	 	
+	 <div id="left_right_container">
+		 <div id="left-menu-div">
+		 	
+		 	<!-- The menu on the left of the page, contains every plugins -->
+		 	{% for plugin in plugins %}
+		 		<!--<input type="hidden" id="checkbox_value_{{ plugin.name }}" name="{{ plugin.name }}" />
+		 		<section>
+		 			<div class="customCheckbox">
+		 				<input type="button" id="checkbox_{{ plugin.name }}" onclick="checkboxClickHandler(this)" name="{{ plugin.name }}"/>
+		 				<label for="checkbox_{{ plugin.name }}"></label>
+		 			</div>
+		 			<label class="centered normal">{{ plugin.name }}</label>
+		 		</section>-->
+		 		<button id="button_{{ plugin.name }}" name="{{ plugin.name }}" onclick="buttonClickHandler(this)" class="left_menu_button">{{ plugin.name }}</button><br>
+		 	{% endfor %}
+		 	
 		 </div>
 		 
-	 </form>
+		 <form id="validation_form">
+		 		 
+			 <div id="right-menu-div">	
+			 
+				 <div style="display:block;"> 
+				 	<input id="id_binary_file" name="binary_file" type="file" required />
+				 	<input type="button" onclick="submit_data()" value="Launch S2E Analysis" />
+				 	<input type="button" onclick="see_last_result()" value="See last results" />
+				 	<label>Timeout: <input type="number" id="timeout_value" value="10"/></label>
+				 	<div id="spinner" class="loader"></div>
+				 </div>
+			 		
+			 </div>
+			 
+		 </form>
+	 </div>
 	 	
 		<script type="text/javascript">
 				//init the dependency map
@@ -67,6 +80,7 @@
 				
 				
 				{% include "configure_plugins/main.js" %}
+				{% include "configure_plugins/buttonHandler.js" %}
 				
 				
 		

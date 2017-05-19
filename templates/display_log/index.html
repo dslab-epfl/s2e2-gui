@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html id="html">
 
 	{% load static %}
     <script src="{% static "jquery-3.2.1.js" %}"></script>
-    <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
 
 	<style>
 		{% include "display_log/main.css" %}
@@ -12,7 +11,7 @@
 		<meta charset="utf-8">
 		<title>S2E Web</title>   
 	</head>
-	<body>
+	<body id = "body">
 		{% if has_s2e_error %}
 			<p>
 			<h1>S2E was unable to properly run :</h1>

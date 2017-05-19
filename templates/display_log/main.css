@@ -9,6 +9,18 @@ body{
 	margin-top: 100px;	
 }
 
+html.warning{
+	background-color: red;
+}
+
+html.info{
+	background-color: lime;
+}
+
+html.debug{
+	background-color: cyan;
+}
+
 #menu {
 	overflow:hidden;
     margin: 0px 0px 0px 0px;
@@ -99,11 +111,6 @@ button:disabled{
 button:active {
     color: black;
 }
-button:disabled{
-    color : white;
-    background-color: darkgray;
-    border-color : darkgray;
-}
 
 .externalContainer{
 	width: 100%;
@@ -154,5 +161,5 @@ tr.error:hover{
 
 #statistics_table{
 	display: inline-table;
-	margin-right: 100px;
+	margin-right: 100px;	
 }

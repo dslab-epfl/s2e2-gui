@@ -1,12 +1,29 @@
 $(document).ready(function(){
 
     $(".mainActionButton").click(function(){
-        var target = $(this).data("target");
+    	var j_this = $(this);
+        var target = j_this.data("target");
         $("#menu button.active").removeClass("active");
-        $(this).addClass("active");
+        j_this.addClass("active");
         
         $("body > .mainContainer").removeClass("open");
         $("#" + target).addClass("open");
+        
+        var j_body = $("#html");
+        
+        j_body.removeClass("warning")
+        j_body.removeClass("info")
+        j_body.removeClass("debug")
+        var id = j_this.data("target");
+        if(id == "warning_log"){
+        	j_body.addClass("warning");
+        }else if(id == "info_log"){
+        	j_body.addClass("info");        	
+        }else if(id == "debug_log"){
+        	j_body.addClass("debug");
+        }
+        
+        console.log(j_this.data("target"));
     });
     
     
