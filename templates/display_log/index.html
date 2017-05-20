@@ -12,12 +12,6 @@
 		<title>S2E Web</title>   
 	</head>
 	<body id = "body">
-		{% if has_s2e_error %}
-			<p>
-			<h1>S2E was unable to properly run :</h1>
-				{{s2e_error|linebreaks}}
-			</p>
-		{% else %}
 			<div id="menu">
 				<button class="mainActionButton active" data-target="overview">Overview</button><!-- 
 				--><button class="mainActionButton" data-target="warning_log">Warning</button><!-- 
@@ -30,9 +24,17 @@
 		
 			<div id="overview" class="mainContainer open">
 				{% if custom_data.killed_by_timeout == True %}
-					<h2 class="centered">Analysis was stopped by timeout</h2>
+					{% if custom_data.has_s2e_error %}
+						<h2 class="centered">Analysis was stopped by timeout with error</h2>
+					{% else %}
+						<h2 class="centered">Analysis was stopped by timeout</h2>
+					{% endif %}
 				{% else %}
-					<h2 class="centered">Analysis finished</h2>
+					{% if custom_data.has_s2e_error %}
+						<h2 class="centered">Analysis finished with error</h2>
+					{% else %}
+						<h2 class="centered">Analysis finished</h2>
+					{% endif %}
 				{% endif %}
 			</div>
 			
@@ -79,8 +81,6 @@
 			<div id="stats" class="mainContainer">
 				
 			</div>
-	
-		{% endif %}
 	</body>
 	
 	<script>	

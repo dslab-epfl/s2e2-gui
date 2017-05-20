@@ -36,7 +36,7 @@ def kill_process(process):
 
     os.kill(process.pid, signal.SIGTERM)
     
-    #this is a hack ask why this works
+    #XXX this is a hack ask why this works
     os.kill(process.pid + 3, signal.SIGTERM)
     
     process.returncode = 0;

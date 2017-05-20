@@ -16,7 +16,8 @@ BOOLEAN_TYPE = "bool"
 INT_TYPE = "int"
 STRING_TYPE = "string"
 STRING_LIST_TYPE = "stringList"
-ACCEPTED_TYPES = [BOOLEAN_TYPE, INT_TYPE, STRING_TYPE, STRING_LIST_TYPE, LIST_TYPE]
+INT_LIST_TYPE = "intList"
+ACCEPTED_TYPES = [BOOLEAN_TYPE, INT_TYPE, STRING_TYPE, STRING_LIST_TYPE, LIST_TYPE, INT_LIST_TYPE]
 
 TYPE_KEY = "type"
 DESCRIPTION_KEY = "description"
@@ -71,8 +72,8 @@ def configurePlugins(request):
                 
                 models.generate_lcov_files(s2e_output_dir)
                 
-                custom_data = models.CustomAnalysisData(killed_by_timeout)
-                custom_data.save_to_disk(s2e_output_dir)            
+                custom_data = models.CustomAnalysisData(killed_by_timeout, has_s2e_error)
+                custom_data.save_to_disk(s2e_output_dir)
                 
                 return render_output(has_s2e_error, s2e_error, s2e_output_dir, custom_data.data, request)
                             
@@ -136,7 +137,7 @@ def generateConfigFile(selectedPlugins, selectedPluginsConfig, tmpdir):
     configFileContent += "}\n\n"
     
     
-    configFileContent += generate_plugins_configurations(selectedPluginsConfig)
+    configFileContent += generate_plugins_configurations(selectedPlugins, selectedPluginsConfig)
     configFileContent += generate_HostFiles_config(tmpdir)
     configFileContent += generate_Vmi_config(tmpdir)
     configFileContent += add_linux_monitor_config()
@@ -172,10 +173,23 @@ def generate_Vmi_config(tmpdir):
     
     return configContent
     
-def generate_plugins_configurations(selectedPluginsConfig):
+def generate_plugins_configurations(selectedPlugins, selectedPluginsConfig):
     configContent = ""
     configContent += "pluginsConfig = {}\n\n"
-    for plugin, configs in selectedPluginsConfig.items():
+    
+    for plugin in selectedPlugins:
+        userConfigs = selectedPluginsConfig[plugin["name"]]
+        
+        if(len(plugin["configOption"]) > 0):
+            configContent += "pluginsConfig." + plugin["name"] + " = {\n"
+        
+            configContent += translate_to_lua(plugin["configOption"], userConfigs)      
+                
+            configContent += "}\n\n"
+    
+    return configContent    
+    
+    '''for plugin, configs in selectedPluginsConfig.items():
         attributeLen = len(configs.items())
         if(attributeLen > 0):
             configContent += "pluginsConfig." + plugin + " = {\n"
@@ -184,13 +198,59 @@ def generate_plugins_configurations(selectedPluginsConfig):
             
             configContent += "}\n\n"
     
-    return configContent
+    return configContent'''
     
 
-def translate_to_lua(configs, level=1):
+def translate_to_lua(configPattern, userConfigs):
     output = ""
-    configsLen = len(configs.items())
+    configLen = len(configPattern)
     
+    for index, (configPatternKey, configPatternValue) in enumerate(configPattern.items()):
+        userConfigValue = userConfigs[configPatternKey]
+        check_user_config(userConfigValue, configPatternValue)
+        configPatternType = configPatternValue[TYPE_KEY]  
+        
+        if(configPatternType == LIST_TYPE):
+            listLen = len(userConfigValue)
+            for listIndex, (key, value) in enumerate(userConfigValue.items()):
+                if(key == ""):
+                    raise S2ELaunchException("the list keys cannot be empty")
+                
+                output += str(key) + "= {\n"
+                output += translate_to_lua(configPatternValue["content"], value)
+                output += "}"
+                if(listIndex != listLen - 1):
+                    output += "," 
+                output += "\n"
+        
+        elif(configPatternType == STRING_TYPE):
+            output += str(configPatternKey) + "='" + str(userConfigValue) + "'"
+        
+        elif(configPatternType == STRING_LIST_TYPE or configPatternType == INT_LIST_TYPE):
+            listLen = len(userConfigValue)
+            output += str(configPatternKey) + " = {"
+            for listIndex, listElem in enumerate(userConfigValue):
+                if(configPatternType == STRING_LIST_TYPE):
+                    output += "'"
+                output += listElem
+                if(configPatternType == STRING_LIST_TYPE):
+                    output += "'"
+                if(listIndex != listLen - 1):
+                    output += ", "
+            output += "}"
+            
+        else:
+            output += str(configPatternKey) + "=" + str(userConfigValue)
+        
+        
+        if(index != configLen - 1):
+            output += "," 
+            
+        output += "\n"
+        
+    return output
+    '''configsLen = len(configs.items())
+        
     for index, (configKey, configValue) in enumerate(configs.items()):
         if(configKey == ""):
             raise S2ELaunchException("configuration key is empty")
@@ -224,8 +284,44 @@ def translate_to_lua(configs, level=1):
         output += "\n"
         
         
-    return output
+    return output'''
+
+def check_user_config(userValue, expectedValue):
+    expectedType = expectedValue[TYPE_KEY];
+    if(expectedType == BOOLEAN_TYPE):
+        if(userValue != "true" and userValue != "false"):
+            raise S2ELaunchException("expected boolean but was : " + str(userValue))
     
+    elif(expectedType == INT_TYPE):
+        if(not is_integer(userValue)):
+            raise S2ELaunchException("expected integer but was : " + str(userValue))
+            
+    elif(expectedType == LIST_TYPE):
+        pass
+    
+    elif(expectedType == STRING_TYPE):
+        pass
+    
+    elif(expectedType == INT_LIST_TYPE):
+        if (type(userValue) is not list) :
+            raise S2ELaunchException("expected a list of integers but was : " + str(userValue))
+        for userValueInt in userValue:
+            if(not is_integer(userValueInt)):
+                raise S2ELaunchException("expected integer but was : " + str(userValueInt))
+        
+    elif(expectedType == STRING_LIST_TYPE):
+        if (type(userValue) is not list) :
+            raise S2ELaunchException("expected a list of string but was : " + str(userValue))
+    else:
+        raise S2ELaunchException("plugins configuration are incorrect, unknown type : " + str(expectedType))
+         
+def is_integer(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
+
            
 def render_output(has_s2e_error, s2e_error, s2e_output_dir, custom_data, request):
     output = models.S2EOutput(has_s2e_error, s2e_output_dir)
@@ -246,7 +342,7 @@ def render_output(has_s2e_error, s2e_error, s2e_output_dir, custom_data, request
     
     return HttpResponse(json.dumps({"stats" : smart_text(stats, encoding="utf-8", errors="ignore"), 
                                     "html" :  html_page[39:],
-                                    "icount" : icount})) 
+                                    "icount" : icount}))
 
 
  

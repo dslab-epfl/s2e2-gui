@@ -17,7 +17,7 @@ input[type=checkbox] {
 	overflow:hidden;
     margin: 0px 0px 0px 0px;
     width: 100%;
-    heigth: auto;
+    height: auto;
     transition: all 1s;
     font-size: 22px;
     background-color: black;
@@ -29,18 +29,16 @@ input[type=checkbox] {
 #left-menu-div{
 	float: right;
 	width: auto;
-	/*border-style: solid;*/
 	background-color: lightgray;
 }
 
 #right-menu-div{
 	display: block;
 	margin-left: auto;
-	width: auto;
+	width: 100%;
 }
 
 #validation_form{
-	float: rigth;
 	width: auto;
 }
 
@@ -105,15 +103,6 @@ div:empty{
 }
 
 
-
-label.normal{
-	font-size: 14px;
-}
-
-label.error{
-	color: red
-}
-
 input.normal{
 	margin-left:15px;
 	margin-top:10px;
@@ -133,10 +122,6 @@ input.normal{
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-label.error{
-	float:left;
 }
 
 button {
@@ -197,29 +182,21 @@ button.disabled{
 }
 
 div.plugin_div{
-	visibility: hidden;
-	overflow: hidden;
-	height: 0px;
-	max-height: 0px;
-	background-color: white;
-	transition: max-height 3s ease-in-out, all 3s;
-	padding: 0px;
-    margin-top: 0px;
-    opacity: 1;
-    box-sizing: border-box;
-}
-
-div.plugin_div.open{
 	visibility: visible;
+	overflow: hidden;
 	opacity: 1;
-	height: 100%;
-	max-height: 1000px;
+	background-color: white;
+	height: auto;
+	padding: 0px;
+	margin-top: 0px;
 	margin-bottom: 30px;
+	display: none;
+	width: 100%;
 }
 
 div.normal{
 	visibility: inherit;
-	height: inherit;
+	height: auto;
 	max-height: inherit;
 	background-color: inherit;
 	transition: inherit;
@@ -233,15 +210,42 @@ h3.right_menu_plugin_description{
 	text-align: center;
 }
 
+div.right_menu_container{
+	
+}
+
 span.attribute_title{
 	margin-left: 20px;
 	font-size: 30px;
 	text-indent: 20px;
-	background-color: aqua;
+	background-color: black;
+	color: white;
 }
 
 span.attribute_description{
 	margin-left: 20px;
 	font-size: 24px;
-	text-indent: 20px;
+	display: block;
+}
+
+#id_binary_file{
+	color: white;
+}
+
+label.normal{
+	margin-left: 20px;
+}
+
+input[type='button']{
+	border: none;
+	width: auto;
+	height: auto;
+	font-size: 16px;
+	background-color: gray;
+	color: black;
+	padding: 5px;
+}
+
+input[type='file']{
+	border: none;
 }

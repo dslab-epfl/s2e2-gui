@@ -1,3 +1,5 @@
+var unique_id = 0;
+
 function generatePluginConfigOption(plugin){
 	var inside_div = document.createElement("div");
 	inside_div.id = plugin["name"];
@@ -16,6 +18,7 @@ function generatePluginConfigOption(plugin){
 	var config_body;
 	if($.isEmptyObject(plugin["configOption"])){
 		config_body = document.createElement("label");
+		config_body.className = "normal";
 		config_body.innerHTML = "This plugin as not configuration options."
 	}else{
 		config_body = document.createElement("div");
@@ -29,55 +32,69 @@ function generatePluginConfigOption(plugin){
 
 function generate_html_per_type(parent, plugin, config_option){
 	$.each(config_option, function(attr_key, attr_value){
+		var container_div = document.createElement("div");
+		container_div.className = "right_menu_container";
+		
 		var header = document.createElement("span");
 		header.className = "attribute_title";
 		header.appendChild(document.createTextNode(attr_key + ":"));
+		
 		var header_descr = document.createElement("span");
 		header_descr.className = "attribute_description";
 		header_descr.appendChild(document.createTextNode(attr_value["description"]))
-		parent.appendChild(header);	
-		parent.appendChild(header_descr);
-		parent.appendChild(document.createElement("BR"));
+		header_descr.appendChild(document.createElement("BR"));
+		
+		container_div.appendChild(header_descr);
+		container_div.appendChild(header);
+		
+		parent.appendChild(container_div);
 		
 		if(attr_value["type"] == "int"){
-			generate_html_for_int(parent, plugin["name"], attr_key);
+			generate_html_for_int(container_div, plugin["name"], attr_key);
 		}else if(attr_value["type"] == "bool"){
-			generate_html_for_bool(parent, plugin["name"], attr_key);
+			generate_html_for_bool(container_div, plugin["name"], attr_key);
 		}else if(attr_value["type"] == "string"){
-			generate_html_for_string(parent, plugin["name"], attr_key);
+			generate_html_for_string(container_div, plugin["name"], attr_key);
 		}else if(attr_value["type"] == "list"){
-			generate_html_for_list(parent, plugin, attr_key, attr_value);
+			generate_html_for_list(container_div, plugin, attr_key, attr_value);
 		}else if(attr_value["type"] == "intList"){
-			generate_html_for_intList(parent, plugin, attr_key, attr_value);
+			generate_html_for_intList(container_div, plugin, attr_key, attr_value);
 		}else if(attr_value["type"] == "stringList"){
-			generate_html_for_stringList(parent, plugin, attr_key, attr_value);
+			generate_html_for_stringList(container_div, plugin, attr_key, attr_value);
 		}else{
 			var error = document.createElement("label");
 			error.className = "error";
 			error.innerHTML = "Unrecognized type:" + attr_value["type"];  
-			parent.appendChild(error);
+			container_div.appendChild(error);
 		}
+		
+		parent.appendChild(document.createElement("BR"));
 		
 	})
 }
 
 function generate_html_for_int(parent, plugin_name, attr_key){
 	var input = document.createElement("input");
+	input.required = "required";
 	input.setAttribute("type", "number");
 	input.className = "normal";
-	input.name = attr_key
+	input.name = attr_key;
+	input.data_key = attr_key;
 	
 	parent.appendChild(input);
 }
 
 function generate_html_for_bool(parent, plugin_name, attr_key){
+	uniqueId++;
+	
 	var label1 = document.createElement("label");
 	var input1 = document.createElement("input");
 	input1.setAttribute("type", "radio");
 	input1.value = "true";
 	input1.checked = "checked";
 	input1.className = "normal";
-	input1.name = attr_key;
+	input1.name = plugin_name + ":" + attr_key + uniqueId;
+	input1.data_key = attr_key;
 	label1.appendChild(input1);
 	label1.appendChild(document.createTextNode("True"));
 
@@ -86,19 +103,24 @@ function generate_html_for_bool(parent, plugin_name, attr_key){
 	input2.setAttribute("type", "radio");
 	input2.value = "false";
 	input2.className = "normal";
-	input2.name = attr_key;
+	input2.name = plugin_name + ":" + attr_key + uniqueId;
+	input2.data_key = attr_key;
 	label2.appendChild(input2);
 	label2.appendChild(document.createTextNode("False"));
-	
+		
 	parent.appendChild(label1);
 	parent.appendChild(label2);
 }
 
 function generate_html_for_string(parent, plugin_name, attr_key){
+	uniqueId++;
+	
 	var input = document.createElement("input");
 	input.setAttribute("type", "text");
 	input.className = "normal";
-	input.name = attr_key;
+	input.required = "required";
+	input.name = plugin_name + ":" + attr_key + uniqueId;
+	input.data_key = attr_key;
 	
 	parent.appendChild(input);
 }
@@ -117,6 +139,7 @@ function generate_html_for_list(parent, plugin, attr_key, attr_value){
 	var div = document.createElement("div");
 	div.className = "container_list";
 	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
+	div.data_key = attr_key;
 	
 	parent.appendChild(input);
 	parent.appendChild(div);
@@ -137,6 +160,7 @@ function generate_html_for_list_onclick(button){
 	
 	var key_input = document.createElement("input");
 	key_input.setAttribute("type", "text");
+	key_input.required = "required";
 	key_input.name = button.data_plugin["name"] + ":" + button.data_key + uniqueId;
 	key_input.className = "normal";
 	element_div.appendChild(key_input);
@@ -170,6 +194,7 @@ function generate_html_for_intList_onclick(button){
 	
 	var input = document.createElement("input");
 	input.setAttribute("type", "number");
+	input.required = "required";
 	input.className = "normal"
 	input.name = button.data_name + uniqueId;
 	
@@ -202,20 +227,10 @@ function generate_html_for_stringList_onclick(button){
 	var input = document.createElement("input");
 	input.setAttribute("type", "text");
 	input.className = "normal"
+	input.required = "required";
 	input.name = button.data_name + uniqueId;
 	
 	parent.appendChild(input);
-}
-
-function submit_data(){
-	
-	var form = $("#validation_form");
-	form.validate();
-	
-	if(form.valid()){
-		parse_and_post_data();
-	}
-	
 }
 
 function parse_and_post_data(){
@@ -239,9 +254,11 @@ function parse_and_post_data(){
 	form_data.append("csrfmiddlewaretoken", middle_token);
 	form_data.append("data", JSON.stringify(json_to_send));
 	form_data.append("method", "run_s2e");
-	form_data.append("timeout", $("#timeout_value").val())
+	form_data.append("timeout", $("#timeout_value").val());
 	
-	document.getElementById("spinner").appendChild(document.createElement("p"));
+	console.log(json_to_send);
+	
+	$('html,body').css('cursor','wait');
 	
 	$.ajax({
 			  type: "POST",
@@ -261,15 +278,18 @@ function parse_DOM(DOM_array){
 	$.each ( DOM_array, function( i, el){
 		
 		if(el.tagName == "DIV"){
+			//lists
 			if(el.className == "container_list"){
-				
 				var parsed_children = parse_div_list(el.childNodes);
-				json_to_send = $.extend(json_to_send, parsed_children);
+				//console.log(parsed_children);
+
+				//json_to_send = $.extend(json_to_send, parsed_children);
+				//console.log(json_to_send);
+				json_to_send[el.data_key] = parsed_children;
 				
-				
+			//intList and stringList
 			}else if(el.className == "container"){
 				
-				console.log(el);
 				json_to_send[el.data_name] = parse_div_container_list(el.childNodes);
 				
 			}else{				
@@ -286,14 +306,16 @@ function parse_DOM(DOM_array){
 			if(el.type == "radio"){
 				if(el.checked == true){
 					var json_var = {};
-					json_var[el.name] = el.value;
+					json_var[el.data_key] = el.value;
 					json_to_send = $.extend(json_to_send, json_var);
 				}
 			}else if(el.type == "button"){
 				
 			}else{
+				console.log(el);
+				console.log(el.data_key);
 				var json_var = {};
-				json_var[el.name] = el.value;
+				json_var[el.data_key] = el.value;
 				json_to_send = $.extend(json_to_send, json_var);
 			}
 			
@@ -316,6 +338,11 @@ function parse_DOM(DOM_array){
 
 function parse_div_list(children){
 	var output = {};
+	
+	/*$.each(children, function(i, el){
+		var key = el.childNodes[1].value;
+		output[key] = parse_DOM([].slice.call(el.childNodes, 2));
+	})*/
 	
 	$.each(children, function(i, el){
 		var key = el.childNodes[1].value;
@@ -342,7 +369,9 @@ function see_last_result(){
 	var form_data = new FormData();
 	form_data.append("csrfmiddlewaretoken", middle_token);
 	form_data.append("method", "get_last_result");
-		
+	
+	$('html,body').css('cursor','wait');
+	
 	$.ajax({
 			  type: "POST",
 			  url: "http://localhost:8000/",

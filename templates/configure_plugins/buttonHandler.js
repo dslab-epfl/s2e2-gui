@@ -12,7 +12,7 @@ for(var i = 0; i < leftMenuChildren.length; ++i){
 
 //Handle button click
 function buttonClickHandler(button){
-	
+		
 	var jButton = $(button);
 	if(!jButton.hasClass("disabled")){		
 		jButton.toggleClass("active");
@@ -30,7 +30,9 @@ function buttonChangeHandler(button){
 	var jButton = $(button);
 	
 	if(jButton.hasClass("active")){
-		$("#" + button.name).addClass("open");
+		var jDiv = $("#" + button.name);
+		jDiv.addClass("open");
+		jDiv.slideDown();
 		//document.getElementById(button.name).style.display="block";
 		
 		for(var i = 0; i < plugin.dependencies.length; ++i){
@@ -55,7 +57,9 @@ function buttonChangeHandler(button){
 			}
 		}
 	}else{
-		$("#" + button.name).removeClass("open");
+		var jDiv = $("#" + button.name);
+		jDiv.removeClass("open");
+		jDiv.slideUp();
 		//document.getElementById(checkbox.name).style.display="none"
 		
 		for(var i = 0; i < plugin.dependencies.length; ++i){

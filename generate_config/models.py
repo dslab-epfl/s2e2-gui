@@ -10,19 +10,16 @@ import utils
 
 class S2EOutput():
     def __init__(self, has_s2e_error, s2e_out_dir):
-        if has_s2e_error != 0 : 
-            self.warnings = ""
-            self.messages = ""
-            self.info = ""
-            self.debug = ""
+        self.warnings = ""
+        self.info = ""
+        self.debug = ""
             
-        else:    
-            with open(s2e_out_dir + "warnings.txt", 'r') as destination:
-                self.warnings = destination.read()
-            with open(s2e_out_dir + "info.txt", 'r') as destination:
-                self.info = destination.read()
-            with open(s2e_out_dir + "debug.txt", 'r') as destination:
-                self.debug = destination.read()
+        with open(s2e_out_dir + "warnings.txt", 'r') as destination:
+            self.warnings = destination.read()
+        with open(s2e_out_dir + "info.txt", 'r') as destination:
+            self.info = destination.read()
+        with open(s2e_out_dir + "debug.txt", 'r') as destination:
+            self.debug = destination.read()
 
 class S2ELaunchException(Exception):
     def __init__(self, value):
@@ -108,8 +105,8 @@ def generate_icount_files(s2e_out_dir):
 class CustomAnalysisData():
     GUI_FILE_NAME = "GUI_data.json"
     
-    def __init__(self, killed_by_timeout = False):
-        self.data = {"killed_by_timeout" : killed_by_timeout}
+    def __init__(self, killed_by_timeout = False, has_s2e_error = False):
+        self.data = {"killed_by_timeout" : killed_by_timeout, "has_s2e_error" : has_s2e_error}
         
     def save_to_disk(self, s2e_output_dir):
         utils.write_string_to_disk_and_close(s2e_output_dir + CustomAnalysisData.GUI_FILE_NAME, json.dumps(self.data))
