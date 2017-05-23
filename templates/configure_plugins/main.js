@@ -1,4 +1,5 @@
 var unique_id = 0;
+var is_analysis_launched = false;
 
 function generatePluginConfigOption(plugin){
 	var inside_div = document.createElement("div");
@@ -234,42 +235,45 @@ function generate_html_for_stringList_onclick(button){
 }
 
 function parse_and_post_data(){
-	var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
-	var data_to_parse = document.getElementById("right-menu-div").childNodes;
-	var json_to_send = {};
-	
-	$.each( data_to_parse, function( i, el ) {
-		if(el.style != undefined){			
-			if(el.style.display == "block"){
-				var test = parse_DOM(el.childNodes);
-				json_to_send[el.id] = test;
+	if(!is_analysis_launched){		
+		var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
+		var data_to_parse = document.getElementById("right-menu-div").childNodes;
+		var json_to_send = {};
+		
+		$.each( data_to_parse, function( i, el ) {
+			if(el.style != undefined){			
+				if(el.style.display == "block"){
+					var test = parse_DOM(el.childNodes);
+					json_to_send[el.id] = test;
+				}
 			}
-		}
-	});	
-
-	
-	var file = document.getElementById("id_binary_file").files[0];
-	var form_data = new FormData();
-	form_data.append("binary_file", file);
-	form_data.append("csrfmiddlewaretoken", middle_token);
-	form_data.append("data", JSON.stringify(json_to_send));
-	form_data.append("method", "run_s2e");
-	form_data.append("timeout", $("#timeout_value").val());
-	
-	console.log(json_to_send);
-	
-	$('html,body').css('cursor','wait');
-	
-	$.ajax({
-			  type: "POST",
-			  url: "http://localhost:8000/",
-			  data: form_data,
-			  processData: false,
-			  contentType: false,
-			  success: function(data){				  
-				  display_data_from_server(JSON.parse(data));
-		      }
-			});
+		});	
+		
+		
+		var file = document.getElementById("id_binary_file").files[0];
+		var form_data = new FormData();
+		form_data.append("binary_file", file);
+		form_data.append("csrfmiddlewaretoken", middle_token);
+		form_data.append("data", JSON.stringify(json_to_send));
+		form_data.append("method", "run_s2e");
+		form_data.append("timeout", $("#timeout_value").val());
+		form_data.append("binary_name", file.name);
+		
+		$('html,body').css('cursor','wait');
+				
+		$.ajax({
+			type: "POST",
+			url: "http://localhost:8000/",
+			data: form_data,
+			processData: false,
+			contentType: false,
+			success: function(data){	  
+				display_data_from_server(JSON.parse(data));
+			}
+		});
+		
+		is_analysis_launched = true;
+	}
 	
 }
 
@@ -281,10 +285,6 @@ function parse_DOM(DOM_array){
 			//lists
 			if(el.className == "container_list"){
 				var parsed_children = parse_div_list(el.childNodes);
-				//console.log(parsed_children);
-
-				//json_to_send = $.extend(json_to_send, parsed_children);
-				//console.log(json_to_send);
 				json_to_send[el.data_key] = parsed_children;
 				
 			//intList and stringList
@@ -339,11 +339,6 @@ function parse_DOM(DOM_array){
 function parse_div_list(children){
 	var output = {};
 	
-	/*$.each(children, function(i, el){
-		var key = el.childNodes[1].value;
-		output[key] = parse_DOM([].slice.call(el.childNodes, 2));
-	})*/
-	
 	$.each(children, function(i, el){
 		var key = el.childNodes[1].value;
 		output[key] = parse_DOM([].slice.call(el.childNodes, 2));
@@ -364,7 +359,9 @@ function parse_div_container_list(children){
 
 function see_last_result(){
 	
-	var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
+	window.location.href = "../display_all_analysis";
+
+	/*var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
 	
 	var form_data = new FormData();
 	form_data.append("csrfmiddlewaretoken", middle_token);
@@ -381,18 +378,10 @@ function see_last_result(){
 			  success: function(data){
 				  display_data_from_server(JSON.parse(data))
 		      }
-			});
+			});*/
 	
 }
 
-function display_data_from_server(data){
-	document.open("text/html");
-	document.write(data.html);
-	document.close();
-	
-	window.data_runstats = data.stats;
-	window.data_icount = data.icount;
-}
 
 
 

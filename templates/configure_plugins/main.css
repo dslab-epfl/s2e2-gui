@@ -74,9 +74,11 @@ button.mainActionButton {
     transition: max-width 1s, height 1s;
 }
 
-#button_run{
+#menu > #button_run.mainActionButton{
 	background-color: green;
 	float: right;
+	padding-left: 50px;
+	padding-right: 50px;
 }
 
 button::-moz-focus-inner { 

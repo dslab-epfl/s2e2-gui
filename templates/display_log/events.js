@@ -26,6 +26,10 @@ $(document).ready(function(){
         console.log(j_this.data("target"));
     });
     
+    $("#backButton").click(function(){
+    	window.location.href = "../";
+    });
+    
     
 	display_stats(window.data_runstats);
 	display_icount(window.data_icount);

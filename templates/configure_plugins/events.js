@@ -4,15 +4,6 @@ $(document).ready(function(){
 		var form = $("#validation_form");
 		var is_form_valid = true;		
 		
-		/*if(!jquery.validate()){
-			console.log("invalid");	
-		}*/
-		//console.log("parse")
-		//form.validate(); 
-		//if(form.valid()){
-		//parse_and_post_data();
-		//}
-		
 		if($("#id_binary_file")[0].checkValidity() == false){
 			is_form_valid = false;
 		}

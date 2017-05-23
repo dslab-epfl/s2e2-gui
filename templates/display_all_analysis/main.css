@@ -9,23 +9,15 @@ body{
 	margin-top: 100px;	
 }
 
-html.warning{
-	background-color: red;
-}
-
-html.info{
-	background-color: lime;
-}
-
-html.debug{
-	background-color: cyan;
+input[type=checkbox] {
+	visibility: hidden;
 }
 
 #menu {
 	overflow:hidden;
     margin: 0px 0px 0px 0px;
     width: 100%;
-    heigth: auto;
+    height: auto;
     transition: all 1s;
     font-size: 22px;
     background-color: black;
@@ -34,7 +26,12 @@ html.debug{
     top: 0px;
 }
 
-button.mainActionButton, #backButton{
+.topMenu{
+	display: inline;
+	font-size: medium;
+}
+
+button.mainActionButton {
     text-transform: uppercase;
     width: 29%;
     max-width: 10000px;
@@ -46,15 +43,15 @@ button.mainActionButton, #backButton{
     transition: max-width 1s, height 1s;
 }
 
-button.mainActionButton::-moz-focus-inner, #backButton::-moz-focus-inner{ 
+button::-moz-focus-inner { 
   border: 0; 
 }
 
-button.mainActionButton.active{
+button.mainActionButton.active {
     background-color: green;
 }
 
-#menu > button.mainActionButton, #backButton{
+#menu > button.mainActionButton{
     width: auto;
     max-width: 1000px;
     height: 60px;
@@ -65,32 +62,9 @@ button.mainActionButton.active{
     display: inline;
 }
 
-.mainContainer{
-    opacity: 0;
-    visibility: hidden;
-    overflow: hidden;
-    transition: max-height 10s, padding 1s, margin 1s, background-position 1s;
-    background-color: navy;
-    height: 0px;
-    max-height: 0px;
-    width: 100%;
-    padding: 0px;
-    margin-top: 0px;
-}
-
-.mainContainer.open{
-    padding: 40px 5%;
-    opacity: 1;
-    visibility: visible;
-    background-color: white;
-    height: auto;
-    max-height: 10000px;
-    overflow-x: auto;
-    box-sizing: border-box;
-}
-
-#backButton{
-	float: right;
+input.normal{
+	margin-left:15px;
+	margin-top:10px;
 }
 
 button {
@@ -101,26 +75,33 @@ button {
     border: none;
     font-size: 19px;
 }
-button:hover, #backButton:hover{
+
+button:hover {
     color: black;
     background-color: white;
     cursor: pointer;
 }
+
 button:disabled{
     color : white;
     background-color: darkgray;
     border-color : darkgray;
     cursor: not-allowed;
 }
+
 button:active {
     color: black;
 }
 
-.externalContainer{
-	width: 100%;
-	height:100%; 
-	overflow:auto;
-	border:5px ridge black
+label.centered{
+	text-align: center;
+}
+
+table{
+	padding: 0px;
+	display: table;
+	margin: auto;
+	text-align: center;
 }
 
 tbody{
@@ -130,6 +111,7 @@ tbody{
 tr > td{
 	padding: 5px;
 	border: 1px solid black;
+	cursor: pointer;
 }
 
 tr > th{
@@ -143,27 +125,4 @@ tr{
 
 tr:hover{
 	background-color: #f1f1f1;
-}
-
-tbody.centered{
-	margin: auto;
-	display: table;
-}
-
-h2.centered{
-	text-align: center;
-	margin-bottom: 50px;	
-}
-
-tr.error{
-	background-color: #c12020;
-}
-
-tr.error:hover{
-	background-color: #e14040;
-}
-
-#statistics_table{
-	display: inline-table;
-	margin-right: 100px;	
 }

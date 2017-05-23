@@ -19,7 +19,8 @@
 				--><button class="mainActionButton" data-target="debug_log">Debug</button><!-- 
 				--><button class="mainActionButton" data-target="icount">Instruction Counter</button><!-- 
 				--><button class="mainActionButton" data-target="line_coverage">Line Coverage</button><!-- 
-				--><button class="mainActionButton" data-target="stats">Statistics</button>
+				--><button class="mainActionButton" data-target="stats">Statistics</button><!-- 
+				--><button id="backButton">Run new analysis</button>
 			</div>
 		
 			<div id="overview" class="mainContainer open">
@@ -85,6 +86,6 @@
 	
 	<script>	
 		{% include "display_log/events.js" %}
-		{% include "display_log/utils.js" %}
+		{% include "utils.js" %}
 	</script>
 </html> 

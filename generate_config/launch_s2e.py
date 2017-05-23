@@ -1,17 +1,18 @@
 import s2e_web.S2E_settings as settings
 import shutil
 import subprocess
+import hashlib
 import os
 import signal
 from threading import Timer
+from display_all_analysis.models import Analysis
 
 
 def launch_s2e(tmpdir, timeout):
-    
+        
     s2e_command = "sh " + settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME  + "/launch-s2e.sh"
     shutil.copyfile(tmpdir + settings.S2E_CONFIG_LUA_FILE_NAME, settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/" + settings.S2E_ENV_CONFIG_LUA_NAME)
-    shutil.copyfile(tmpdir + settings.S2E_BINARY_FILE_NAME, settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/" + settings.S2E_BINARY_FILE_NAME)
-    
+    shutil.copyfile(tmpdir + settings.S2E_BINARY_FILE_NAME, settings.S2E_BINARY_PATH)
     
     kill = lambda process: kill_process(process)
     
@@ -50,4 +51,5 @@ def write_file_to_disk_and_close(path, w_file):
     destination.close()
     w_file.close()
     
+
     

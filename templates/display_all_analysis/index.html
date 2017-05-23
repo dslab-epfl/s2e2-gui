@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	    {% load static %}
+    	<script src="{% static "jquery-3.2.1.js" %}"></script>
+    	<style type="text/css">
+			{% include "display_all_analysis/main.css" %}
+    	</style>
+        <meta charset="utf-8">
+        <title>S2E Web</title>        
+    </head>
+    <body id="body">
+	 
+	 {% csrf_token %}
+	 	 
+	 <div id="menu">
+			<button type="button" class="mainActionButton topMenu" id="button_prev_result" onclick="run_new_analysis()">Run new analysis</button>
+	 </div>
+		 	
+	 <div id="container">
+			 <table>
+			 	<tr><th>Analysis ID</th><th>Binary Checksum</th><th>Binary Name</th></tr>
+				 {% for a in analysis %}
+				 	<tr data-s2e_num={{a.s2e_num}} onclick="display_analysis(this)">
+			 			<td>{{a.id}}</td><td>{{a.binary_checksum}}</td><td>{{a.binary_name}}</td>
+					</tr>
+				 {% endfor %}
+			 </table>
+	 </div>
+	 	 	
+	<script type="text/javascript">
+			
+			{% include "display_all_analysis/main.js" %}
+			{% include "utils.js" %}
+	
+	</script> 
+		
+	</body>
+	
+	
+</html> 

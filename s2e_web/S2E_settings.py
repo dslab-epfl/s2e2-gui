@@ -20,5 +20,6 @@ S2E_BOOTSTRAP_FILE_NAME = "bootstrap"
 S2E_PLUGIN_JSON_CONFIG_FILE = "/home/davide/S2E/python/s2e2-gui/result.json"
 S2E_ANALYSIS_ROOT_DIR = "/home/davide/S2E/python/s2e2-gui/"
 
+S2E_BINARY_PATH = S2E_PROJECT_FOLDER_PATH + S2E_BINARY_FILE_NAME + "/" + S2E_BINARY_FILE_NAME
 
     
