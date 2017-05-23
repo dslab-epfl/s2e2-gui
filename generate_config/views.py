@@ -13,6 +13,8 @@ import utils
 from django.utils.encoding import smart_text
 from yum.misc import checksum
 from display_all_analysis.models import Analysis
+from extract_basic_blocks import generate_graph
+from twisted.python.reflect import funcinfo
 
 
 LIST_TYPE = "list"
@@ -70,8 +72,9 @@ def configurePlugins(request):
                 s2e_output_dir = settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/s2e-last/"
                 
                 models.generate_lcov_files(s2e_output_dir)
-                
-                custom_data = models.CustomAnalysisData(killed_by_timeout, has_s2e_error)
+                function_paths = generate_graph(s2e_output_dir, s2e_num)
+                                
+                custom_data = models.CustomAnalysisData(killed_by_timeout, has_s2e_error, function_paths)
                 custom_data.save_to_disk(s2e_output_dir)
                 
                 return render_output(has_s2e_error, s2e_error, s2e_output_dir, custom_data.data, request)

@@ -20,6 +20,7 @@
 				--><button class="mainActionButton" data-target="icount">Instruction Counter</button><!-- 
 				--><button class="mainActionButton" data-target="line_coverage">Line Coverage</button><!-- 
 				--><button class="mainActionButton" data-target="stats">Statistics</button><!-- 
+				--><button class="mainActionButton" data-target="graph">Graph</button><!-- 
 				--><button id="backButton">Run new analysis</button>
 			</div>
 		
@@ -81,6 +82,12 @@
 			
 			<div id="stats" class="mainContainer">
 				
+			</div>
+			
+			<div id="graph" class="mainContainer">
+				{% for func_path in custom_data.function_paths %}
+				<img src="{% get_static_prefix %}{{func_path}}">
+				{% endfor %}
 			</div>
 	</body>
 	
