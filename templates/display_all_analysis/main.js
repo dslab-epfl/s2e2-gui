@@ -2,6 +2,13 @@ function run_new_analysis(){
 	window.location.href = "../";
 }
 
+/**
+ * Displays the analysis data for the clicked line
+ * 
+ * @param tr 
+ * 		The line that was clicked
+ * @returns
+ */
 function display_analysis(tr){
 	var s2e_num = $(tr).data("s2e_num");
 		

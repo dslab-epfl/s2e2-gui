@@ -10,12 +10,18 @@ import yaml
 import json
 		
 class PluginParseException(Exception):
+	"""
+	Custom exception in case of parsing error.
+	"""
 	def __init__(self, value):
 		self.value = value
 	def __str__(self):
 		return repr(self.value)
 		
 class S2ECodeParser():
+	"""
+	Class representing the s2e source file parser.
+	"""
 	CONFIG_TAG = "@s2e_plugin_option@"
 	DESCRIPTION_TAG = "S2E_DEFINE_PLUGIN"
 	
@@ -34,6 +40,9 @@ class S2ECodeParser():
 	
 	@staticmethod
 	def parsePluginsInDir(dirPath, pluginNameList):
+		"""
+		Parse the every source file with the name appearing inside the given directory.
+		"""
 		everyPluginDict = []
 		for root, dirs, files in os.walk(dirPath):
 			for file in files:
@@ -50,6 +59,9 @@ class S2ECodeParser():
 	
 	@staticmethod
 	def parsePlugin(filePath):
+		"""
+		Parse a single plugin source file 
+		"""
 		index = clang.cindex.Index.create()
 		tu = index.parse(filePath)
 		print('Parsing File :', tu.spelling)
@@ -74,6 +86,10 @@ class S2ECodeParser():
 			
 	@staticmethod
 	def checkAndCleanConfigDictionary(dict):
+		"""
+		Checks if the dictionary is properly formed and cleans it in case of minor problem.
+		In case of major error, raise an exception.
+		"""
 		for key, value in dict.iteritems():
 			if(not(S2ECodeParser.TYPE_KEY in value)):
 				raise PluginParseException(str(key) + "has no type")
@@ -102,9 +118,11 @@ class S2ECodeParser():
 			
 	@staticmethod
 	def getPluginInfo(cursor):
+		"""
+		Gets the plugin header information (name, description and dependencies)
+		"""
 		generator = cursor.get_tokens()
-		notFound = True
-		while(notFound):
+		while(True):
 			try:
 				currentToken = next(generator)
 					
@@ -119,13 +137,17 @@ class S2ECodeParser():
 	
 	@staticmethod
 	def isComment(string):
-		if(string.startswith("//") or string.startswith("/*")):
-			return True;
-		else:
-			return False;
+		"""
+		Return true if the string is a comment
+		"""
+		return (string.startswith("//") or string.startswith("/*"))
+
 	
 	@staticmethod
 	def getAllConfigOption(cursor):
+		"""
+		Gets every configuration option that can be found with the cursor.
+		"""
 		generator = cursor.get_tokens()
 		configOut = {}
 		nextConfig = S2ECodeParser.getNextConfigOption(generator)
@@ -136,14 +158,18 @@ class S2ECodeParser():
 				
 	@staticmethod
 	def mergeDictionary(x, y):
-		'''Merge two dictionary.'''
+		"""
+		Merge two dictionary.
+		"""
 		z = x.copy()
 		z.update(y)
 		return z
 	
 	@staticmethod
 	def getNextConfigOption(generator):
-		'''Finds the next config option tag'''
+		"""
+		Finds the next configuration option tag
+		"""
 		notFound = True
 		while(notFound):
 			try:
@@ -176,6 +202,9 @@ class S2ECodeParser():
 	
 	@staticmethod
 	def getArgumentList(tokenList, separator = ",", remove = '"'):
+		"""
+		Gets the string argument list given a token list a separator and an element to remove.
+		"""
 		outputList = []
 		accumulator = ""
 		for token in tokenList:
@@ -192,12 +221,18 @@ class S2ECodeParser():
 			
 	@staticmethod
 	def printToken(tokenList):
+		"""
+		Prints the given token list
+		"""
 		for token in tokenList:
 			print(token.spelling, end='')	
 		print("\n")
 		
 	@staticmethod
 	def tokenListToString(tokenList):
+		"""
+		Transform a token list to a string list
+		"""
 		outputString = ""
 		for token in tokenList:
 			outputString = outputString + token.spelling
@@ -205,6 +240,9 @@ class S2ECodeParser():
 		
 	@staticmethod
 	def getUpToCloseParenthesis(generator):
+		"""
+		Get the list of token from the generator up to the next matching closing parenthesis
+		"""
 		outputList = list()
 		currentToken = None
 		currentLevel = 1
@@ -212,9 +250,7 @@ class S2ECodeParser():
 			try:
 				currentToken = next(generator)
 			except StopIteration:
-				#TODO add plugin name and make more robust
-				print("Cannot generate config file for the plugin : ")
-				return
+				raise PluginParseException("Cannot get plugin description: missing closing parenthesis")
 			
 			outputList.append(currentToken)
 			

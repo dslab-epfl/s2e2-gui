@@ -3,7 +3,6 @@
     <head>
 	    {% load static %}
     	<script src="{% static "jquery-3.2.1.js" %}"></script>
-    	<script src="{% static "validation_plugin/jquery.validate.min.js" %}"></script>
     	<style type="text/css">
 			{% include "configure_plugins/main.css" %}
     	</style>
@@ -29,14 +28,6 @@
 			 	
 			 	<!-- The menu on the left of the page, contains every plugins -->
 			 	{% for plugin in plugins %}
-			 		<!--<input type="hidden" id="checkbox_value_{{ plugin.name }}" name="{{ plugin.name }}" />
-			 		<section>
-			 			<div class="customCheckbox">
-			 				<input type="button" id="checkbox_{{ plugin.name }}" onclick="checkboxClickHandler(this)" name="{{ plugin.name }}"/>
-			 				<label for="checkbox_{{ plugin.name }}"></label>
-			 			</div>
-			 			<label class="centered normal">{{ plugin.name }}</label>
-			 		</section>-->
 			 		<button type="button" id="button_{{ plugin.name }}" name="{{ plugin.name }}" onclick="buttonClickHandler(this)" class="left_menu_button">{{ plugin.name }}</button><br>
 			 	{% endfor %}
 			 	

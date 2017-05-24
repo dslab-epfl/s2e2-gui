@@ -13,6 +13,7 @@ if __name__ == "__main__":
     #    "EdgeKiller.cpp",
     #    "ModuleExecutionDetector.cpp"])
 
+    #This is the list of plugins that should be parsed and their root directory of the plugins source.
     S2ECodeParser.parsePluginsInDir("/home/davide/tmp/s2e/source/s2e/libs2eplugins/src/s2e/Plugins", [
 	"CallSiteMonitor.cpp",
 	"ExecutionTracer.cpp",

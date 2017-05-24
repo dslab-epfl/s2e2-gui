@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'display_all_analysis',
-	'generate_config',
+	'configure_and_run_analysis',
 ]
 
 MIDDLEWARE = [

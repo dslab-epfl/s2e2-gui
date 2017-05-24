@@ -41,6 +41,9 @@ $(document).ready(function(){
     displayFinalStatusCode(info_line_by_state);
 });
 
+/**
+ * Resize an Iframe.
+ */
 function resizeIframe(obj) {
     obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
 }
@@ -54,6 +57,9 @@ $(".log_select").change(function(){
 	$("#" + target + "_" + jquery_this.val()).addClass("open");
 });
 
+/**
+ * Displays the statistics in a table.
+ */
 function display_stats(stats){
 	var lines = stats.split("\n");
 	
@@ -76,6 +82,9 @@ function display_stats(stats){
 	$("#stats").html(table);
 }
 
+/**
+ * Displays the instruction count in a table
+ */
 function display_icount(icount){
 	
 	if(icount === null){
@@ -115,6 +124,10 @@ function display_icount(icount){
 	
 }
 
+/**
+ * Display the logs in a custom way.
+ * Each logs gets sorted by state.
+ */
 function createCustomLogDisplay(div_id){
 	
 		var re = /\[State \d+\]/g;
@@ -162,6 +175,9 @@ function createCustomLogDisplay(div_id){
 		return line_by_state;
 }
 
+/**
+ * Display a table in the overview to print the final message an status code for every states.
+ */
 function displayFinalStatusCode(info_line_by_state){
 	
 	var status_reg_exp = /status: \dx\d*/;
@@ -240,6 +256,5 @@ function displayFinalStatusCode(info_line_by_state){
 	}
 	
 	$("#overview").append(table);
-	
 }
 

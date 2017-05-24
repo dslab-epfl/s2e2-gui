@@ -1,1 +1,0 @@
-./s2eget binary && chmod +x ./binary && ./binary

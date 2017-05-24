@@ -1,6 +1,13 @@
 var unique_id = 0;
 var is_analysis_launched = false;
 
+/**
+ * Generate a div with the options for the given plugin
+ * 
+ * @param plugin
+ * 		The plugin we want to generate.
+ * @returns void
+ */
 function generatePluginConfigOption(plugin){
 	var inside_div = document.createElement("div");
 	inside_div.id = plugin["name"];
@@ -31,6 +38,17 @@ function generatePluginConfigOption(plugin){
 	document.getElementById("right-menu-div").append(inside_div);
 }
 
+/**
+ * Generate the html for the plugin given the type of the option.
+ * 
+ * @param parent
+ * 		The object we want to append the data to.
+ * @param plugin
+ * 		The plugin we currently are generating the options of.
+ * @param config_option
+ * 		The current configuration option to decide the type of element to generate.
+ * @returns void
+ */
 function generate_html_per_type(parent, plugin, config_option){
 	$.each(config_option, function(attr_key, attr_value){
 		var container_div = document.createElement("div");
@@ -74,6 +92,16 @@ function generate_html_per_type(parent, plugin, config_option){
 	})
 }
 
+/**
+ * Generate the html in case the required option value is an int
+ * @param parent
+ * 		The element we want to append to.
+ * @param plugin_name
+ * 		The plugin name.
+ * @param attr_key
+ * 		The attribute key.
+ * @returns
+ */
 function generate_html_for_int(parent, plugin_name, attr_key){
 	var input = document.createElement("input");
 	input.required = "required";
@@ -85,6 +113,16 @@ function generate_html_for_int(parent, plugin_name, attr_key){
 	parent.appendChild(input);
 }
 
+/**
+ * Generate the html in case the required option value is a boolean
+ * @param parent
+ * 		The element we want to append to.
+ * @param plugin_name
+ * 		The plugin name.
+ * @param attr_key
+ * 		The attribute key.
+ * @returns
+ */
 function generate_html_for_bool(parent, plugin_name, attr_key){
 	uniqueId++;
 	
@@ -113,6 +151,16 @@ function generate_html_for_bool(parent, plugin_name, attr_key){
 	parent.appendChild(label2);
 }
 
+/**
+ * Generate the html in case the required option value is a string
+ * @param parent
+ * 		The element we want to append to.
+ * @param plugin_name
+ * 		The plugin name.
+ * @param attr_key
+ * 		The attribute key.
+ * @returns
+ */
 function generate_html_for_string(parent, plugin_name, attr_key){
 	uniqueId++;
 	
@@ -126,6 +174,16 @@ function generate_html_for_string(parent, plugin_name, attr_key){
 	parent.appendChild(input);
 }
 
+/**
+ * Generate the html in case the required option value is a list
+ * @param parent
+ * 		The element we want to append to.
+ * @param plugin_name
+ * 		The plugin name.
+ * @param attr_key
+ * 		The attribute key.
+ * @returns
+ */
 function generate_html_for_list(parent, plugin, attr_key, attr_value){
 	var input = document.createElement("input");
 	input.setAttribute("type", "button");
@@ -146,6 +204,13 @@ function generate_html_for_list(parent, plugin, attr_key, attr_value){
 	parent.appendChild(div);
 }
 
+/**
+ * What a button for a list should do in case it is clicked.
+ * 
+ * @param button
+ * 		The clicked button
+ * @returns
+ */
 function generate_html_for_list_onclick(button){
 	var parent = document.getElementById("div_" + button.data_div);
 		
@@ -170,6 +235,17 @@ function generate_html_for_list_onclick(button){
 	parent.appendChild(element_div);
 }
 
+
+/**
+ * Generate the html in case the required option value is a list of integers
+ * @param parent
+ * 		The element we want to append to.
+ * @param plugin_name
+ * 		The plugin name.
+ * @param attr_key
+ * 		The attribute key.
+ * @returns
+ */
 function generate_html_for_intList(parent, plugin, attr_key, attr_value){
 	var input = document.createElement("input");
 	input.setAttribute("type", "button");
@@ -188,6 +264,13 @@ function generate_html_for_intList(parent, plugin, attr_key, attr_value){
 	parent.appendChild(div);
 }
 
+/**
+ * What a button for an integer list should do in case it is clicked.
+ * 
+ * @param button
+ * 		The clicked button
+ * @returns
+ */
 function generate_html_for_intList_onclick(button){
 	var parent = document.getElementById("div_" + button.data_div);
 		
@@ -202,6 +285,16 @@ function generate_html_for_intList_onclick(button){
 	parent.appendChild(input);
 }
 
+/**
+ * Generate the html in case the required option value is a list of strings
+ * @param parent
+ * 		The element we want to append to.
+ * @param plugin_name
+ * 		The plugin name.
+ * @param attr_key
+ * 		The attribute key.
+ * @returns
+ */
 function generate_html_for_stringList(parent, plugin, attr_key, attr_value){
 	var input = document.createElement("input");
 	input.setAttribute("type", "button");
@@ -220,6 +313,13 @@ function generate_html_for_stringList(parent, plugin, attr_key, attr_value){
 	parent.appendChild(div);
 }
 
+/**
+ * What a button for an list of string should do in case it is clicked.
+ * 
+ * @param button
+ * 		The clicked button
+ * @returns
+ */
 function generate_html_for_stringList_onclick(button){
 	var parent = document.getElementById("div_" + button.data_div);
 		
@@ -234,6 +334,11 @@ function generate_html_for_stringList_onclick(button){
 	parent.appendChild(input);
 }
 
+
+/**
+ * Parse the DOM data and create a json tree to send to the server.
+ * @returns
+ */
 function parse_and_post_data(){
 	if(!is_analysis_launched){		
 		var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
@@ -277,6 +382,14 @@ function parse_and_post_data(){
 	
 }
 
+/**
+ * Parse the DOM_array to create the json tree.
+ * 
+ * @param DOM_array
+ * 		The array to parse.
+ * @returns
+ * 		The json tree to send to the server.
+ */
 function parse_DOM(DOM_array){
 	var json_to_send = {};
 	$.each ( DOM_array, function( i, el){
@@ -335,7 +448,12 @@ function parse_DOM(DOM_array){
 	return json_to_send;
 }
 
-
+/**
+ * Parse the div for the list type
+ * @param children.
+ * 		The children of the element div.
+ * @returns the partial json tree.
+ */
 function parse_div_list(children){
 	var output = {};
 	
@@ -346,7 +464,12 @@ function parse_div_list(children){
 	
 	return output
 }
-
+/**
+ * Parse the container div for the integer list and string list types.
+ * @param children
+ * 		Children of the list element div
+ * @returns the partial json tree.
+ */
 function parse_div_container_list(children){
 	var output = [];
 	
@@ -357,28 +480,13 @@ function parse_div_container_list(children){
 	return output
 }
 
+/**
+ * Retirect to the page to see the analysis history.
+ * @returns
+ */
 function see_last_result(){
 	
 	window.location.href = "../display_all_analysis";
-
-	/*var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
-	
-	var form_data = new FormData();
-	form_data.append("csrfmiddlewaretoken", middle_token);
-	form_data.append("method", "get_last_result");
-	
-	$('html,body').css('cursor','wait');
-	
-	$.ajax({
-			  type: "POST",
-			  url: "http://localhost:8000/",
-			  data: form_data,
-			  processData: false,
-			  contentType: false,
-			  success: function(data){
-				  display_data_from_server(JSON.parse(data))
-		      }
-			});*/
 	
 }
 
