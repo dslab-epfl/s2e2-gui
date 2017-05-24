@@ -81,16 +81,21 @@ def basic_block_coverage(r2, translation_blocks):
 
 def render_functions(r2, covered_bbs, output_dir):
     """
-    Renders PNG graphs of each of the functions in the program. Basic blocks
+    Renders SVG graphs of each of the functions in the program. Basic blocks
     that were executed by S2E are coloured green.
 
-    The resulting PNG images are written to `output_dir`.
+    The resulting SVG images are written to `output_dir`.
     """
     for func_addr in function_addrs(r2):
+        # Get the function name
+        func_name = r2.cmdj('agj 0x%x' % func_addr)[0]['name']
+
         dot_str = r2.cmd('ag 0x%x' % func_addr)
         dot = pydot.graph_from_dot_data(dot_str)
-        assert len(dot) == 1
-        dot = dot[0]
+        if not dot:
+            continue
+        else:
+            dot = dot[0]
 
         for node in dot.get_nodes():
             node_name = node.get_name()
@@ -106,9 +111,10 @@ def render_functions(r2, covered_bbs, output_dir):
             if node_addr in covered_bbs:
                 node.set_fillcolor('darkolivegreen2')
 
-        with open(os.path.join(output_dir, 'func_0x%x.png' % func_addr), 'wb') as f:
-            png = dot.create_png()
-            f.write(png)
+        svg_path = os.path.join(output_dir, '%s_0x%x.svg' % (func_name, func_addr))
+        with open(svg_path, 'wb') as f:
+            svg = dot.create_svg()
+            f.write(svg)
 
 
 def generate_graph(s2e_output_dir, s2e_num):
