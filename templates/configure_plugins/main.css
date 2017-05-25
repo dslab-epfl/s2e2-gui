@@ -24,6 +24,7 @@ input[type=checkbox] {
     position: fixed;
     left: 0px;
     top: 0px;
+    text-align: center;
 }
 
 #left-menu-div{
@@ -52,13 +53,15 @@ input[type=checkbox] {
 
 #topMenuTimeout{
 	text-transform: uppercase;
-	position: relative;
 	color: white;
-	height: 180px;
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-right: 20px;
+	
 }
 
 .topMenu{
-	display: inline;
+	display: inline-block;
 	font-size: medium;
 }
 
@@ -72,13 +75,6 @@ button.mainActionButton {
     margin-bottom: 10px;
     background-color: black;
     transition: max-width 1s, height 1s;
-}
-
-#menu > #button_run.mainActionButton{
-	background-color: green;
-	float: right;
-	padding-left: 50px;
-	padding-right: 50px;
 }
 
 button::-moz-focus-inner { 
@@ -232,6 +228,7 @@ span.attribute_description{
 
 #id_binary_file{
 	color: white;
+	margin-top: 15px;
 }
 
 label.normal{
@@ -250,4 +247,30 @@ input[type='button']{
 
 input[type='file']{
 	border: none;
+}
+
+#menu > #button_run.mainActionButton{
+	background-color: green;
+	padding-left: 50px;
+	padding-right: 50px;
+	float: right;
+}
+
+#menu > #top_menu_center_div {
+	display: inline-block;
+	height: 60px;
+	box-sizing: content-box;
+}
+
+#menu > #button_prev_result{
+	left: 0px;
+	float: left;
+}
+
+.list_element{
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border: 1px solid black;
 }

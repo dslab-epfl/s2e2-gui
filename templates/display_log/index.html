@@ -86,7 +86,9 @@
 			
 			<div id="graph" class="mainContainer">
 				{% for func_path in custom_data.function_paths %}
-				<img src="{% get_static_prefix %}{{func_path}}">
+				<div class="mainContainer">
+					<img src="{% get_static_prefix %}{{func_path}}">
+				</div>
 				{% endfor %}
 			</div>
 	</body>

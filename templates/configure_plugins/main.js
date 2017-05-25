@@ -229,6 +229,8 @@ function generate_html_for_list_onclick(button){
 	key_input.required = "required";
 	key_input.name = button.data_plugin["name"] + ":" + button.data_key + uniqueId;
 	key_input.className = "normal";
+	key_input.pattern = "([A-Z]|[a-z])\\w*";
+	key_input.title="a valid key without whitespace and with no leading digit"
 	element_div.appendChild(key_input);
 	
 	generate_html_per_type(element_div, button.data_plugin, button.data_content);
