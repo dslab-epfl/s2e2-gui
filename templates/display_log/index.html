@@ -85,11 +85,15 @@
 			</div>
 			
 			<div id="graph" class="mainContainer">
-				{% for func_path in custom_data.function_paths %}
-				<div class="mainContainer">
-					<img src="{% get_static_prefix %}{{func_path}}">
+				<select id="graph_img_select" class="img_select" data-target="img_display">
+					{% for func in custom_data.function_paths %}
+						<option value="{% get_static_prefix %}{{func.1}}">{{func.0}}</option>
+					{% endfor %}
+				</select>
+				
+				<div id="graph_image_container" class="mainContainer open">
+					<img id="image_display" src="{% get_static_prefix %}{{custom_data.function_paths.0.1}}">
 				</div>
-				{% endfor %}
 			</div>
 	</body>
 	

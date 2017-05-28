@@ -167,3 +167,15 @@ tr.error:hover{
 	display: inline-table;
 	margin-right: 100px;	
 }
+
+#image_display{
+    width: auto;
+    height: auto;
+    opacity: 1;
+}
+
+#graph_image_container {
+	width: 100%;
+	height: auto;
+	text-align: center;
+}

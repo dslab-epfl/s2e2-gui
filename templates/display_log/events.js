@@ -26,6 +26,21 @@ $(document).ready(function(){
         console.log(j_this.data("target"));
     });
     
+    $(".log_select").change(function(){
+    	var jquery_this = $(this);
+    	var target = jquery_this.data("target");
+    		
+    	$("#" + target + " .mainContainer").removeClass("open");
+    	$("#" + target + "_" + jquery_this.val()).addClass("open");
+    });
+    
+    $("#graph_img_select").change(function(){
+    	var jquery_this = $(this);
+    	var image_display = $("#image_display");
+    	
+        image_display.attr("src", jquery_this.val()); 
+    });
+    
     $("#backButton").click(function(){
     	window.location.href = "../";
     });
@@ -48,14 +63,6 @@ function resizeIframe(obj) {
     obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
 }
 
-
-$(".log_select").change(function(){
-	var jquery_this = $(this);
-	var target = jquery_this.data("target");
-		
-	$("#" + target + " .mainContainer").removeClass("open");
-	$("#" + target + "_" + jquery_this.val()).addClass("open");
-});
 
 /**
  * Displays the statistics in a table.

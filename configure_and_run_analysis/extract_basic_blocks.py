@@ -179,4 +179,4 @@ def generate_graph(s2e_output_dir, s2e_num):
     render_functions(r2, covered_bbs, output_dir)
     
     base_path = S2E_settings.S2E_BINARY_FILE_NAME + "/s2e-out-" + str(s2e_num) + "/functions/"
-    return [os.path.join(base_path, file) for file in os.listdir(output_dir)]
+    return [[file, os.path.join(base_path, file)] for file in os.listdir(output_dir)]

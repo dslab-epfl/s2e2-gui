@@ -21,8 +21,8 @@
 			 <table>
 			 	<tr><th>Analysis ID</th><th>Binary Checksum</th><th>Binary Name</th></tr>
 				 {% for a in analysis %}
-				 	<tr data-s2e_num={{a.s2e_num}} onclick="display_analysis(this)">
-			 			<td>{{a.id}}</td><td>{{a.binary_checksum}}</td><td>{{a.binary_name}}</td>
+				 	<tr data-s2e_num={{a.s2e_num}}>
+			 			<td onclick="display_analysis(this)">{{a.id}}</td><td onclick="display_analysis(this)">{{a.binary_checksum}}</td><td onclick="display_analysis(this)">{{a.binary_name}}</td><td onclick="delete_analysis(this)"><img width="30px" height="30px" src="{% static "images/delete.png" %}"/></td>
 					</tr>
 				 {% endfor %}
 			 </table>
