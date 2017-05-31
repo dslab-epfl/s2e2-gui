@@ -85,15 +85,20 @@
 			</div>
 			
 			<div id="graph" class="mainContainer">
-				<select id="graph_img_select" class="img_select" data-target="img_display">
-					{% for func in custom_data.function_paths %}
-						<option value="{% get_static_prefix %}{{func.1}}">{{func.0}}</option>
-					{% endfor %}
-				</select>
-				
-				<div id="graph_image_container" class="mainContainer open">
-					<img id="image_display" src="{% get_static_prefix %}{{custom_data.function_paths.0.1}}">
-				</div>
+				{% if custom_data.function_paths %}
+					<select id="graph_img_select" class="img_select" data-target="img_display">
+						{% for func in custom_data.function_paths %}
+							<option value="{% get_static_prefix %}{{func.1}}">{{func.0}}</option>
+						{% endfor %}
+					</select>
+					
+					<div id="graph_image_container" class="mainContainer open">
+						<img id="image_display" src="{% get_static_prefix %}{{custom_data.function_paths.0.1}}">
+					</div>
+				{% else %}
+					<h4>No function graph found :</h4>
+						<p>To have a function graph, make sure to enable TranslationBlockCoverage and set the value writeCoverageOnStateKill to true</p>
+				{% endif %}
 			</div>
 	</body>
 	

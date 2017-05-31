@@ -3,7 +3,7 @@ import json
 import hashlib
 import os
 from django.http import HttpResponseServerError, HttpResponse
-from launch_s2e import launch_s2e
+from launch_s2e import launch_s2e, create_new_s2e_project
 from s2e_web import S2E_settings
 from models import S2ELaunchException
 import models
@@ -11,6 +11,7 @@ import utils
 from django.utils.encoding import smart_text
 from display_all_analysis.models import Analysis
 from extract_basic_blocks import generate_graph
+from Crypto.Util.RFC1751 import binary
 
 
 LIST_TYPE = "list"
@@ -51,32 +52,40 @@ def handleRequest(request):
             
             try:
                 # Generate an unique name
-                timeout = request.POST["timeout"]               
-                s2e_num = find_next_analysis_num()
+                timeout = request.POST["timeout"]
+                project_name = request.POST["binary_name"]
+                
+                binary_path = os.path.join(S2E_settings.S2E_BINARY_FOLDER_PATH, project_name)
+                project_path = os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, project_name)
+                
+                if not os.path.exists(S2E_settings.S2E_BINARY_FOLDER_PATH):
+                    os.makedirs(S2E_settings.S2E_BINARY_FOLDER_PATH)
+                
+                utils.write_file_to_disk_and_close(binary_path, request.FILES["binary_file"])
+
+                if not os.path.isdir(project_path):
+                    create_new_s2e_project(binary_path)
+                
+                s2e_num = find_next_analysis_num(project_name)
                                 
-                selectedPluginsConfig = json.loads(request.POST["data"]);
+                selectedPluginsConfig = json.loads(request.POST["data"])
                 selectedPlugins = getSelectedPlugins(selectedPluginsConfig)
                 
-                generateConfigFile(selectedPlugins, selectedPluginsConfig)
-                utils.write_file_to_disk_and_close(S2E_settings.S2E_BINARY_PATH, request.FILES["binary_file"])
+                generateConfigFile(selectedPlugins, selectedPluginsConfig, project_name)
                 
+                has_s2e_error, killed_by_timeout = launch_s2e(timeout, project_name)
+                add_entry_to_database(s2e_num, project_name, binary_path) 
                 
-                has_s2e_error, killed_by_timeout = launch_s2e(timeout)
-                add_entry_to_database(s2e_num, request.POST["binary_name"]) 
-                
-                
-                s2e_output_dir = S2E_settings.S2E_PROJECT_FOLDER_PATH + S2E_settings.S2E_BINARY_FILE_NAME + "/s2e-last/"
-                
-                models.generate_lcov_files(s2e_output_dir)
-                function_paths = generate_graph(s2e_output_dir, s2e_num)
+                s2e_output_dir = os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, project_name, "s2e-out-" + str(s2e_num))
+                print(s2e_output_dir)
+                                
+                models.generate_lcov_files(s2e_output_dir, project_name)
+                function_paths = generate_graph(s2e_output_dir, s2e_num, project_name)
                                 
                 custom_data = models.CustomAnalysisData(killed_by_timeout, has_s2e_error, function_paths)
                 custom_data.save_to_disk(s2e_output_dir)
-
-                os.remove(S2E_settings.S2E_CONFIG_LUA_PATH)
-                os.remove(S2E_settings.S2E_BINARY_PATH)
                 
-                return render_output(s2e_output_dir, custom_data.data, s2e_num, request)
+                return render_output(s2e_output_dir, custom_data.data, s2e_num, project_name, request)
                             
             except AttributeError as err:
                 print(err)
@@ -98,16 +107,16 @@ def handleRequest(request):
         return configure_plugins_html
 
 
-def displayAnalysisInDir(request, dir_num):
+def displayAnalysisInDir(request, dir_num, binary_name):
     """
     Display the analysis from inside the directory number
     """
-    s2e_output_dir = S2E_settings.S2E_PROJECT_FOLDER_PATH + S2E_settings.S2E_BINARY_FILE_NAME + "/s2e-out-" + dir_num + "/"
+    s2e_output_dir = os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, binary_name) + "/s2e-out-" + dir_num + "/"
     
     custom_data = models.CustomAnalysisData()
     custom_data.get_from_disk(s2e_output_dir)
                 
-    return render_output(s2e_output_dir, custom_data.data, dir_num, request)
+    return render_output(s2e_output_dir, custom_data.data, dir_num, binary_name, request)
     
 
 def getSelectedPlugins(request_data):
@@ -124,7 +133,7 @@ def getSelectedPlugins(request_data):
     return selectedPlugins
     
 
-def generateConfigFile(selectedPlugins, selectedPluginsConfig):
+def generateConfigFile(selectedPlugins, selectedPluginsConfig, binary_name):
     """
     Write the config.lua file with the selected plugins and the user configuration.
     """
@@ -149,11 +158,11 @@ def generateConfigFile(selectedPlugins, selectedPluginsConfig):
     configFileContent += "}\n\n"
     
     configFileContent += generate_plugins_configurations(selectedPlugins, selectedPluginsConfig)
-    configFileContent += generate_HostFiles_config()
-    configFileContent += generate_Vmi_config()
+    configFileContent += generate_HostFiles_config(binary_name)
+    configFileContent += generate_Vmi_config(binary_name)
     configFileContent += add_linux_monitor_config()
     
-    utils.write_string_to_disk_and_close(S2E_settings.S2E_CONFIG_LUA_PATH, configFileContent)
+    utils.write_string_to_disk_and_close(os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, binary_name, "s2e-config.lua"), configFileContent)
 
 def add_linux_monitor_config():
     """
@@ -170,25 +179,25 @@ def add_linux_monitor_config():
     return out
 
     
-def generate_HostFiles_config():
+def generate_HostFiles_config(binary_name):
     """
     The HostFiles configuration.
     """
     configContent = ""
     configContent += "pluginsConfig.HostFiles = {\n"
-    configContent += "\t baseDirs = {\"" + S2E_settings.S2E_PROJECT_FOLDER_PATH + S2E_settings.S2E_BINARY_FILE_NAME + "\"},\n"
+    configContent += "\t baseDirs = {\"" + os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, binary_name) + "\"},\n"
     configContent += "\t allowWrite = true,\n"
     configContent += "}\n"
     
     return configContent
 
-def generate_Vmi_config():
+def generate_Vmi_config(binary_name):
     """
     The Vmi configuration
     """
     configContent = ""
     configContent += "pluginsConfig.Vmi = {\n"
-    configContent += "\t baseDirs = {\"" + S2E_settings.S2E_PROJECT_FOLDER_PATH + S2E_settings.S2E_BINARY_FILE_NAME + "\"}\n"
+    configContent += "\t baseDirs = {\"" + os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, binary_name) + "\"}\n"
     configContent += "}\n"
     
     return configContent
@@ -309,13 +318,14 @@ def is_integer(s):
         return False
 
            
-def render_output(s2e_output_dir, custom_data, s2e_num, request):
+def render_output(s2e_output_dir, custom_data, s2e_num, project_name, request):
     """
     Render an html file for the analysis in the output directory with the given data.
     """
+    print(s2e_output_dir)
     output = models.S2EOutput(s2e_output_dir)
     stats = models.generate_stats(s2e_output_dir)     
-    has_coverage, line_coverage_path = models.get_lcov_path(s2e_output_dir, s2e_num)
+    has_coverage, line_coverage_path = models.get_lcov_path(s2e_output_dir, s2e_num, project_name)
     icount = models.generate_icount_files(s2e_output_dir)
     
     html_data_dictionary =  {'warnings': smart_text(output.warnings, encoding="utf-8", errors="ignore"), 
@@ -334,12 +344,12 @@ def render_output(s2e_output_dir, custom_data, s2e_num, request):
     
 
 
-def find_next_analysis_num():
+def find_next_analysis_num(binary_name):
     """
     Finds the next analysis number from the binary project folder
     """
     s2e_num = -1
-    analysis_numbers = [int(name[8:]) for name in os.listdir(S2E_settings.S2E_PROJECT_FOLDER_PATH + S2E_settings.S2E_BINARY_FILE_NAME) if name.startswith("s2e-out")]
+    analysis_numbers = [int(name[8:]) for name in os.listdir(os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, binary_name)) if name.startswith("s2e-out")]
     i = 0
     while s2e_num == -1:
         if i not in analysis_numbers:
@@ -348,13 +358,13 @@ def find_next_analysis_num():
         
     return s2e_num
 
-def add_entry_to_database(s2e_num, binary_name):
+def add_entry_to_database(s2e_num, project_name, binary_path):
     """
     Adds an entry to the Analysis database. 
     """
-    cksum = hash_bytestr_iter(file_as_blockiter(open(S2E_settings.S2E_BINARY_PATH, 'rb')), hashlib.sha256())
+    cksum = hash_bytestr_iter(file_as_blockiter(open(binary_path, 'rb')), hashlib.sha256())
         
-    a = Analysis(s2e_num = s2e_num, binary_checksum = cksum, binary_name = binary_name)
+    a = Analysis(s2e_num = s2e_num, binary_checksum = cksum, binary_name=project_name)
     a.save()
     
 def hash_bytestr_iter(bytesiter, hasher):

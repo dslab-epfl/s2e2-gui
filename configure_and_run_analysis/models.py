@@ -17,11 +17,11 @@ class S2EOutput():
         self.info = ""
         self.debug = ""
             
-        with open(s2e_out_dir + "warnings.txt", 'r') as destination:
+        with open(os.path.join(s2e_out_dir, "warnings.txt"), 'r') as destination:
             self.warnings = destination.read()
-        with open(s2e_out_dir + "info.txt", 'r') as destination:
+        with open(os.path.join(s2e_out_dir, "info.txt"), 'r') as destination:
             self.info = destination.read()
-        with open(s2e_out_dir + "debug.txt", 'r') as destination:
+        with open(os.path.join(s2e_out_dir, "debug.txt"), 'r') as destination:
             self.debug = destination.read()
 
 class S2ELaunchException(Exception):
@@ -40,40 +40,40 @@ def generate_stats(s2e_out_dir):
     """
     stats = None
     try:
-        with open(s2e_out_dir + "run.stats", 'r') as destination:
+        with open(os.path.join(s2e_out_dir, "run.stats"), 'r') as destination:
             stats = destination.read()
     except IOError:
         return "No stats found"
         
     return stats
         
-def generate_lcov_files(s2e_out_dir):
+def generate_lcov_files(s2e_out_dir, binary_name):
     """
     Generate the line coverage files for the given output directory
     """
-    generate_coverage_file = "s2e coverage lcov binary"
+    generate_coverage_file = "s2e coverage lcov " + binary_name
     p = subprocess.Popen([generate_coverage_file, ""], shell=True, cwd=settings.S2E_ENVIRONEMENT_FOLDER_PATH)
     p.communicate()
     
     if(p.returncode != 0):
         print("error in coverage generation")
         return
-    
+        
     generate_lcov_command = "genhtml -o lcov_html coverage.info"
-    p = subprocess.Popen([generate_lcov_command, ""], shell=True, cwd=settings.S2E_PROJECT_FOLDER_PATH + settings.S2E_BINARY_FILE_NAME + "/s2e-last")
+    p = subprocess.Popen([generate_lcov_command, ""], shell=True, cwd=s2e_out_dir)
     p.communicate()
     
     if(p.returncode != 0):
         print("error in html generation")
     
 
-def get_lcov_path(s2e_out_dir, s2e_num):
+def get_lcov_path(s2e_out_dir, s2e_num, binary_name):
     """
     If the line coverage report exist,
     gets the line coverage path to the index.html file.
     """
-    line_cov_path = settings.S2E_BINARY_FILE_NAME + "/s2e-out-" + str(s2e_num) + "/lcov_html/index.html"
-    has_line_cov = os.path.isfile(settings.S2E_PROJECT_FOLDER_PATH + line_cov_path)
+    line_cov_path = binary_name + "/s2e-out-" + str(s2e_num) + "/lcov_html/index.html"
+    has_line_cov = os.path.isfile(os.path.join(settings.S2E_PROJECT_FOLDER_PATH, line_cov_path))
     
     return has_line_cov, line_cov_path
 
@@ -81,8 +81,8 @@ def generate_icount_files(s2e_out_dir):
     """
     Generate the instruction count data for the given output directory.
     """
-    run_execution_trace_parser_script = "/home/davide/tmp/s2e-tools-python/tools/run_execution_trace_parser.sh"
-    generate_json_from_tracer_cmd = "sh " + run_execution_trace_parser_script + " ExecutionTracer.dat"
+    run_execution_trace_parser_script = settings.EXECUTION_TRACE_PARSER_SCRIPT_PATH
+    generate_json_from_tracer_cmd = "python " + run_execution_trace_parser_script + " ExecutionTracer.dat"
     
     process = subprocess.Popen([generate_json_from_tracer_cmd, ""], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=s2e_out_dir)
     out, err = process.communicate()
@@ -129,13 +129,13 @@ class CustomAnalysisData():
         """
         Saves the data to the disk
         """
-        utils.write_string_to_disk_and_close(s2e_output_dir + CustomAnalysisData.GUI_FILE_NAME, json.dumps(self.data))
+        utils.write_string_to_disk_and_close(os.path.join(s2e_output_dir, CustomAnalysisData.GUI_FILE_NAME), json.dumps(self.data))
         
     def get_from_disk(self, s2e_output_dir):
         """
         Gets the data from the disk
         """
-        with open(s2e_output_dir + CustomAnalysisData.GUI_FILE_NAME, 'r') as destination:
+        with open(os.path.join(s2e_output_dir, CustomAnalysisData.GUI_FILE_NAME), 'r') as destination:
             self.data = json.load(destination)
         
         

@@ -117,13 +117,12 @@ def render_functions(r2, covered_bbs, output_dir):
             f.write(svg)
 
 
-def generate_graph(s2e_output_dir, s2e_num):
+def generate_graph(s2e_output_dir, s2e_num, project_name):
     """
     Generate the PNG graph for the analysis in the output_dir
     """
 
     s2e_env_path = S2E_settings.S2E_ENVIRONEMENT_FOLDER_PATH
-    project_name = S2E_settings.S2E_BINARY_FILE_NAME
     output_dir = os.path.join(s2e_output_dir, "functions")
     os.makedirs(output_dir)
 
@@ -178,5 +177,5 @@ def generate_graph(s2e_output_dir, s2e_num):
     covered_bbs = basic_block_coverage(r2, covered_tbs)
     render_functions(r2, covered_bbs, output_dir)
     
-    base_path = S2E_settings.S2E_BINARY_FILE_NAME + "/s2e-out-" + str(s2e_num) + "/functions/"
-    return [[file, os.path.join(base_path, file)] for file in os.listdir(output_dir)]
+    base_path = project_name + "/s2e-out-" + str(s2e_num) + "/functions/"
+    return [[file[0:-4], os.path.join(base_path, file)] for file in os.listdir(output_dir)]
