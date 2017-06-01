@@ -179,3 +179,48 @@ tr.error:hover{
 	height: auto;
 	text-align: center;
 }
+
+div#div_legend_parent{
+	border: 2px solid darkslategray;
+	text-align: center;
+}
+
+div.div_legend{
+	text-align: center;
+	display: inline-block;
+	margin-left: 50px;
+	margin-right: 50px;	
+}
+
+div#arrow_legend_green{
+	font-size: 60px;
+	color: green;
+}
+
+div#arrow_legend_red{
+	font-size: 60px;
+	color: red;
+}
+
+div#arrow_legend_blue{
+	color: blue;
+	font-size: 60px;
+}
+
+div#block_legend_green{
+	width: 60px;
+	height: 40px;
+	background-color: #50d131;
+	border: 1px solid black;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div#block_legend_gray{
+	width: 60px;
+	height: 40px;
+	background-color: gray;
+	border: 1px solid black;
+	margin-left: auto;
+	margin-right: auto;
+}

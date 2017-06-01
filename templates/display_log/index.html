@@ -95,6 +95,23 @@
 					<div id="graph_image_container" class="mainContainer open">
 						<img id="image_display" src="{% get_static_prefix %}{{custom_data.function_paths.0.1}}">
 					</div>
+					
+					<div id="div_legend_parent">
+						<div class="div_legend"><div id="arrow_legend_green">&larr;</div>
+						<h5>Branch if true</h5></div>
+						
+						<div class="div_legend"><div id="arrow_legend_red">&larr;</div>
+						<h5>Branch if false</h5></div>
+						
+						<div class="div_legend"><div id="arrow_legend_blue">&larr;</div>
+						<h5>Go to block without condition</h5></div>
+						
+						<div class="div_legend"><div id="block_legend_green"></div>
+						<h5>Executed block</h5></div>
+
+						<div class="div_legend"><div id="block_legend_gray"></div>
+						<h5>Non executed block</h5></div>						
+					</div>
 				{% else %}
 					<h4>No function graph found :</h4>
 						<p>To have a function graph, make sure to enable TranslationBlockCoverage and set the value writeCoverageOnStateKill to true</p>
