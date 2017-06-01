@@ -21,7 +21,7 @@ function display_analysis(td){
 	form_data.append("binary_name", binary_name);
 	form_data.append("method", "display");
 	
-	$('html,body').css('cursor','wait');
+	$('html, body').css('cursor','wait');
 	
 	$.ajax({
 			  type: "POST",

@@ -77,7 +77,6 @@ def handleRequest(request):
                 add_entry_to_database(s2e_num, project_name, binary_path) 
                 
                 s2e_output_dir = os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, project_name, "s2e-out-" + str(s2e_num))
-                print(s2e_output_dir)
                                 
                 models.generate_lcov_files(s2e_output_dir, project_name)
                 function_paths = generate_graph(s2e_output_dir, s2e_num, project_name)
@@ -322,7 +321,6 @@ def render_output(s2e_output_dir, custom_data, s2e_num, project_name, request):
     """
     Render an html file for the analysis in the output directory with the given data.
     """
-    print(s2e_output_dir)
     output = models.S2EOutput(s2e_output_dir)
     stats = models.generate_stats(s2e_output_dir)     
     has_coverage, line_coverage_path = models.get_lcov_path(s2e_output_dir, s2e_num, project_name)

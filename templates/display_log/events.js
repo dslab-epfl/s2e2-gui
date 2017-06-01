@@ -23,7 +23,6 @@ $(document).ready(function(){
         	j_body.addClass("debug");
         }
         
-        console.log(j_this.data("target"));
     });
     
     $(".log_select").change(function(){
@@ -52,7 +51,7 @@ $(document).ready(function(){
 	createCustomLogDisplay("warning_log");
 	createCustomLogDisplay("debug_log");
 	var info_line_by_state = createCustomLogDisplay("info_log");
-    
+	    
     displayFinalStatusCode(info_line_by_state);
 });
 
@@ -196,6 +195,9 @@ function displayFinalStatusCode(info_line_by_state){
 	for(var key in info_line_by_state){
 		var text_array = info_line_by_state[key];
 		
+		status_by_state[key] = "Terminated by timeout";
+		message_by_state[key] = "";
+				
 		for(var i = 0; i < text_array.length; ++i){
 			var text_line = text_array[i];
 			
@@ -238,7 +240,7 @@ function displayFinalStatusCode(info_line_by_state){
 	tr.appendChild(th_message);
 	
 	table.appendChild(tr);
-	
+		
 	for(var key in status_by_state){
 		var tr_in = document.createElement("TR");
 		
@@ -248,7 +250,6 @@ function displayFinalStatusCode(info_line_by_state){
 		
 		var td_status = document.createElement("TD");
 		var status_message = status_by_state[key];
-		console.log(status_message)
 		if(status_message != "0x0" && status_message != "0"){
 			tr_in.className = "error";
 		}
