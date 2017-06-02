@@ -53,5 +53,6 @@ When the user has configured the plugins with the interface, he has to supply a 
 
 4. Extend the web interface to displays plugin-specific output in an easy-to-understand way
 
-For this stage of developpement, I created a way to display analysis results in a more practical way. 
+In a normal execution, S2E outputs 
+For this stage of developpement, I created a way to display analysis results in a more practical way. ...
 

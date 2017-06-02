@@ -4,7 +4,7 @@ GUI for interacting with S2E2
 Dependencies: 
 - s2e-env
 - radare2
-
+- django
 
 Quick start
 -----------
