@@ -1,6 +1,4 @@
-include LICENSE
 include README.rst
-include result.json
-recursive-include static *
-recursive-include templates *
-recursive-include tutorial_binary *
+recursive-include tools *
+recursive-include configure_and_run_analysis *
+recursive-include display_all_analysis *

@@ -1,0 +1,44 @@
+S2E GUI
+
+Davide Di Dio
+
+
+------------------------
+
+
+
+Context :
+
+S2E is a platform for writing tools that analyze the properties and behavior of software systems. S2E is a virtual machine augmented with symbolic execution and modular path analyzers. S2E runs unmodified x86, x86-64, or ARM software stacks, including programs, libraries, the kernel, and drivers. Symbolic execution then automatically explores hundreds of thousands of paths through the system, while analyzers check that the desired properties hold on these paths and selectors focus path exploration on components of interest.
+
+
+Currently S2E is executed by command line and configuration files, the goals of this project are to ease the use of S2E making it more approachable to beginners, to provide a easy way to manage and access analysis and to display the results of the analysis in a more readable way.
+
+
+Project Stages:
+
+1. Decide on the development stack to use: 
+I choose to use a stack with : python, django, Linux and javascript.
+When I started to work on the project, S2E was only supported on Linux choosing it was innevitable.
+
+2. Automate the generation of configuration files.
+Currently, on S2E, if a user wants to use a plugin, it as to through the source code of the plugin and understand the way it works. Then the user has to write a configuration file in LUA to be able to use that plugin. With the interface, the user can just select which plugin to enable. 
+
+The plugin's developer must include a small annotation in his code for each attributes of the plugin. The comment looks like this: 
+
+// attribute_name:
+//   type: int
+//   description: "attribute description."
+
+The developer must supply the name of the attribute, the type and optionally a description for the attribute. These comment should respect the YAML format. Currently the project supports multiple types: int, bool, string, stringList, intList and list. An attribute of type list describes a list of attributes, it must contain a variable named "content" assigned with every attributes included in the list.
+Here is an example of a list attribute:
+
+// list_prefix:
+//   type: list
+//   description: "this is the description of the list"
+//   content: 
+//     checked:
+//       type: bool
+//       description: "this is the description of checked"
+
+When the source has been written inside the plugin source, the developper executes a script that generates a json file with the information inside these source file. In term, this json file is used by the GUI to generate a easy to use interface 

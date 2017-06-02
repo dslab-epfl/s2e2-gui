@@ -2,16 +2,41 @@
 GUI for interacting with S2E2
 
 Dependencies: 
-- html-gen
+- s2e-env
+- radare2
 
 
-To use the GUI:
- 
-1.  You have to edit the S2E_ENVIRONEMENT_FOLDER_PATH variable located inside the file s2e_web/S2E_settings 
-	and set it to your s2e_environement path (visit https://github.com/S2E/s2e-env for more info about s2e-env).
-2.	Run `python manage.py runserver`.
-3.	Visit "localhost:8000" to access the GUI.
-4. 	Enjoy.
+Quick start
+-----------
+
+1. Add "display_all_analysis" and "configure_and_run_analysis" to your INSTALLED_APPS setting like this::
+
+    INSTALLED_APPS = [
+        ...
+        'configure_and_run_analysis',
+		'display_all_analysis',
+    ]
+
+2. Include the display_all_analysis and configure_and_run_analysis URLconf in your project urls.py like this::
+
+	url(r'^display_all_analysis/', include('display_all_analysis.urls')),
+	url(r'^', include('configure_and_run_analysis.urls')),
+
+3. Add the variable S2E_ENVIRONEMENT_FOLDER_PATH with the path of your s2e environement like this:
+	
+	S2E_ENVIRONEMENT_FOLDER_PATH = "/path/to/your/s2e/environement/"
+
+4. Run `python manage.py migrate` to create the database models.
+
+5. Add your projects inside your environement folder to the statics files like this: 
+	
+	STATICFILES_DIRS = [
+		...,
+		"/path/to/your/s2e/environement/projects/",
+		...,
+	]
+
+6. Visit http://127.0.0.1:8000/ to access the GUI.
 
 
 Plugin annotation:
@@ -23,7 +48,7 @@ The body of the config option must follow the YAML format and is structured as f
 //   type: int
 //   description: "attribute description."
 
-The type of the attribute can only be one of the following types : int, bool, string, stringList or list.
+The type of the attribute can only be one of the following types : int, bool, string, stringList, intList or list.
 
 The list type has a different construct, instead of attribute_name, you must specify a prefix allong with the "content" tag.
 
@@ -35,4 +60,4 @@ Here is an example of a list starting with the prefix "list_prefix" and containi
 //   content: 
 //     checked:
 //       type: bool
-//       description: "this is the description of checked
+//       description: "this is the description of checked"

@@ -8,6 +8,7 @@ from s2e_web import S2E_settings
 from models import S2ELaunchException
 import models
 import utils
+import learn_plugin.learn_plugin
 from django.utils.encoding import smart_text
 from display_all_analysis.models import Analysis
 from extract_basic_blocks import generate_graph
@@ -38,6 +39,9 @@ def handleRequest(request):
     
         
     if(plugins == None):
+        if not os.path.isfile(S2E_settings.S2E_PLUGIN_JSON_CONFIG_FILE):
+            learn_plugin.learn_plugin.generate_configuration_for_plugins()
+        
         with open(S2E_settings.S2E_PLUGIN_JSON_CONFIG_FILE, "r") as jsonFile:
             plugins = json.load(jsonFile)
     
