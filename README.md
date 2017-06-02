@@ -36,7 +36,12 @@ Quick start
 		...,
 	]
 
-6. Visit http://127.0.0.1:8000/ to access the GUI.
+6. Run your server with `python manage runserver`
+
+7. Visit http://127.0.0.1:8000/ to access the GUI.
+
+
+
 
 
 Plugin annotation:
