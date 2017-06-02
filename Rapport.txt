@@ -17,11 +17,13 @@ Currently S2E is executed by command line and configuration files, the goals of 
 
 Project Stages:
 
-1. Decide on the development stack to use: 
+1. Decide on the development stack to use.
+
 I choose to use a stack with : python, django, Linux and javascript.
 When I started to work on the project, S2E was only supported on Linux choosing it was innevitable.
 
 2. Automate the generation of configuration files.
+
 Currently, on S2E, if a user wants to use a plugin, it as to through the source code of the plugin and understand the way it works. Then the user has to write a configuration file in LUA to be able to use that plugin. With the interface, the user can just select which plugin to enable. 
 
 The plugin's developer must include a small annotation in his code for each attributes of the plugin. The comment looks like this: 
@@ -41,4 +43,15 @@ Here is an example of a list attribute:
 //       type: bool
 //       description: "this is the description of checked"
 
-When the source has been written inside the plugin source, the developper executes a script that generates a json file with the information inside these source file. In term, this json file is used by the GUI to generate a easy to use interface 
+When the annotation has been written inside the plugin source, a script will generate a json file with the information inside the source files. 
+
+3. Configure and run S2E.
+
+The json file constructed in stage 2 is used by the GUI to create a customized interface to generate the plugin configuration. The user can use the interface to configure the analysis
+
+When the user has configured the plugins with the interface, he has to supply a binary to execute and then he can run the analysis. The interface sends everything to the server, generates a config.lua file and runs s2e on the binary with the generated config.lua file.
+
+4. Extend the web interface to displays plugin-specific output in an easy-to-understand way
+
+For this stage of developpement, I created a way to display analysis results in a more practical way. 
+
