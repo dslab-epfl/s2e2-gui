@@ -56,3 +56,5 @@ def create_new_s2e_project(binary_path):
     
     p.communicate()
     
+    return p.returncode
+    

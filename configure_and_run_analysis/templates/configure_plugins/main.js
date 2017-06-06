@@ -388,6 +388,11 @@ function parse_and_post_data(){
 			contentType: false,
 			success: function(data){
 				display_data_from_server(JSON.parse(data));
+			},
+			error: function(data){
+				alert("error " + data.status + ": " + data.responseText);
+				$('html,body').css('cursor','auto');
+				is_analysis_launched = false;
 			}
 		});
 		

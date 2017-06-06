@@ -2,7 +2,7 @@ from django.shortcuts import render
 import json
 import hashlib
 import os
-from django.http import HttpResponseServerError, HttpResponse
+from django.http import HttpResponseServerError, HttpResponse, HttpResponseBadRequest
 from launch_s2e import launch_s2e, create_new_s2e_project
 from s2e_web import S2E_settings
 from models import S2ELaunchException
@@ -38,7 +38,6 @@ def handleRequest(request):
     """
     global plugins
     global configure_plugins_html
-    
         
     if(plugins == None):
         if not os.path.isfile(S2E_settings.S2E_PLUGIN_JSON_CONFIG_FILE):
@@ -88,10 +87,10 @@ def handle_get_config_request(request, plugins):
         
     except AttributeError as err:
         print(err)
-        return HttpResponseServerError()
+        return HttpResponseServerError(err)
     except S2ELaunchException as err:
         print(err)
-        return HttpResponseServerError()
+        return HttpResponseServerError(err)
 
 def handle_run_s2e_request(request, plugins):
     try:
@@ -106,8 +105,12 @@ def handle_run_s2e_request(request, plugins):
         
         utils.write_file_to_disk_and_close(binary_path, request.FILES["binary_file"])
 
+        create_error = 0
         if not os.path.isdir(project_path):
-            create_new_s2e_project(binary_path)
+            create_error = create_new_s2e_project(binary_path)
+        
+        if create_error != 0:
+            return HttpResponseBadRequest("Unable to create a project with the given binary")
         
         s2e_num = find_next_analysis_num(project_name)
                         
@@ -132,10 +135,10 @@ def handle_run_s2e_request(request, plugins):
                     
     except AttributeError as err:
         print(err)
-        return HttpResponseServerError()
+        return HttpResponseServerError(err)
     except S2ELaunchException as err:
         print(err)
-        return HttpResponseServerError()
+        return HttpResponseServerError(err)
     
 
 

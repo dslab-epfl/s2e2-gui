@@ -107,7 +107,6 @@ def generate_icount_files(s2e_out_dir):
         
         instruction_count[data_current_state] = data_current_count
             
-
         if(data_current_timestamp < data_last_timestamp):
             print("assumption wrong on timestamp : " + data_current_timestamp)
         
