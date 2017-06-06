@@ -336,45 +336,57 @@ function generate_html_for_stringList_onclick(button){
 	parent.appendChild(input);
 }
 
+/**
+ * Parse the DOM data and create a json tree to send to the server and get the config.lua file.
+ * @returns
+ */
+function parse_and_get_config_file(){
+	var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
+	
+	var json_to_send = parse_data();
+	
+    var form = $('<form method="POST" action=".">');
+
+    form.append($('<input type="hidden" name="csrfmiddlewaretoken" value="' + middle_token + '">'))
+	form.append($('<input type="hidden" name="data" value=\'' + JSON.stringify(json_to_send) + '\'>'))
+	form.append($('<input type="hidden" name="method" value="get_config">'))
+            
+    $('#body').append(form);
+    
+    form.submit();
+    
+    form.remove();
+}
+
 
 /**
- * Parse the DOM data and create a json tree to send to the server.
+ * Parse the DOM data and create a json tree to send to the server to run the analysis.
  * @returns
  */
 function parse_and_post_data(){
 	if(!is_analysis_launched){		
 		var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
-		var data_to_parse = document.getElementById("right-menu-div").childNodes;
-		var json_to_send = {};
 		
-		$.each( data_to_parse, function( i, el ) {
-			if(el.style != undefined){			
-				if(el.style.display == "block"){
-					var test = parse_DOM(el.childNodes);
-					json_to_send[el.id] = test;
-				}
-			}
-		});	
-		
+		var json_to_send = parse_data();
 		
 		var file = document.getElementById("id_binary_file").files[0];
 		var form_data = new FormData();
 		form_data.append("binary_file", file);
+		form_data.append("binary_name", file.name);
 		form_data.append("csrfmiddlewaretoken", middle_token);
 		form_data.append("data", JSON.stringify(json_to_send));
 		form_data.append("method", "run_s2e");
 		form_data.append("timeout", $("#timeout_value").val());
-		form_data.append("binary_name", file.name);
 		
 		$('html,body').css('cursor','wait');
 				
 		$.ajax({
 			type: "POST",
-			url: "http://localhost:8000/",
+			url: ".",
 			data: form_data,
 			processData: false,
 			contentType: false,
-			success: function(data){	  
+			success: function(data){
 				display_data_from_server(JSON.parse(data));
 			}
 		});
@@ -382,6 +394,27 @@ function parse_and_post_data(){
 		is_analysis_launched = true;
 	}
 	
+}
+
+/**
+ * Gets the full json tree of current configuration 
+ * @returns the json tree
+ */
+function parse_data(){
+	var json_to_send = {};
+	
+	var data_to_parse = document.getElementById("right-menu-div").childNodes;
+	
+	$.each( data_to_parse, function( i, el ) {
+		if(el.style != undefined){			
+			if(el.style.display == "block"){
+				var test = parse_DOM(el.childNodes);
+				json_to_send[el.id] = test;
+			}
+		}
+	});	
+	
+	return json_to_send;
 }
 
 /**

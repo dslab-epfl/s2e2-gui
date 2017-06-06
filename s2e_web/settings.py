@@ -25,7 +25,7 @@ SECRET_KEY = '-eyi@$kfi=w%f$l_7aa6lsje0t@$$lk^qph21jb0i#^-4lyio&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost"]
+ALLOWED_HOSTS = ["localhost", "128.179.149.107"]
 
 S2E_ENVIRONEMENT_FOLDER_PATH = "/home/davide/tmp/s2e/"
 

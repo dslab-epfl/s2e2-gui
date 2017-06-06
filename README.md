@@ -50,6 +50,7 @@ Plugin annotation:
 A plugin annotation for this gui is a comment in the code that starts with the tag : "@s2e_plugin_option@".
 The body of the config option must follow the YAML format and is structured as follow : 
 
+// @s2e_plugin_option@
 // attribute_name:
 //   type: int
 //   description: "attribute description."

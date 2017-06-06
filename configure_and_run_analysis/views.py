@@ -12,7 +12,9 @@ import learn_plugin.learn_plugin
 from django.utils.encoding import smart_text
 from display_all_analysis.models import Analysis
 from extract_basic_blocks import generate_graph
-from Crypto.Util.RFC1751 import binary
+from wsgiref.util import FileWrapper
+#from Crypto.Util.RFC1751 import binary
+import StringIO
 
 
 LIST_TYPE = "list"
@@ -47,57 +49,16 @@ def handleRequest(request):
     
     if (request.method == 'POST'):
         
-        #TODO remove
-        if(request.POST["method"] == "get_last_result"):
-            return HttpResponse("Error : this method does not exist anymore")
+        if(request.POST["method"] == "get_config"):
             
+            return handle_get_config_request(request, plugins)
+                        
             
         elif(request.POST["method"] == "run_s2e"):
             
-            try:
-                # Generate an unique name
-                timeout = request.POST["timeout"]
-                project_name = request.POST["binary_name"]
+            return handle_run_s2e_request(request, plugins)
                 
-                binary_path = os.path.join(S2E_settings.S2E_BINARY_FOLDER_PATH, project_name)
-                project_path = os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, project_name)
                 
-                if not os.path.exists(S2E_settings.S2E_BINARY_FOLDER_PATH):
-                    os.makedirs(S2E_settings.S2E_BINARY_FOLDER_PATH)
-                
-                utils.write_file_to_disk_and_close(binary_path, request.FILES["binary_file"])
-
-                if not os.path.isdir(project_path):
-                    create_new_s2e_project(binary_path)
-                
-                s2e_num = find_next_analysis_num(project_name)
-                                
-                selectedPluginsConfig = json.loads(request.POST["data"])
-                selectedPlugins = getSelectedPlugins(selectedPluginsConfig)
-                
-                generateConfigFile(selectedPlugins, selectedPluginsConfig, project_name)
-                
-                has_s2e_error, killed_by_timeout = launch_s2e(timeout, project_name)
-                add_entry_to_database(s2e_num, project_name, binary_path) 
-                
-                s2e_output_dir = os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, project_name, "s2e-out-" + str(s2e_num))
-                                
-                models.generate_lcov_files(s2e_output_dir, project_name)
-                function_paths = generate_graph(s2e_output_dir, s2e_num, project_name)
-                                
-                custom_data = models.CustomAnalysisData(killed_by_timeout, has_s2e_error, function_paths)
-                custom_data.save_to_disk(s2e_output_dir)
-                
-                return render_output(s2e_output_dir, custom_data.data, s2e_num, project_name, request)
-                            
-            except AttributeError as err:
-                print(err)
-                return HttpResponseServerError()
-            except S2ELaunchException as err:
-                print(err)
-                return HttpResponseServerError()
-                
-        
         return HttpResponse(status = 404)
     
 
@@ -108,6 +69,74 @@ def handleRequest(request):
         configure_plugins_html = render(request, 'configure_plugins/index.html', {'plugins': plugins, 'pluginsJson': json.dumps(plugins)})
         
         return configure_plugins_html
+
+
+def handle_get_config_request(request, plugins):
+    try:
+        
+        project_name = "your_binary_name"
+
+        selectedPluginsConfig = json.loads(request.POST["data"])
+        selectedPlugins = getSelectedPlugins(selectedPluginsConfig)
+        
+        configFileContent = generateConfigFileString(selectedPlugins, selectedPluginsConfig, project_name)
+
+        response = HttpResponse(configFileContent, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename="s2e-config.lua"'    
+                
+        return response
+        
+    except AttributeError as err:
+        print(err)
+        return HttpResponseServerError()
+    except S2ELaunchException as err:
+        print(err)
+        return HttpResponseServerError()
+
+def handle_run_s2e_request(request, plugins):
+    try:
+        timeout = request.POST["timeout"]
+        project_name = request.POST["binary_name"]
+        
+        binary_path = os.path.join(S2E_settings.S2E_BINARY_FOLDER_PATH, project_name)
+        project_path = os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, project_name)
+        
+        if not os.path.exists(S2E_settings.S2E_BINARY_FOLDER_PATH):
+            os.makedirs(S2E_settings.S2E_BINARY_FOLDER_PATH)
+        
+        utils.write_file_to_disk_and_close(binary_path, request.FILES["binary_file"])
+
+        if not os.path.isdir(project_path):
+            create_new_s2e_project(binary_path)
+        
+        s2e_num = find_next_analysis_num(project_name)
+                        
+        selectedPluginsConfig = json.loads(request.POST["data"])
+        selectedPlugins = getSelectedPlugins(selectedPluginsConfig)
+        
+        configFileContent = generateConfigFileString(selectedPlugins, selectedPluginsConfig, project_name)
+        utils.write_string_to_disk_and_close(os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, project_name, "s2e-config.lua"), configFileContent)
+        
+        has_s2e_error, killed_by_timeout = launch_s2e(timeout, project_name)
+        add_entry_to_database(s2e_num, project_name, binary_path) 
+        
+        s2e_output_dir = os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, project_name, "s2e-out-" + str(s2e_num))
+                        
+        models.generate_lcov_files(s2e_output_dir, project_name)
+        function_paths = generate_graph(s2e_output_dir, s2e_num, project_name)
+                        
+        custom_data = models.CustomAnalysisData(killed_by_timeout, has_s2e_error, function_paths)
+        custom_data.save_to_disk(s2e_output_dir)
+        
+        return render_output(s2e_output_dir, custom_data.data, s2e_num, project_name, request)
+                    
+    except AttributeError as err:
+        print(err)
+        return HttpResponseServerError()
+    except S2ELaunchException as err:
+        print(err)
+        return HttpResponseServerError()
+    
 
 
 def displayAnalysisInDir(request, dir_num, binary_name):
@@ -136,7 +165,7 @@ def getSelectedPlugins(request_data):
     return selectedPlugins
     
 
-def generateConfigFile(selectedPlugins, selectedPluginsConfig, binary_name):
+def generateConfigFileString(selectedPlugins, selectedPluginsConfig, binary_name):
     """
     Write the config.lua file with the selected plugins and the user configuration.
     """
@@ -165,8 +194,9 @@ def generateConfigFile(selectedPlugins, selectedPluginsConfig, binary_name):
     configFileContent += generate_Vmi_config(binary_name)
     configFileContent += add_linux_monitor_config()
     
-    utils.write_string_to_disk_and_close(os.path.join(S2E_settings.S2E_PROJECT_FOLDER_PATH, binary_name, "s2e-config.lua"), configFileContent)
-
+    return configFileContent
+    
+    
 def add_linux_monitor_config():
     """
     The linux monitor configuration.

@@ -274,3 +274,12 @@ input[type='file']{
 	margin-bottom: 5px;
 	border: 1px solid black;
 }
+
+button.save_load_button{
+	text-transform: uppercase;
+	height: 40px;
+    width: 49.2%;
+    padding: 0px;
+    margin: 0px;
+    transition: max-width 1s, height 1s;
+}
