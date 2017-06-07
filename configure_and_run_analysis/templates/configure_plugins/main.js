@@ -195,12 +195,15 @@ function generate_html_for_list(parent, plugin, attr_key, attr_value){
 	input.data_key = attr_key;
 	input.onclick = function(){generate_html_for_list_onclick(this);};
 	
+	var delete_button = create_delete_button(plugin, attr_key);
+	
 	var div = document.createElement("div");
 	div.className = "container_list";
 	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
 	div.data_key = attr_key;
 	
 	parent.appendChild(input);
+	parent.appendChild(delete_button);
 	parent.appendChild(div);
 }
 
@@ -257,13 +260,34 @@ function generate_html_for_intList(parent, plugin, attr_key, attr_value){
 	input.data_name = attr_key;
 	input.onclick = function(){generate_html_for_intList_onclick(this);};
 	
+	var delete_button = create_delete_button(plugin, attr_key);
+
 	var div = document.createElement("div");
 	div.className = "container";
 	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
 	div.data_name = attr_key;
 	
 	parent.appendChild(input);
+	parent.appencChild(delete_button)
 	parent.appendChild(div);
+}
+
+/**
+ * Create and return a delete button for the given plugin and for the given attribute key.
+ * @param plugin The plugin to generate the button for.
+ * @param attr_key The attribute key to generate the button for.
+ * @returns A delete button.
+ */
+function create_delete_button(plugin, attr_key){
+	var delete_button = document.createElement("input");
+	delete_button.setAttribute("type", "button");
+	delete_button.className = "normal";
+	delete_button.value = "remove " + attr_key;
+	delete_button.data_div = plugin["name"] + ":" + attr_key + uniqueId;
+	delete_button.data_name = attr_key;
+	delete_button.onclick = function(){$(document.getElementById("div_" + this.data_div)).children().last().remove()};
+	
+	return delete_button
 }
 
 /**
@@ -281,7 +305,7 @@ function generate_html_for_intList_onclick(button){
 	var input = document.createElement("input");
 	input.setAttribute("type", "number");
 	input.required = "required";
-	input.className = "normal"
+	input.className = "normal";
 	input.name = button.data_name + uniqueId;
 	
 	parent.appendChild(input);
@@ -306,12 +330,15 @@ function generate_html_for_stringList(parent, plugin, attr_key, attr_value){
 	input.data_name = attr_key;
 	input.onclick = function(){generate_html_for_stringList_onclick(this);};
 	
+	var delete_button = create_delete_button(plugin, attr_key);
+	
 	var div = document.createElement("div");
 	div.className = "container";
 	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
 	div.data_name = attr_key;
 	
 	parent.appendChild(input);
+	parent.appendChild(delete_button);
 	parent.appendChild(div);
 }
 
