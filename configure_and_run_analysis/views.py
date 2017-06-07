@@ -94,7 +94,11 @@ def handle_get_config_request(request, plugins):
 
 def handle_run_s2e_request(request, plugins):
     try:
-        timeout = request.POST["timeout"]
+        timeout = int(request.POST["timeout"])
+        
+        if(timeout <= 0):
+            return HttpResponseBadRequest("The timeout cannot be negative or zero")
+        
         project_name = request.POST["binary_name"]
         
         binary_path = os.path.join(S2E_settings.S2E_BINARY_FOLDER_PATH, project_name)
