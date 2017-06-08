@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "128.179.149.107"]
 
-S2E_ENVIRONEMENT_FOLDER_PATH = "/home/davide/tmp/s2e/"
+S2E_ENVIRONMENT_FOLDER_PATH = "/home/davide/tmp/s2e/"
 
 # Application definition
 

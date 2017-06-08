@@ -12,10 +12,10 @@ import s2e_web.S2E_settings as settings
 
 
 def generate_configuration_for_plugins():
-    sys.path.append(os.path.join(settings.S2E_ENVIRONEMENT_FOLDER_PATH, "build/s2e/llvm-3.9.0.src/tools/clang/bindings/python"))
-    os.environ["LD_LIBRARY_PATH"] = os.path.join(settings.S2E_ENVIRONEMENT_FOLDER_PATH, "build/s2e/llvm-release/lib")
+    sys.path.append(os.path.join(settings.S2E_ENVIRONMENT_FOLDER_PATH, "build/s2e/llvm-3.9.0.src/tools/clang/bindings/python"))
+    os.environ["LD_LIBRARY_PATH"] = os.path.join(settings.S2E_ENVIRONMENT_FOLDER_PATH, "build/s2e/llvm-release/lib")
             
-    S2ECodeParser.parsePluginsInDir(os.path.join(settings.S2E_ENVIRONEMENT_FOLDER_PATH, "source/s2e/libs2eplugins/src/s2e/Plugins"), [
+    S2ECodeParser.parsePluginsInDir(os.path.join(settings.S2E_ENVIRONMENT_FOLDER_PATH, "source/s2e/libs2eplugins/src/s2e/Plugins"), [
         "CallSiteMonitor.cpp",
         "ExecutionTracer.cpp",
         "BasicBlockCoverage.cpp",
@@ -88,7 +88,7 @@ class S2ECodeParser():
         try:
             index = clang.cindex.Index.create()
         except Exception:
-            clang.cindex.Config.set_library_path(os.path.join(settings.S2E_ENVIRONEMENT_FOLDER_PATH, "build/s2e/llvm-release/lib"))
+            clang.cindex.Config.set_library_path(os.path.join(settings.S2E_ENVIRONMENT_FOLDER_PATH, "build/s2e/llvm-release/lib"))
             index = clang.cindex.Index.create()
 
         tu = index.parse(filePath)

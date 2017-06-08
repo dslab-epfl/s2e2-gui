@@ -52,7 +52,7 @@ def generate_lcov_files(s2e_out_dir, binary_name):
     Generate the line coverage files for the given output directory
     """
     generate_coverage_file = "s2e coverage lcov " + binary_name
-    p = subprocess.Popen([generate_coverage_file, ""], shell=True, cwd=settings.S2E_ENVIRONEMENT_FOLDER_PATH)
+    p = subprocess.Popen([generate_coverage_file, ""], shell=True, cwd=settings.S2E_ENVIRONMENT_FOLDER_PATH)
     p.communicate()
     
     if(p.returncode != 0):

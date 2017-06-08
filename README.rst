@@ -23,17 +23,17 @@ Quick start
 	url(r'^display_all_analysis/', include('display_all_analysis.urls')),
 	url(r'^', include('configure_and_run_analysis.urls')),
 
-3. Add the variable S2E_ENVIRONEMENT_FOLDER_PATH with the path of your s2e environement like this:
+3. Add the variable S2E_ENVIRONMENT_FOLDER_PATH with the path of your s2e environment like this:
 	
-	S2E_ENVIRONEMENT_FOLDER_PATH = "/path/to/your/s2e/environement/"
+	S2E_ENVIRONMENT_FOLDER_PATH = "/path/to/your/s2e/environment/"
 
 4. Run `python manage.py migrate` to create the database models.
 
-5. Add your projects inside your environement folder to the statics files like this: 
+5. Add your projects inside your environment folder to the statics files like this: 
 	
 	STATICFILES_DIRS = [
 		...,
-		"/path/to/your/s2e/environement/projects/",
+		"/path/to/your/s2e/environment/projects/",
 		...,
 	]
 

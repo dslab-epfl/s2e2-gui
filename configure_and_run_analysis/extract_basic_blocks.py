@@ -122,7 +122,7 @@ def generate_graph(s2e_output_dir, s2e_num, project_name):
     Generate the PNG graph for the analysis in the output_dir
     """
 
-    s2e_env_path = S2E_settings.S2E_ENVIRONEMENT_FOLDER_PATH
+    s2e_env_path = S2E_settings.S2E_ENVIRONMENT_FOLDER_PATH
     output_dir = os.path.join(s2e_output_dir, "functions")
     os.makedirs(output_dir)
 

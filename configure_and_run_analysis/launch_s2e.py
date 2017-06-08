@@ -50,7 +50,7 @@ def kill_process(process):
     process.killed_by_timeout = True
 
 def create_new_s2e_project(binary_path):
-    s2e_create_project_command = "s2e new_project -e " + settings.S2E_ENVIRONEMENT_FOLDER_PATH + " " + binary_path
+    s2e_create_project_command = "s2e new_project -e " + settings.S2E_ENVIRONMENT_FOLDER_PATH + " " + binary_path
     
     p = subprocess.Popen([s2e_create_project_command, ""], shell=True)
     
