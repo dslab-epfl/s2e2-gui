@@ -56,7 +56,12 @@ function delete_analysis(td){
 			  processData: false,
 			  contentType: false,
 			  success: function(data){
-				  $(td).parent().remove();
+				  if($(td).parent().parent().children().length === 3){
+					  $(td).parent().parent().remove();
+				  }else{					  
+					  $(td).parent().remove();
+				  }
+				  
 				  $('html,body').css('cursor','auto');
 			  }
 	});

@@ -224,3 +224,7 @@ div#block_legend_gray{
 	margin-left: auto;
 	margin-right: auto;
 }
+
+span.highlight{
+	background-color: yellow;
+}

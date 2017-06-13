@@ -283,3 +283,7 @@ button.save_load_button{
     margin: 0px;
     transition: max-width 1s, height 1s;
 }
+
+label#countdown_label, label#countdown_label_descr{
+	color: white;
+}

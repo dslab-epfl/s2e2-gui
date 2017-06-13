@@ -63,9 +63,35 @@
     },
     {
         "configOption": {},
+        "dependencies": [
+            "ExecutionTracer"
+        ],
+        "name": "StateSwitchTracer",
+        "description": "Traces state switches"
+    },
+    {
+        "configOption": {},
         "dependencies": [],
         "name": "ExecutionTracer",
         "description": "ExecutionTracer plugin"
+    },
+    {
+        "configOption": {
+            "flushTbCache": {
+                "type": "bool",
+                "description": "Whether or not to flush the translation block cache when enabling/disabling tracing."
+            },
+            "manualTrigger": {
+                "type": "bool",
+                "description": ""
+            }
+        },
+        "dependencies": [
+            "ExecutionTracer",
+            "ModuleExecutionDetector"
+        ],
+        "name": "TBCoverageTracer",
+        "description": "Tracer for translation blocks"
     },
     {
         "configOption": {
@@ -98,6 +124,28 @@
         "dependencies": [],
         "name": "MultiSearcher",
         "description": "MultiSearcher S2E plugin"
+    },
+    {
+        "configOption": {
+            "batchTime": {
+                "type": "int",
+                "description": ""
+            },
+            "classes": {
+                "type": "stringList",
+                "description": ""
+            },
+            "enabled": {
+                "type": "bool",
+                "description": ""
+            }
+        },
+        "dependencies": [
+            "ModuleExecutionDetector",
+            "MultiSearcher"
+        ],
+        "name": "CUPASearcher",
+        "description": "CUPA searcher"
     },
     {
         "configOption": {

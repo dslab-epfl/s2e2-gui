@@ -367,6 +367,8 @@ def render_output(s2e_output_dir, custom_data, s2e_num, project_name, request):
     has_coverage, line_coverage_path = models.get_lcov_path(s2e_output_dir, s2e_num, project_name)
     icount = models.generate_icount_files(s2e_output_dir)
     
+    print(icount)
+    
     html_data_dictionary =  {'warnings': smart_text(output.warnings, encoding="utf-8", errors="ignore"), 
                         'info' : smart_text(output.info, encoding="utf-8", errors="ignore"), 
                         'debug' : smart_text(output.debug, encoding="utf-8", errors="ignore"), 

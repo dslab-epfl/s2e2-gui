@@ -76,7 +76,7 @@
 					<iframe onload="resizeIframe(this)" src="{% get_static_prefix %}{{line_coverage_report_path}}" class="externalContainer"></iframe>
 				{% else %}
 					<h4>No coverage report found :</h4>
-						<p>To have a coverage report, make sure to enable TranslationBlockCoverage and set the value writeCoverageOnStateKill to true</p>
+						<p>To have a coverage report, make sure to enable TranslationBlockCoverage and set the value writeCoverageOnStateKill to true. You also need to compile your binary with DWARF info (add the option -g to gcc)</p>
 				{% endif %}			
 			</div>
 			

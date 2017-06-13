@@ -27,6 +27,9 @@ def generate_configuration_for_plugins():
         "SeedSearcher.cpp",
         "MultiSearcher.cpp",
         "TestCaseGenerator.cpp",
+        "StateSwitchTracer.cpp",
+        "TBCoverageTracer.cpp",
+        "CUPASearcher.cpp",
         "SeedScheduler.cpp"])
 
 class PluginParseException(Exception):

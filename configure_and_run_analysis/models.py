@@ -7,6 +7,7 @@ import os
 from xdiagnose.utils.url_io import data_from_url
 import json
 import utils
+import tools.execution_tracer.execution_trace_parser as execution_parser
 
 class S2EOutput():
     """
@@ -80,18 +81,14 @@ def get_lcov_path(s2e_out_dir, s2e_num, binary_name):
 def generate_icount_files(s2e_out_dir):
     """
     Generate the instruction count data for the given output directory.
-    """
-    run_execution_trace_parser_script = settings.EXECUTION_TRACE_PARSER_SCRIPT_PATH
-    generate_json_from_tracer_cmd = "python " + run_execution_trace_parser_script + " ExecutionTracer.dat"
+    """    
+    file_path = os.path.join(s2e_out_dir, "ExecutionTracer.dat")
     
-    process = subprocess.Popen([generate_json_from_tracer_cmd, ""], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=s2e_out_dir)
-    out, err = process.communicate()
-    
-    try:
-        data = json.loads(out)
-    except ValueError:
+    if(not os.path.exists(file_path)):
         return
     
+    data = execution_parser.main(file_path)
+        
     if(data == None):
         return 
     
@@ -112,6 +109,8 @@ def generate_icount_files(s2e_out_dir):
         
         data_last_timestamp = data_current_timestamp
         
+    print(instruction_count)    
+    
     return instruction_count
     
     

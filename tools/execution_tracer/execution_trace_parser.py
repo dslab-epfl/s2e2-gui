@@ -139,7 +139,7 @@ def parse_args():
     return parser.parse_args()
     
 
-def main():
+def main(argument):
     """The main function."""
 
     entry_classes = {
@@ -166,15 +166,15 @@ def main():
         TraceEntryType.TRACE_TB_END_X64: '',
         TraceEntryType.TRACE_BLOCK: 'block',
     }
-
-    args = parse_args()
+    
+    args = argparse.Namespace(log_file=argument)
 
     try:
         log_reader = S2ETraceParser(args.log_file)
         results = log_reader.read()
         json_results = [{entry_classes[h.type]: _merge_dicts(h.as_dict(), d.as_dict())} for h, d in results]
 
-        print(json.dumps(json_results, indent=4))
+        return json_results
     except S2ETraceParserException as e:
         print('ERROR: %s' % e)
 

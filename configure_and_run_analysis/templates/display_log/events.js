@@ -44,10 +44,9 @@ $(document).ready(function(){
     	window.location.href = "../";
     });
     
-    
 	display_stats(window.data_runstats);
 	display_icount(window.data_icount);
-	
+		
 	createCustomLogDisplay("warning_log");
 	createCustomLogDisplay("debug_log");
 	var info_line_by_state = createCustomLogDisplay("info_log");
@@ -138,7 +137,10 @@ function createCustomLogDisplay(div_id){
 	
 		var re = /\[State \d+\]/g;
 				
-		var warning_array = $("#" + div_id + "_all").html().split(/<br>|<p>|<\/p>/);
+		var full_log_div = $("#" + div_id + "_all");
+		var warning_array = full_log_div.html().split(/<br>|<p>|<\/p>/);
+		full_log_div.empty();
+				
 		var line_by_state = {};
 		var last_matched_state = null;
 		
@@ -158,6 +160,8 @@ function createCustomLogDisplay(div_id){
 				}
 				state_array.push(text_line);
 			}
+			
+			appendWithGuestHighlight(full_log_div, text_line);
 		}
 		
 		for(var key in line_by_state){
@@ -167,8 +171,9 @@ function createCustomLogDisplay(div_id){
 			var text_array = line_by_state[key];
 			
 			for(var i = 0; i < text_array.length; ++i){
-				div.appendChild(document.createTextNode(text_array[i]));
-				div.appendChild(document.createElement("BR"));
+				var text_line = text_array[i];
+				
+				appendWithGuestHighlight($(div), text_line);
 			}
 			$("#" + div_id).append(div);
 			
@@ -181,8 +186,23 @@ function createCustomLogDisplay(div_id){
 		return line_by_state;
 }
 
+function appendWithGuestHighlight(div, text_line){
+	var message_from_guest_re = /\s*Message from guest\s*/;
+	var matched_message = text_line.match(message_from_guest_re);
+		
+	if(matched_message != null){
+		var highlight = document.createElement("span");
+		highlight.className = "highlight";
+		highlight.appendChild(document.createTextNode(text_line));
+		div.append(highlight);
+	}else{
+		div.append(document.createTextNode(text_line));	
+	}				
+	div.append(document.createElement("BR"));
+}
+
 /**
- * Display a table in the overview to print the final message an status code for every states.
+ * Display a table in the overview to print the final message and status code for every states.
  */
 function displayFinalStatusCode(info_line_by_state){
 	

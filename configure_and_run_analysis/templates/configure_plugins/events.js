@@ -1,7 +1,11 @@
+var timer;
+
 $(document).ready(function(){
 	$("#button_run").click(function(event){
 				
 		$("#button_run_hidden").click()
+		
+		
 		
 		var is_form_valid = true;		
 		
@@ -22,6 +26,11 @@ $(document).ready(function(){
 		}
 		
 		if(is_form_valid == true){
+			$("#countdown_label").html($("#timeout_value").val())
+			$("#countdown_label").show();
+			$("#countdown_label_descr").show();
+			timer = setInterval(decrease_countdown, 1000);
+			
 			parse_and_post_data();
 		}
 		
@@ -36,6 +45,21 @@ $(document).ready(function(){
 	});
 		
 });
+
+function decrease_countdown(){
+	var countdown_label = $("#countdown_label");
+	
+	var value = countdown_label.html() - 1;
+	
+	countdown_label.html(value);
+	
+	if(value <= 0){
+		clearInterval(timer);
+		
+		$("#countdown_label_descr").hide();
+		countdown_label.hide();
+	}
+}
 
 /**
  * Send a configuration file with the current configuration

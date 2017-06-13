@@ -6,6 +6,8 @@ import shutil
 import os
 from configure_and_run_analysis.views import displayAnalysisInDir
 from cups import HTTP_OK
+from django.db.models.aggregates import Count
+from itertools import groupby
 
 
 def handleRequest(request):
@@ -13,8 +15,8 @@ def handleRequest(request):
 	Handle the requests from the display_all_analysis page.
 	"""
 		
-	if (request.method == 'GET'):
-		return render(request, 'display_all_analysis/index.html', {"analysis" : Analysis.objects.all()})
+	if (request.method == 'GET'):			
+		return render(request, 'display_all_analysis/index.html', {"analysis" : group_by(Analysis.objects.all(), lambda x: x.binary_name)})
 	
 	elif (request.method == 'POST'):
 		if(request.POST["method"] == "display"):
@@ -33,3 +35,14 @@ def handleRequest(request):
 			return HttpResponse(status=200)
 		
 
+def group_by(data_list, func):
+	output = {}
+	
+	for data in data_list:
+		key = func(data)
+		if(not key in output):
+			output[key] = [data]
+		else:
+			output[key].append(data)
+
+	return output

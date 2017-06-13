@@ -27,7 +27,7 @@ function generatePluginConfigOption(plugin){
 	if($.isEmptyObject(plugin["configOption"])){
 		config_body = document.createElement("label");
 		config_body.className = "normal";
-		config_body.innerHTML = "This plugin as not configuration options."
+		config_body.innerHTML = "This plugin has no configuration option."
 	}else{
 		config_body = document.createElement("div");
 		config_body.className = "normal";
@@ -492,8 +492,6 @@ function parse_DOM(DOM_array){
 			}else if(el.type == "button"){
 				
 			}else{
-				console.log(el);
-				console.log(el.data_key);
 				var json_var = {};
 				json_var[el.data_key] = el.value;
 				json_to_send = $.extend(json_to_send, json_var);

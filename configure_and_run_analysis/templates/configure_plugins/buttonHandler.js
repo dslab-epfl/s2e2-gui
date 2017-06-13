@@ -40,6 +40,8 @@ function buttonChangeHandler(button){
 					
 					buttonChangeHandler(dependencyButton);
 				}
+			}else{
+				console.log(plugin.dependencies[i]);
 			}
 		}
 	}else{
@@ -65,6 +67,8 @@ function buttonChangeHandler(button){
 						buttonChangeHandler(dependencyButton);
 					}
 				}
+			}else{
+				console.log(plugin.dependencies[i]);
 			}
 		}
 	}
