@@ -7,82 +7,82 @@
 			{% include "configure_plugins/main.css" %}
     	</style>
         <meta charset="utf-8">
-        <title>S2E Web</title>        
+        <title>S2E Web</title>
     </head>
     <body id="body">
-	 
+
 	 {% csrf_token %}
-	 
+
 	 <form id="header_form" action="">
-	 
+
 		 <div id="menu">
-				<button type="button" class="mainActionButton topMenu" id="button_prev_result" onclick="see_last_result()">See Previous Results</button><!-- 
-				--><div id="top_menu_center_div"><label class="topMenu" id="topMenuTimeout">Timeout (s) : <input class="topMenu" type="number" id="timeout_value" value="15" min="1" required/></label><!-- 
+				<button type="button" class="mainActionButton topMenu" id="button_prev_result" onclick="see_last_result()">See Previous Results</button><!--
+				--><div id="top_menu_center_div"><label class="topMenu" id="topMenuTimeout">Timeout (s) : <input class="topMenu" type="number" id="timeout_value" value="15" min="1" required/></label><!--
 				--><input id="id_binary_file" name="binary_file" type="file" required /><!--
 				--><label id="countdown_label_descr" style="display: none">Timeout in : </label><label id="countdown_label" style="display: none"></label></div><!--
 				--><button class="mainActionButton topMenu" form="header_form" id="button_run">Run</button>
 				<button id="button_run_hidden" style="display: none" form="content_form" onclick=""></button>
 		 </div>
-		 
+
  	 </form>
-		 
-		 
+
+
 	 <form id="content_form" action="">
 		 <div id="left_right_container">
 			 <div id="left-menu-div">
-			 	
+
 			 	<button class="save_load_button" form="content_form" onclick="save_config()">Save config</button>
 			 	<button class="save_load_button" style="display:none" form="" onclick="load_config()">Load config</button>
-			 	
+
 			 	<!-- The menu on the left of the page, contains every plugins -->
 			 	{% for plugin in plugins %}
 			 		<button type="button" id="button_{{ plugin.name }}" name="{{ plugin.name }}" onclick="buttonClickHandler(this)" class="left_menu_button">{{ plugin.name }}</button><br>
 			 	{% endfor %}
-			 	
+
 			 </div>
-			 	 
-			 <div id="right-menu-div">	
-			
+
+			 <div id="right-menu-div">
+
 			 </div>
-				 
+
 		 </div>
 	 </form>
-	 
-	 	
+
+
 		<script type="text/javascript">
 				//init the dependency map
 				var pluginMap = new Map();
 				var uniqueId = 0;
-				
+
 				var tmpCopyArray;
 				{% for plugin in plugins %}
 					tmpCopyArray = new Array();
-					
+
 					{% for dependency in plugin.dependencies %}
 						tmpCopyArray.push("{{dependency}}");
 					{% endfor %}
-					
-					pluginMap.set("{{plugin.name}}", {isChecked: false, depCount: 0, dependencies: tmpCopyArray});				
-				
+
+					pluginMap.set("{{plugin.name}}", {isChecked: false, depCount: 0, dependencies: tmpCopyArray});
+
 				{% endfor %}
-				
+
 				var plugins = {{ pluginsJson | safe }};
-				
+
 				for(var i = 0; i < plugins.length; ++i){
 					generatePluginConfigOption(plugins[i]);
 				}
-				
-				
+
+
 				{% include "configure_plugins/main.js" %}
 				{% include "configure_plugins/events.js" %}
 				{% include "configure_plugins/buttonHandler.js" %}
 				{% include "utils.js" %}
-				
-				
-		
-		</script> 
-		
+
+
+
+		</script>
+
 	</body>
-	
-	
-</html> 
+
+
+</html>

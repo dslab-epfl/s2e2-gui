@@ -7,21 +7,21 @@
 			{% include "display_all_analysis/main.css" %}
     	</style>
         <meta charset="utf-8">
-        <title>S2E Web</title>        
+        <title>S2E Web</title>
     </head>
     <body id="body">
-	 
+
 	 {% csrf_token %}
-	 	 
+
 	 <div id="menu">
 			<button type="button" class="mainActionButton topMenu" id="button_prev_result" onclick="run_new_analysis()">Run new analysis</button>
 	 </div>
-		 	
+
 	 <div id="container">
-	 	
+
 	 	{% for binary_name, analysis_group in analysis.items %}
 	 		<table>
-	 			<tr><th colspan="2">Project name: {{binary_name}}</th></tr>				
+	 			<tr><th colspan="2">Project name: {{binary_name}}</th></tr>
 					<tr><th>Analysis ID</th><th>Binary Checksum</th></tr>
 					{% for a in analysis_group %}
 						<tr data-s2e_num="{{a.s2e_num}}" data-binary_name="{{a.binary_name}}" >
@@ -31,15 +31,15 @@
 			</table>
 		{% endfor %}
 	 </div>
-	 	 	
+
 	<script type="text/javascript">
-			
+
 			{% include "display_all_analysis/main.js" %}
 			{% include "utils.js" %}
-	
-	</script> 
-		
+
+	</script>
+
 	</body>
-	
-	
-</html> 
+
+
+</html>

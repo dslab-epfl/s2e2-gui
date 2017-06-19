@@ -4,25 +4,25 @@ function run_new_analysis(){
 
 /**
  * Displays the analysis data for the clicked line
- * 
- * @param tr 
+ *
+ * @param tr
  * 		The line that was clicked
  * @returns
  */
 function display_analysis(td){
 	var s2e_num = $(td).parent().data("s2e_num");
 	var binary_name = $(td).parent().data("binary_name");
-		
+
 	var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
-	
+
 	var form_data = new FormData();
 	form_data.append("csrfmiddlewaretoken", middle_token);
 	form_data.append("s2e_num", s2e_num);
 	form_data.append("binary_name", binary_name);
 	form_data.append("method", "display");
-	
+
 	$('html, body').css('cursor','wait');
-	
+
 	$.ajax({
 			  type: "POST",
 			  url: ".",
@@ -40,15 +40,15 @@ function delete_analysis(td){
 	var binary_name = $(td).parent().data("binary_name");
 
 	var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
-	
+
 	var form_data = new FormData();
 	form_data.append("csrfmiddlewaretoken", middle_token);
 	form_data.append("s2e_num", s2e_num);
 	form_data.append("binary_name", binary_name);
 	form_data.append("method", "remove");
-	
+
 	$('html,body').css('cursor','wait');
-	
+
 	$.ajax({
 			  type: "POST",
 			  url: ".",
@@ -58,12 +58,11 @@ function delete_analysis(td){
 			  success: function(data){
 				  if($(td).parent().parent().children().length === 3){
 					  $(td).parent().parent().remove();
-				  }else{					  
+				  }else{
 					  $(td).parent().remove();
 				  }
-				  
+
 				  $('html,body').css('cursor','auto');
 			  }
 	});
 }
-	

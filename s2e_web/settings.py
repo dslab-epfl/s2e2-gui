@@ -25,9 +25,12 @@ SECRET_KEY = '-eyi@$kfi=w%f$l_7aa6lsje0t@$$lk^qph21jb0i#^-4lyio&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "128.179.149.107"]
+ALLOWED_HOSTS = ['*']
 
-S2E_ENVIRONMENT_FOLDER_PATH = "/home/davide/tmp/s2e/"
+S2E_ENVIRONMENT_FOLDER_PATH = os.environ.get('S2E_ENV_PATH')
+if not S2E_ENVIRONMENT_FOLDER_PATH:
+    raise Exception('No S2E environment provided - please provide a path to the S2E environment in the S2E_ENV_PATH '
+                    'environment variable')
 
 # Application definition
 
@@ -38,8 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'display_all_analysis',
-	'configure_and_run_analysis',
+    'display_all_analysis',
+    'configure_and_run_analysis',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +61,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-              BASE_DIR + '/templates/',
+            os.path.join(BASE_DIR, 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -126,5 +129,5 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-	"/home/davide/tmp/s2e/projects/",
+    os.path.join(S2E_ENVIRONMENT_FOLDER_PATH, 'projects'),
 ]

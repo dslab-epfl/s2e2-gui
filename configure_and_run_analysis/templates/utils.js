@@ -1,5 +1,5 @@
 function appendElementsToTable(table, elements){
-	
+
 	var tr = document.createElement('tr');
 	for(var i = 0 ; i < elements.length; ++i){
 		var td = document.createElement('td');
@@ -7,7 +7,7 @@ function appendElementsToTable(table, elements){
 		tr.appendChild(td);
 	}
 	table.appendChild(tr);
-	
+
 }
 
 
@@ -15,7 +15,7 @@ function display_data_from_server(data){
 	document.open("text/html");
 	document.write(data.html);
 	document.close();
-		
+
 	window.data_runstats = data.stats;
 	window.data_icount = data.icount;
 }

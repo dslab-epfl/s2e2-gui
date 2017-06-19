@@ -13,7 +13,6 @@ from __future__ import print_function
 import glob
 import json
 import os
-import sys
 
 import pydot
 import r2pipe
@@ -123,7 +122,7 @@ def generate_graph(s2e_output_dir, s2e_num, project_name):
     """
 
     s2e_env_path = S2E_settings.S2E_ENVIRONMENT_FOLDER_PATH
-    output_dir = os.path.join(s2e_output_dir, "functions")
+    output_dir = os.path.join(s2e_output_dir, 'functions')
     os.makedirs(output_dir)
 
     # Check that the given S2E environment is legitimate
@@ -176,6 +175,6 @@ def generate_graph(s2e_output_dir, s2e_num, project_name):
     # of PNG images for each function
     covered_bbs = basic_block_coverage(r2, covered_tbs)
     render_functions(r2, covered_bbs, output_dir)
-    
-    base_path = project_name + "/s2e-out-" + str(s2e_num) + "/functions/"
-    return [[file[0:-4], os.path.join(base_path, file)] for file in os.listdir(output_dir)]
+
+    base_path = os.path.join(project_name, 's2e-out-%d' % s2e_num, 'functions')
+    return [[file_[0:-4], os.path.join(base_path, file_)] for file_ in os.listdir(output_dir)]
