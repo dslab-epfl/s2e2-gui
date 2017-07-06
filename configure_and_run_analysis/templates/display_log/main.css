@@ -6,7 +6,7 @@ html, body {
 }
 
 body{
-	margin-top: 100px;	
+	margin-top: 100px;
 }
 
 html.warning{
@@ -46,8 +46,8 @@ button.mainActionButton, #backButton{
     transition: max-width 1s, height 1s;
 }
 
-button.mainActionButton::-moz-focus-inner, #backButton::-moz-focus-inner{ 
-  border: 0; 
+button.mainActionButton::-moz-focus-inner, #backButton::-moz-focus-inner{
+  border: 0;
 }
 
 button.mainActionButton.active{
@@ -118,7 +118,7 @@ button:active {
 
 .externalContainer{
 	width: 100%;
-	height:100%; 
+	height:100%;
 	overflow:auto;
 	border:5px ridge black
 }
@@ -152,7 +152,7 @@ tbody.centered{
 
 h2.centered{
 	text-align: center;
-	margin-bottom: 50px;	
+	margin-bottom: 50px;
 }
 
 tr.error{
@@ -165,7 +165,7 @@ tr.error:hover{
 
 #statistics_table{
 	display: inline-table;
-	margin-right: 100px;	
+	margin-right: 100px;
 }
 
 #image_display{
@@ -189,7 +189,7 @@ div.div_legend{
 	text-align: center;
 	display: inline-block;
 	margin-left: 50px;
-	margin-right: 50px;	
+	margin-right: 50px;
 }
 
 div#arrow_legend_green{

@@ -31,14 +31,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import print_function
 
-"""
-Parses an S2E binary execution trace file and outputs the result as
-pretty-printed JSON.
-"""
-
 import argparse
-import json
 import struct
+import sys
 
 from structs import *
 
@@ -137,7 +132,7 @@ def parse_args():
                         help='Path to log file')
 
     return parser.parse_args()
-    
+
 
 def main(argument):
     """The main function."""
@@ -166,7 +161,7 @@ def main(argument):
         TraceEntryType.TRACE_TB_END_X64: '',
         TraceEntryType.TRACE_BLOCK: 'block',
     }
-    
+
     args = argparse.Namespace(log_file=argument)
 
     try:
@@ -180,4 +175,4 @@ def main(argument):
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)

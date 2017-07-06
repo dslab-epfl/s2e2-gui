@@ -3,7 +3,7 @@ var is_analysis_launched = false;
 
 /**
  * Generate a div with the options for the given plugin
- * 
+ *
  * @param plugin
  * 		The plugin we want to generate.
  * @returns void
@@ -12,16 +12,16 @@ function generatePluginConfigOption(plugin){
 	var inside_div = document.createElement("div");
 	inside_div.id = plugin["name"];
 	inside_div.className = "plugin_div";
-	
+
 	var plugin_name = document.createElement("H1");
 	plugin_name.className = "right_menu_plugin_name";
 	plugin_name.appendChild(document.createTextNode(plugin["name"]));
 	inside_div.appendChild(plugin_name);
-	
+
 	var plugin_description = document.createElement("H3");
 	plugin_description.className = "right_menu_plugin_description";
 	plugin_description.appendChild(document.createTextNode(plugin["description"]));
-	inside_div.appendChild(plugin_description);   
+	inside_div.appendChild(plugin_description);
 
 	var config_body;
 	if($.isEmptyObject(plugin["configOption"])){
@@ -31,16 +31,16 @@ function generatePluginConfigOption(plugin){
 	}else{
 		config_body = document.createElement("div");
 		config_body.className = "normal";
-		generate_html_per_type(config_body, plugin, plugin["configOption"]); 
+		generate_html_per_type(config_body, plugin, plugin["configOption"]);
 	}
-	inside_div.appendChild(config_body);   
+	inside_div.appendChild(config_body);
 
 	document.getElementById("right-menu-div").append(inside_div);
 }
 
 /**
  * Generate the html for the plugin given the type of the option.
- * 
+ *
  * @param parent
  * 		The object we want to append the data to.
  * @param plugin
@@ -53,21 +53,21 @@ function generate_html_per_type(parent, plugin, config_option){
 	$.each(config_option, function(attr_key, attr_value){
 		var container_div = document.createElement("div");
 		container_div.className = "right_menu_container";
-		
+
 		var header = document.createElement("span");
 		header.className = "attribute_title";
 		header.appendChild(document.createTextNode(attr_key + ":"));
-		
+
 		var header_descr = document.createElement("span");
 		header_descr.className = "attribute_description";
 		header_descr.appendChild(document.createTextNode(attr_value["description"]))
 		header_descr.appendChild(document.createElement("BR"));
-		
+
 		container_div.appendChild(header_descr);
 		container_div.appendChild(header);
-		
+
 		parent.appendChild(container_div);
-		
+
 		if(attr_value["type"] == "int"){
 			generate_html_for_int(container_div, plugin["name"], attr_key);
 		}else if(attr_value["type"] == "bool"){
@@ -83,12 +83,12 @@ function generate_html_per_type(parent, plugin, config_option){
 		}else{
 			var error = document.createElement("label");
 			error.className = "error";
-			error.innerHTML = "Unrecognized type:" + attr_value["type"];  
+			error.innerHTML = "Unrecognized type:" + attr_value["type"];
 			container_div.appendChild(error);
 		}
-		
+
 		parent.appendChild(document.createElement("BR"));
-		
+
 	})
 }
 
@@ -109,7 +109,7 @@ function generate_html_for_int(parent, plugin_name, attr_key){
 	input.className = "normal";
 	input.name = attr_key;
 	input.data_key = attr_key;
-	
+
 	parent.appendChild(input);
 }
 
@@ -125,7 +125,7 @@ function generate_html_for_int(parent, plugin_name, attr_key){
  */
 function generate_html_for_bool(parent, plugin_name, attr_key){
 	uniqueId++;
-	
+
 	var label1 = document.createElement("label");
 	var input1 = document.createElement("input");
 	input1.setAttribute("type", "radio");
@@ -146,7 +146,7 @@ function generate_html_for_bool(parent, plugin_name, attr_key){
 	input2.data_key = attr_key;
 	label2.appendChild(input2);
 	label2.appendChild(document.createTextNode("False"));
-		
+
 	parent.appendChild(label1);
 	parent.appendChild(label2);
 }
@@ -163,14 +163,14 @@ function generate_html_for_bool(parent, plugin_name, attr_key){
  */
 function generate_html_for_string(parent, plugin_name, attr_key){
 	uniqueId++;
-	
+
 	var input = document.createElement("input");
 	input.setAttribute("type", "text");
 	input.className = "normal";
 	input.required = "required";
 	input.name = plugin_name + ":" + attr_key + uniqueId;
 	input.data_key = attr_key;
-	
+
 	parent.appendChild(input);
 }
 
@@ -194,14 +194,14 @@ function generate_html_for_list(parent, plugin, attr_key, attr_value){
 	input.data_div = plugin["name"] + ":" + attr_key + uniqueId;
 	input.data_key = attr_key;
 	input.onclick = function(){generate_html_for_list_onclick(this);};
-	
+
 	var delete_button = create_delete_button(plugin, attr_key);
-	
+
 	var div = document.createElement("div");
 	div.className = "container_list";
 	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
 	div.data_key = attr_key;
-	
+
 	parent.appendChild(input);
 	parent.appendChild(delete_button);
 	parent.appendChild(div);
@@ -209,24 +209,24 @@ function generate_html_for_list(parent, plugin, attr_key, attr_value){
 
 /**
  * What a button for a list should do in case it is clicked.
- * 
+ *
  * @param button
  * 		The clicked button
  * @returns
  */
 function generate_html_for_list_onclick(button){
 	var parent = document.getElementById("div_" + button.data_div);
-		
+
 	uniqueId++;
-	
+
 	var element_div = document.createElement("div");
 	element_div.className = "list_element";
-	
+
 	var key_label = document.createElement("label");
 	key_label.appendChild(document.createTextNode(button.data_key + " key : "));
 	key_label.className = "normal";
 	element_div.appendChild(key_label);
-	
+
 	var key_input = document.createElement("input");
 	key_input.setAttribute("type", "text");
 	key_input.required = "required";
@@ -235,7 +235,7 @@ function generate_html_for_list_onclick(button){
 	key_input.pattern = "([A-Z]|[a-z])\\w*";
 	key_input.title="a valid key without whitespace and with no leading digit"
 	element_div.appendChild(key_input);
-	
+
 	generate_html_per_type(element_div, button.data_plugin, button.data_content);
 	parent.appendChild(element_div);
 }
@@ -259,14 +259,14 @@ function generate_html_for_intList(parent, plugin, attr_key, attr_value){
 	input.data_div = plugin["name"] + ":" + attr_key + uniqueId;
 	input.data_name = attr_key;
 	input.onclick = function(){generate_html_for_intList_onclick(this);};
-	
+
 	var delete_button = create_delete_button(plugin, attr_key);
 
 	var div = document.createElement("div");
 	div.className = "container";
 	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
 	div.data_name = attr_key;
-	
+
 	parent.appendChild(input);
 	parent.appencChild(delete_button)
 	parent.appendChild(div);
@@ -286,28 +286,28 @@ function create_delete_button(plugin, attr_key){
 	delete_button.data_div = plugin["name"] + ":" + attr_key + uniqueId;
 	delete_button.data_name = attr_key;
 	delete_button.onclick = function(){$(document.getElementById("div_" + this.data_div)).children().last().remove()};
-	
+
 	return delete_button
 }
 
 /**
  * What a button for an integer list should do in case it is clicked.
- * 
+ *
  * @param button
  * 		The clicked button
  * @returns
  */
 function generate_html_for_intList_onclick(button){
 	var parent = document.getElementById("div_" + button.data_div);
-		
+
 	uniqueId++;
-	
+
 	var input = document.createElement("input");
 	input.setAttribute("type", "number");
 	input.required = "required";
 	input.className = "normal";
 	input.name = button.data_name + uniqueId;
-	
+
 	parent.appendChild(input);
 }
 
@@ -329,14 +329,14 @@ function generate_html_for_stringList(parent, plugin, attr_key, attr_value){
 	input.data_div = plugin["name"] + ":" + attr_key + uniqueId;
 	input.data_name = attr_key;
 	input.onclick = function(){generate_html_for_stringList_onclick(this);};
-	
+
 	var delete_button = create_delete_button(plugin, attr_key);
-	
+
 	var div = document.createElement("div");
 	div.className = "container";
 	div.id = "div_" + plugin["name"] + ':' + attr_key + uniqueId;
 	div.data_name = attr_key;
-	
+
 	parent.appendChild(input);
 	parent.appendChild(delete_button);
 	parent.appendChild(div);
@@ -344,22 +344,22 @@ function generate_html_for_stringList(parent, plugin, attr_key, attr_value){
 
 /**
  * What a button for an list of string should do in case it is clicked.
- * 
+ *
  * @param button
  * 		The clicked button
  * @returns
  */
 function generate_html_for_stringList_onclick(button){
 	var parent = document.getElementById("div_" + button.data_div);
-		
+
 	uniqueId++;
-	
+
 	var input = document.createElement("input");
 	input.setAttribute("type", "text");
 	input.className = "normal"
 	input.required = "required";
 	input.name = button.data_name + uniqueId;
-	
+
 	parent.appendChild(input);
 }
 
@@ -369,19 +369,19 @@ function generate_html_for_stringList_onclick(button){
  */
 function parse_and_get_config_file(){
 	var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
-	
+
 	var json_to_send = parse_data();
-	
+
     var form = $('<form method="POST" action=".">');
 
     form.append($('<input type="hidden" name="csrfmiddlewaretoken" value="' + middle_token + '">'))
 	form.append($('<input type="hidden" name="data" value=\'' + JSON.stringify(json_to_send) + '\'>'))
 	form.append($('<input type="hidden" name="method" value="get_config">'))
-            
+
     $('#body').append(form);
-    
+
     form.submit();
-    
+
     form.remove();
 }
 
@@ -391,11 +391,11 @@ function parse_and_get_config_file(){
  * @returns
  */
 function parse_and_post_data(){
-	if(!is_analysis_launched){		
+	if(!is_analysis_launched){
 		var middle_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
-		
+
 		var json_to_send = parse_data();
-		
+
 		var file = document.getElementById("id_binary_file").files[0];
 		var form_data = new FormData();
 		form_data.append("binary_file", file);
@@ -404,9 +404,9 @@ function parse_and_post_data(){
 		form_data.append("data", JSON.stringify(json_to_send));
 		form_data.append("method", "run_s2e");
 		form_data.append("timeout", $("#timeout_value").val());
-		
+
 		$('html,body').css('cursor','wait');
-				
+
 		$.ajax({
 			type: "POST",
 			url: ".",
@@ -422,36 +422,36 @@ function parse_and_post_data(){
 				is_analysis_launched = false;
 			}
 		});
-		
+
 		is_analysis_launched = true;
 	}
-	
+
 }
 
 /**
- * Gets the full json tree of current configuration 
+ * Gets the full json tree of current configuration
  * @returns the json tree
  */
 function parse_data(){
 	var json_to_send = {};
-	
+
 	var data_to_parse = document.getElementById("right-menu-div").childNodes;
-	
+
 	$.each( data_to_parse, function( i, el ) {
-		if(el.style != undefined){			
+		if(el.style != undefined){
 			if(el.style.display == "block"){
 				var test = parse_DOM(el.childNodes);
 				json_to_send[el.id] = test;
 			}
 		}
-	});	
-	
+	});
+
 	return json_to_send;
 }
 
 /**
  * Parse the DOM_array to create the json tree.
- * 
+ *
  * @param DOM_array
  * 		The array to parse.
  * @returns
@@ -460,29 +460,29 @@ function parse_data(){
 function parse_DOM(DOM_array){
 	var json_to_send = {};
 	$.each ( DOM_array, function( i, el){
-		
+
 		if(el.tagName == "DIV"){
 			//lists
 			if(el.className == "container_list"){
 				var parsed_children = parse_div_list(el.childNodes);
 				json_to_send[el.data_key] = parsed_children;
-				
+
 			//intList and stringList
 			}else if(el.className == "container"){
-				
+
 				json_to_send[el.data_name] = parse_div_container_list(el.childNodes);
-				
-			}else{				
+
+			}else{
 				if(el.hasChildNodes()){
 					var parsed_DOM = parse_DOM(el.childNodes);
-					if(parsed_DOM.length != 0){				
+					if(parsed_DOM.length != 0){
 						json_to_send = $.extend(json_to_send, parsed_DOM);
 					}
 				}
 			}
-			
+
 		}else if(el.tagName == "INPUT"){
-			
+
 			if(el.type == "radio"){
 				if(el.checked == true){
 					var json_var = {};
@@ -490,26 +490,26 @@ function parse_DOM(DOM_array){
 					json_to_send = $.extend(json_to_send, json_var);
 				}
 			}else if(el.type == "button"){
-				
+
 			}else{
 				var json_var = {};
 				json_var[el.data_key] = el.value;
 				json_to_send = $.extend(json_to_send, json_var);
 			}
-			
-		}else{			
+
+		}else{
 			if(el.hasChildNodes()){
 				var parsed_DOM = parse_DOM(el.childNodes);
-				if(parsed_DOM.length != 0){				
+				if(parsed_DOM.length != 0){
 					json_to_send = $.extend(json_to_send, parsed_DOM);
 				}
 			}
 		}
-		
-		
-		
+
+
+
 	});
-	
+
 	return json_to_send;
 }
 
@@ -521,12 +521,12 @@ function parse_DOM(DOM_array){
  */
 function parse_div_list(children){
 	var output = {};
-	
+
 	$.each(children, function(i, el){
 		var key = el.childNodes[1].value;
 		output[key] = parse_DOM([].slice.call(el.childNodes, 2));
 	})
-	
+
 	return output
 }
 /**
@@ -537,11 +537,11 @@ function parse_div_list(children){
  */
 function parse_div_container_list(children){
 	var output = [];
-	
+
 	$.each(children, function(i, el){
 		output.push(el.value);
 	})
-	
+
 	return output
 }
 
@@ -550,9 +550,9 @@ function parse_div_container_list(children){
  * @returns
  */
 function see_last_result(){
-	
+
 	window.location.href = "../display_all_analysis";
-	
+
 }
 
 
